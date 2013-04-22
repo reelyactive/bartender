@@ -54,7 +54,7 @@ function whatAt(params, cb) {
   var offset = pagination.offset;
   var limit = pagination.limit;
 
-  var pointInterest = params.id;
+  var pointInterest = params.uids;
 
   var results = [];
   for(var i = 0, l = tags.length; i < l; i++) {

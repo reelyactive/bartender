@@ -25,7 +25,7 @@ function whatAt(req, res, next) {
  * @param  {Function} next callback
  */
 function whereIs(req, res, next) {
-  var tagId = req.params.id;
+  var tagId = req.params.uids;
   ask.whereIs(tagId, function devicesFound(err, pointInterest) {
     if(err) {
       return next(err);

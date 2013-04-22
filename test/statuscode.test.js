@@ -10,21 +10,28 @@ describe('Status code testing', function() {
 
   var routes200 = ['',
     'devices', 'devices/00-10-00-57', 'devices/00-16-00-31/location',
-    'ask/whatat/00-00-00-02', 'ask/whereis/00-10-00-57'
+    'ask/whatat?uids=00-00-00-02', 'ask/whereis?uids=00-10-00-57',
+    'accounts/132/devices/00-10-00-57'
   ];
   var routes404 = ['404',
     'devices/FF-FF-FF-FF-FF', 'devices/FF-FF-FF-FF-FF/location',
-    'ask', 'ask/whatat', 'ask/wheris'
+    'ask',
+    'accounts', 'accounts/132/devices'
   ];
+  var routes409 = ['ask/whatat', 'ask/whereis'];
 
   var routes = [
     {
       'status': 200,
-      'roads': routes200
+      'routes': routes200
     },
     {
       'status': 404,
-      'roads': routes404
+      'routes': routes404
+    },
+    {
+      'status': 409,
+      'routes': routes409
     }
   ];
 
@@ -34,7 +41,7 @@ describe('Status code testing', function() {
   processNextRouteGroup();
 
   /**
-   * For each road groups check his roads
+   * For each road groups check his routes
    */
   function processNextRouteGroup() {
     if(++routeGroupNum < routes.length) {
@@ -46,13 +53,13 @@ describe('Status code testing', function() {
   }
 
   /**
-   * For each roads in a group, check his response status code
+   * For each routes in a group, check his response status code
    * @param  {Object}  routeGroup JSON Object representing a status code
-   *                              and an array of roads to test
+   *                              and an array of routes to test
    */
   function processNextRoute(routeGroup) {
-    if(++routeNum < routeGroup.roads.length) {
-      var route = routeGroup.roads[routeNum];
+    if(++routeNum < routeGroup.routes.length) {
+      var route = routeGroup.routes[routeNum];
       checkStatusCode(route, routeGroup, processNextRoute);
     } else {
       routeNum = -1;
@@ -64,7 +71,7 @@ describe('Status code testing', function() {
    * Check the response status code for given road
    * @param  {String}   route      Url we want to test
    * @param  {Object}   routeGroup JSON Object representing a status code
-   *                              and an array of roads to test
+   *                              and an array of routes to test
    * @param  {Function} next       Callback for the next url
    */
   function checkStatusCode(route, routeGroup, next) {
