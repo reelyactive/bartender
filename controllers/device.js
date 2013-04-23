@@ -1,7 +1,4 @@
 var device = require('../models/device');
-var pagination = require('../utils/pagination');
-
-var helper = require('../utils/helper');
 
 /**
  * Find all devices

@@ -79,7 +79,8 @@ describe('Status code testing', function() {
     it('should get a ' + status + ' response for /' + route, function(done) {
       client.get('/' + route, function(err, req, res, data) {
         if(res.statusCode !== status) {
-          var errMessage = 'Invalid response ' + res.statusCode + ' from /' + route;
+          var errMessage = 'Invalid response ' + res.statusCode +
+                           ' from /' + route;
           errMessage += '\n Expected ' + res.statusCode + ' to equal ' + status;
           throw new Error(errMessage);
         }

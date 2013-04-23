@@ -1,5 +1,4 @@
 var ask = require('../models/ask');
-var helper = require('../utils/helper');
 
 /**
  * Find what is at a Point of Interest
@@ -25,12 +24,12 @@ function whatAt(req, res, next) {
  * @param  {Function} next callback
  */
 function whereIs(req, res, next) {
-  var tagId = req.params.uids;
-  ask.whereIs(tagId, function devicesFound(err, pointInterest) {
+  var tagIds = req.params.uids;
+  ask.whereIs(tagIds, function devicesFound(err, result) {
     if(err) {
       return next(err);
     }
-    res.json(200, pointInterest);
+    res.json(200, result);
 
     return next();
   });

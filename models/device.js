@@ -6,23 +6,43 @@ var restify = require('restify');
 var devices = [
   {
     id: '00-10-00-57',
-    location: 'Rouen'
+    location: 'Rouen',
+    sensors: [{
+      type: 'battery',
+      value: '83'
+    }]
   },
   {
     id: '00-16-00-31',
-    location: 'Montréal'
+    location: 'Montréal',
+    sensors: [{
+      type: 'battery',
+      value: '83'
+    }]
   },
   {
     id: '00-ff-ff-54',
-    location: 'Paris'
+    location: 'Paris',
+    sensors: [{
+      type: 'battery',
+      value: '83'
+    }]
   },
   {
     id: '11-13-45-ed',
-    location: 'Toronto'
+    location: 'Toronto',
+    sensors: [{
+      type: 'battery',
+      value: '83'
+    }]
   },
   {
     id: '02-78-99-f1',
-    location: 'San Francisco'
+    location: 'San Francisco',
+    sensors: [{
+      type: 'battery',
+      value: '83'
+    }]
   }
 ];
 

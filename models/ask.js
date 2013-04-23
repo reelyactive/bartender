@@ -54,62 +54,81 @@ function whatAt(params, cb) {
   var offset = pagination.offset;
   var limit = pagination.limit;
 
-  var pointInterest = params.uids;
-
+  var pointInterests = params.uids.split(',');
   var results = [];
-  for(var i = 0, l = tags.length; i < l; i++) {
-    var tag = tags[i];
-    if(tag.location == pointInterest) {
-      results.push(tag);
+  for (var i = 0, l = pointInterests.length; i < l; i++) {
+    var pointInterest = pointInterests[i];
+    var result = {};
+    result.id = pointInterest;
+    result.devices = [];
+    for(var j = 0, length = tags.length; j < length; j++) {
+      var tag = tags[j];
+      if(tag.location === pointInterest) {
+        result.devices.push(tag);
+      }
     }
-  }
+    result._count = result.devices.length;
+    results.push(result);
+  };
 
-  var result = results.slice(offset, limit);
-  if(result.length === 0) {
-    // 200 here
-    return cb(new restify.ResourceNotFoundError('No point of interest with id ' + params.id + ' found'));
-  }
+
+  // var result = results.slice(offset, limit);
 
   var total = results.length;
   var paginationResult = {
     pagination: {
-        offset: offset,
-        limit: limit,
-        total: total
+      offset: offset,
+      limit: limit,
+      total: total
     },
-    result: result
-  }
+    _uids: pointInterests,
+    results: results
+  };
 
   return cb(null, paginationResult);
 };
 
-function whereIs(tagId, cb) {
-  var tagFound;
+function whereIs(tagUids, cb) {
+  var returnValue = {};
+  returnValue._unmatched = [];
+  returnValue.results = [];
 
-  var results = [];
-  for(var i = 0, l = tags.length; i < l; i++) {
-    var tag = tags[i];
-    if(tag.id == tagId) {
-      tagFound = tag;
-      break;
-    }
-  }
-  if(!tagFound) {
-    return cb(new restify.ResourceNotFoundError('Device with id ' + tagId + ' isn\'t existing.'));
-  } else {
-    var piFound;
-    for(var i = 0, l = pointInterests.length; i < l; i++) {
-      var pointInterest = pointInterests[i];
-      if(tag.location == pointInterest.id) {
-        piFound = pointInterest;
+  var tagsRequest = tagUids.split(',');
+  for(var i = 0, l = tagsRequest.length; i < l; i++) {
+    var tagFound = null;
+    var tagRequest = tagsRequest[i];
+    var result = {};
+
+    for(var j = 0, length = tags.length; j < length; j++) {
+      var tag = tags[j];
+      if(tag.id === tagRequest) {
+        tagFound = tag;
+        break;
       }
     }
-    if(!piFound) {
-      return cb(new restify.ResourceNotFoundError('This device can\'t be located.'));
+
+    if(!tagFound) {
+      returnValue._unmatched.push(tagRequest);
     } else {
-      return cb(null, piFound);
+      result.id = tagRequest;
+      var piFound;
+      for(var j = 0, length = pointInterests.length; j < length; j++) {
+        var pointInterest = pointInterests[j];
+        if(tagFound.location === pointInterest.id) {
+          result.location = pointInterest;
+          break;
+        }
+      }
+      if(!result.location) {
+        result.state = 'offline';
+      } else {
+        result.state = 'online';
+      }
+      returnValue.results.push(result);
     }
   }
+
+  return cb(null, returnValue);
 };
 
 exports.whatAt = whatAt;
