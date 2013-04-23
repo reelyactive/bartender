@@ -1,11 +1,13 @@
-var account = require('../controllers/account');
+var accountController = require('../controllers/account');
 var policies = require('../policies/account/account');
 
-module.exports = function(server) {
-  server.get('/accounts/:accountUid/devices/:deviceUid',
-    policies.requireParams, account.findDevice);
-  server.get('/accounts/:accountUid/devices/:deviceUid/location',
-    policies.requireParams, account.findDeviceLocation);
-  server.get('/accounts/:accountUid/devices/:deviceUid/sensors',
-    policies.requireParams, account.findDeviceSensors);
+module.exports = function(server, VERSION) {
+  server.get(VERSION + '/accounts/:accountUid/devices/:deviceUid',
+    policies.requireParams, accountController.findDevice);
+
+  server.get(VERSION + '/accounts/:accountUid/devices/:deviceUid/location',
+    policies.requireParams, accountController.findDeviceLocation);
+
+  server.get(VERSION + '/accounts/:accountUid/devices/:deviceUid/sensors',
+    policies.requireParams, accountController.findDeviceSensors);
 };

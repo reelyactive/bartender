@@ -1,6 +1,6 @@
 var should = require('should');
 var validator = require('../utils/validator');
-var pagination = require('../utils/pagination');
+var paginator = require('../utils/paginator');
 
 
 describe('Policies validation', function() {
@@ -25,6 +25,23 @@ describe('Policies validation', function() {
         req.params.id = '00-10-00-57';
         validator.requireId(req, res, function() {
           should.exist(req.params.id);
+          should.not.exist(req.error);
+        });
+      });
+    });
+
+    describe('Require macs', function() {
+      it('should set an error if an "macs" isn\'t present in the req.params', function() {
+        validator.requireMacs(req, res, function() {
+          should.not.exist(req.params.macs);
+          should.exist(req.error);
+        });
+      });
+
+      it('should check if an "macs" is present in the req.params', function() {
+        req.params.macs = '00-10-00-57';
+        validator.requireMacs(req, res, function() {
+          should.exist(req.params.macs);
           should.not.exist(req.error);
         });
       });
@@ -90,37 +107,34 @@ describe('Policies validation', function() {
       res = {};
     });
 
-    it('should set a default pagination object in the req', function() {
-      pagination.paginate(req, res, function() {
-        should.exist(req.params.pagination);
-        should.exist(req.params.pagination.offset);
-        should.exist(req.params.pagination.limit);
-        req.params.pagination.offset.should.equal(0);
-        req.params.pagination.limit.should.equal(10);
+    it('should set a defaults paginaton params in the req', function() {
+      paginator.paginate(req, res, function() {
+        should.exist(req.params.offset);
+        should.exist(req.params.limit);
+        req.params.offset.should.equal(0);
+        req.params.limit.should.equal(10);
       });
     });
 
-    it('should set a pagination object based on the params', function() {
+    it('should set paginaton params based on the params', function() {
       req.params.offset = 3;
       req.params.limit = 23;
-      pagination.paginate(req, res, function() {
-        should.exist(req.params.pagination);
-        should.exist(req.params.pagination.offset);
-        should.exist(req.params.pagination.limit);
-        req.params.pagination.offset.should.equal(3);
-        req.params.pagination.limit.should.equal(23);
+      paginator.paginate(req, res, function() {
+        should.exist(req.params.offset);
+        should.exist(req.params.limit);
+        req.params.offset.should.equal(3);
+        req.params.limit.should.equal(23);
       });
     });
 
-    it('should set a pagination object based on the params', function() {
+    it('should set paginaton params based on the params and validate them', function() {
       req.params.offset = 7;
       req.params.limit = 1500;
-      pagination.paginate(req, res, function() {
-        should.exist(req.params.pagination);
-        should.exist(req.params.pagination.offset);
-        should.exist(req.params.pagination.limit);
-        req.params.pagination.offset.should.equal(7);
-        req.params.pagination.limit.should.equal(100);
+      paginator.paginate(req, res, function() {
+        should.exist(req.params.offset);
+        should.exist(req.params.limit);
+        req.params.offset.should.equal(7);
+        req.params.limit.should.equal(100);
       });
     });
   });

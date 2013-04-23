@@ -1,45 +1,45 @@
-var device = require('../models/device');
+var deviceModel = require('../models/device');
 
-/**
- * Find all devices
- */
-function findDevices(req, res, next) {
-  device.findDevices(req.params, function devicesFound(err, result) {
-    if(err) {
-      return next(err);
-    }
+var DeviceController = {
+  /**
+   * Find all devices
+   */
+  findDevices: function(req, res, next) {
+    deviceModel.findDevices(req.params, function devicesFound(err, result) {
+      if(err) {
+        return next(err);
+      }
 
-    res.json(200, result);
-    return next();
-  });
-}
+      res.json(200, result);
+      return next();
+    });
+  },
 
-/**
- * Proceed a find request
- */
-function findDeviceRequest(req, res, next) {
-  device.findDeviceRequest(req.params.id, function deviceFound(err, device) {
-    if(err) {
-      return next(err);
-    }
-    res.json(200, { code: 200, message: 'Device # ' + device.id + ' found !' });
-    return next();
-  });
-}
+  /**
+   * Proceed a find request
+   */
+  findDeviceRequest: function(req, res, next) {
+    deviceModel.findDeviceRequest(req.params.id, function deviceFound(err, device) {
+      if(err) {
+        return next(err);
+      }
+      res.json(200, { code: 200, message: 'Device # ' + device.id + ' found !' });
+      return next();
+    });
+  },
 
-/**
- * Locate a device
- */
-function location(req, res, next) {
-  device.location(req.params.id, function deviceLocated(err, device) {
-    if(err) {
-      return next(err);
-    }
-    res.json(200, { code: 200, message: 'Device # ' + device.id + ' found in ' + device.location + '!'});
-    return next();
-  });
-}
+  /**
+   * Locate a device
+   */
+  location: function(req, res, next) {
+    deviceModel.location(req.params.id, function deviceLocated(err, device) {
+      if(err) {
+        return next(err);
+      }
+      res.json(200, { code: 200, message: 'Device # ' + device.id + ' found in ' + device.location + '!'});
+      return next();
+    });
+  }
+};
 
-exports.findDevices = findDevices;
-exports.findDeviceRequest = findDeviceRequest;
-exports.location = location;
+module.exports = DeviceController;

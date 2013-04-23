@@ -1,39 +1,62 @@
-var ask = require('../models/ask');
+var askModel = require('../models/ask');
 
-/**
- * Find what is at a Point of Interest
- * @param  {[type]}   req  request
- * @param  {[type]}   res  response
- * @param  {Function} next callback
- */
-function whatAt(req, res, next) {
-  ask.whatAt(req.params, function devicesFound(err, result) {
-    if(err) {
-      return next(err);
-    }
+var AskController = {
+  /**
+   * Specify which actions are available for this ressource
+   * @param  {[type]}   req  request
+   * @param  {[type]}   res  response
+   * @param  {Function} next callback
+   */
+  root: function(req, res, next) {
+    var result = {};
+    result.description = 'Allow you to ask the API';
+    result.supportedActions = [
+      {
+        'href': 'whatAt',
+        'versionsSupported': ['v0']
+      },
+      {
+        'href': 'whereIs',
+        'versionsSupported': ['v0']
+      }
+    ];
     res.json(200, result);
-
     return next();
-  });
+  },
+
+  /**
+   * Find what is at a Point of Interest
+   * @param  {[type]}   req  request
+   * @param  {[type]}   res  response
+   * @param  {Function} next callback
+   */
+  whatAt: function(req, res, next) {
+    askModel.whatAt(req.params, function devicesFound(err, result) {
+      if(err) {
+        return next(err);
+      }
+      res.json(200, result);
+
+      return next();
+    });
+  },
+
+  /**
+   * Find where is a device
+   * @param  {[type]}   req  request
+   * @param  {[type]}   res  response
+   * @param  {Function} next callback
+   */
+  whereIs: function(req, res, next) {
+    askModel.whereIs(req.params, function devicesFound(err, result) {
+      if(err) {
+        return next(err);
+      }
+      res.json(200, result);
+
+      return next();
+    });
+  }
 };
 
-/**
- * Find where is a device
- * @param  {[type]}   req  request
- * @param  {[type]}   res  response
- * @param  {Function} next callback
- */
-function whereIs(req, res, next) {
-  var tagIds = req.params.uids;
-  ask.whereIs(tagIds, function devicesFound(err, result) {
-    if(err) {
-      return next(err);
-    }
-    res.json(200, result);
-
-    return next();
-  });
-};
-
-exports.whereIs = whereIs;
-exports.whatAt = whatAt;
+module.exports = AskController;

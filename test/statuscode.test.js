@@ -6,16 +6,17 @@ var client = restify.createJsonClient({
   url: CONF.HOST + ':' + CONF.PORT
 });
 
+var VERSION = '/v' + parseInt(CONF.VERSION, 10) + '/';
+
 describe('Status code testing', function() {
 
-  var routes200 = ['',
-    'devices', 'devices/00-10-00-57', 'devices/00-16-00-31/location',
-    'ask/whatat?uids=00-00-00-02', 'ask/whereis?uids=00-10-00-57',
+  var routes200 = ['devices',
+    'devices/00-10-00-57', 'devices/00-16-00-31/location',
+    'ask', 'ask/whatat?macs=00-00-00-02', 'ask/whereis?macs=00-10-00-57',
     'accounts/132/devices/00-10-00-57'
   ];
   var routes404 = ['404',
     'devices/FF-FF-FF-FF-FF', 'devices/FF-FF-FF-FF-FF/location',
-    'ask',
     'accounts', 'accounts/132/devices'
   ];
   var routes409 = ['ask/whatat', 'ask/whereis'];
@@ -76,8 +77,8 @@ describe('Status code testing', function() {
    */
   function checkStatusCode(route, routeGroup, next) {
     var status = routeGroup.status;
-    it('should get a ' + status + ' response for /' + route, function(done) {
-      client.get('/' + route, function(err, req, res, data) {
+    it('should get a ' + status + ' response for ' + VERSION + route, function(done) {
+      client.get(VERSION + route, function(err, req, res, data) {
         if(res.statusCode !== status) {
           var errMessage = 'Invalid response ' + res.statusCode +
                            ' from /' + route;
