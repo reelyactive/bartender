@@ -1,7 +1,6 @@
-beehive
-=======
+# [Bartender 0.1.0](https://github.com/reelyactive/bartender/)
 
-Beehive is a REST API that provides the interface to label the infrastructure and to query for information.
+Bartender is a REST-style API that enables third parties to ask questions about the infrastructure and the status of the devices they have access to.
 
 ## Quick Start
 
