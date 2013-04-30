@@ -4,8 +4,10 @@ Bartender is a REST-style API that enables third parties to ask questions about 
 
 ## Quick Start
 
-* Clone the repo: `git clone git@github.com:reelyactive/beehive.git`
+* Clone the repo: `git clone git@github.com:reelyactive/bartender.git`
 * Run the following to get all the dependancies: `[sudo] npm install`
+
+Before launching the API, be sure to rename dbconf.sample.js to dbconf.js
 
 ### Unit tests
 

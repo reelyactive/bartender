@@ -1,4 +1,7 @@
 var restify = require('restify');
+var _ = require('underscore');
+var Tag = require('./schemas/tag')();
+
 var paginator = require('../utils/paginator');
 
 var AskModel = {
@@ -52,7 +55,8 @@ var AskModel = {
     }
   ],
 
-  whatAt: function(params, cb) {
+  whatAt: function(req, cb) {
+    var params = req.params;
     var offset = params.offsest;
     var limit = params.limit;
 
@@ -90,8 +94,9 @@ var AskModel = {
     return cb(null, paginationResult);
   },
 
-  whereIs: function(params, cb) {
+  whereIs: function(req, cb) {
     // Get params
+    var params = req.params;
     var macs = params.macs.split(',');
     var offset = params.offset;
     var limit = params.limit;
@@ -107,11 +112,11 @@ var AskModel = {
 
     // Metadata handling
     returnObject._metadata.statusCode = 200;
-    returnObject._metadata.message = 'ok;'
-    returnObject._metadata.developerMessage = 'ok';
-    returnObject._metadata.userMessage = 'ok';
-    returnObject._metadata.errorCode = null;
-    returnObject._metadata.moreInfo = 'ok';
+    returnObject._metadata.message = 'ok';
+    // returnObject._metadata.developerMessage = 'ok';
+    // returnObject._metadata.userMessage = 'ok';
+    // returnObject._metadata.errorCode = null;
+    // returnObject._metadata.moreInfo = 'ok';
     returnObject._metadata.totalCount = totalCount;
     returnObject._metadata.offset = offset;
     returnObject._metadata.limit = limit;
@@ -123,48 +128,29 @@ var AskModel = {
     returnObject._links = paginator.createLinks(url, offset, limit, totalCount);
 
     // Business logic
-    for(var i = 0, l = macs.length; i < l; i++) {
-      var deviceFound = null;
-      var mac = macs[i];
-      var result = {};
-
-      for(var j = 0, length = this.tags.length; j < length; j++) {
-        var tag = this.tags[j];
-        if(tag.mac === mac) {
-          deviceFound = tag;
-          break;
-        }
-      }
-
-      if(!deviceFound) {
-        returnObject.unmatched.push(mac);
-      } else {
-        result.mac = mac;
-        var piFound;
-        for(var j = 0, length = this.pi.length; j < length; j++) {
-          var pointInterest = this.pi[j];
-          if(deviceFound.location === pointInterest.mac) {
-            piFound = pointInterest;
-            break;
-          }
-        }
-        result.location = {};
-        result.location.modelUid = 'FF-FF-FF-FF';
-        result.location.modelName = 'rAStrongestReelceiver';
-        result.location.lastUpdate = 'todo';
-        result.location.lastChangeEvent = {'to': 'do'};
-        result.location.values = {};
-        if(!piFound) {
-          result.location.values.visibility = 'offline';
+    Tag
+      .where('mac').in(macs)
+      .exec(function(err, tags) {
+        if(err) {
+          return cb(err);
         } else {
-          result.location.values.reelceiverMac = piFound.mac;
-          result.location.values.visibility = 'online';
+          var result;
+          var unmatchedMacs = macs;
+          for(var i = 0, l = tags.length; i < l; i++) {
+            result = {};
+            var tag = tags[i];
+            result.mac = tag.mac;
+            result.location = tag;
+            // result.location = {};
+            // result.location.uuid = tag.uuid;
+            returnObject.locations.push(result);
+            unmatchedMacs = _.without(unmatchedMacs, tag.mac);
+          }
+          returnObject.unmatched = unmatchedMacs;
         }
-        returnObject.locations.push(result);
-      }
-    }
 
-    return cb(null, returnObject);
+        return cb(null, returnObject);
+    });
   }
 };
 

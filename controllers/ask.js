@@ -31,7 +31,7 @@ var AskController = {
    * @param  {Function} next callback
    */
   whatAt: function(req, res, next) {
-    askModel.whatAt(req.params, function devicesFound(err, result) {
+    askModel.whatAt(req, function devicesFound(err, result) {
       if(err) {
         return next(err);
       }
@@ -48,7 +48,7 @@ var AskController = {
    * @param  {Function} next callback
    */
   whereIs: function(req, res, next) {
-    askModel.whereIs(req.params, function devicesFound(err, result) {
+    askModel.whereIs(req, function devicesFound(err, result) {
       if(err) {
         return next(err);
       }
