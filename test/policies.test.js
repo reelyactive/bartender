@@ -13,89 +13,44 @@ describe('Policies validation', function() {
       res = {};
     });
 
-    describe('Require id', function() {
-      it('should set an error if an "id" isn\'t present in the req.params', function() {
-        validator.requireId(req, res, function() {
-          should.not.exist(req.params.id);
+    /**
+     * Test the requireParam function from the validator
+     * @param  {String} paramName  Name of the param you want to test
+     * @param  {String} paramValue Value of this param
+     */
+    function requireParam(paramName, paramValue) {
+      var CamelCaseParam = paramName.charAt(0).toUpperCase() + paramName.substr(1);
+      it('should set an error if an "' + paramName + '" isn\'t present in the req.params', function() {
+        validator['require' + CamelCaseParam](req, res, function() {
+          should.not.exist(req.params[paramName]);
           should.exist(req.error);
         });
       });
 
-      it('should check if an "id" is present in the req.params', function() {
-        req.params.id = '00-10-00-57';
-        validator.requireId(req, res, function() {
-          should.exist(req.params.id);
+      it('should check if an "' + paramName + '" is present in the req.params', function() {
+        req.params[paramName] = paramValue;
+        validator['require' + CamelCaseParam](req, res, function() {
+          should.exist(req.params[paramName]);
           should.not.exist(req.error);
         });
       });
+    }
+
+    // Tests
+    describe('Require id', function() {
+      requireParam('id', '00-10-00-57');
     });
 
     describe('Require macs', function() {
-      it('should set an error if an "macs" isn\'t present in the req.params', function() {
-        validator.requireMacs(req, res, function() {
-          should.not.exist(req.params.macs);
-          should.exist(req.error);
-        });
-      });
-
-      it('should check if an "macs" is present in the req.params', function() {
-        req.params.macs = '00-10-00-57';
-        validator.requireMacs(req, res, function() {
-          should.exist(req.params.macs);
-          should.not.exist(req.error);
-        });
-      });
+      requireParam('macs', 'aabbcc,ddeeff');
     });
 
     describe('Require uids', function() {
-      it('should set an error if an "uids" isn\'t present in the req.params', function() {
-        validator.requireUids(req, res, function() {
-          should.not.exist(req.params.uids);
-          should.exist(req.error);
-        });
-      });
-
-      it('should check if an "uids" is present in the req.params', function() {
-        req.params.uids = '00-10-00-57';
-        validator.requireUids(req, res, function() {
-          should.exist(req.params.uids);
-          should.not.exist(req.error);
-        });
-      });
-    });
-
-    describe('Require accountUid', function() {
-      it('should set an error if an "accountUid" isn\'t present in the req.params', function() {
-        validator.requireAccountUid(req, res, function() {
-          should.not.exist(req.params.accountUid);
-          should.exist(req.error);
-        });
-      });
-
-      it('should check if an "accountUid" is present in the req.params', function() {
-        req.params.accountUid = '132';
-        validator.requireAccountUid(req, res, function() {
-          should.exist(req.params.accountUid);
-          should.not.exist(req.error);
-        });
-      });
+      requireParam('uids', '00-10-00-57,00-10-00-69');
     });
 
     describe('Require tagUid', function() {
-      it('should set an error if an "tagUid" isn\'t present in the req.params', function() {
-        validator.requireTagUid(req, res, function() {
-          should.not.exist(req.params.tagUid);
-          should.exist(req.error);
-        });
-      });
-
-      it('should check if an "tagUid" is present in the req.params', function() {
-        req.params.tagUid = '00-10-00-57';
-        validator.requireTagUid(req, res, function() {
-          should.exist(req.params.tagUid);
-          should.not.exist(req.error);
-        });
-      });
+      requireParam('tagUid', '00-10-00-57');
     });
   });
 

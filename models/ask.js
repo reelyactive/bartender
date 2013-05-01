@@ -77,7 +77,6 @@ var AskModel = {
       results.push(result);
     };
 
-
     // var result = results.slice(offset, limit);
 
     var total = results.length;
@@ -130,26 +129,29 @@ var AskModel = {
 
     // Business logic
     Tag
+      .where('type').equals('Tag')
       .where('mac').in(macs)
-      .exec(function(err, tags) {
+      .exec(function tagsFoundDB(err, tags) {
         if(err) {
           return cb(err);
-        } else {
-          var result;
-          var unmatchedMacs = macs;
-          for(var i = 0, l = tags.length; i < l; i++) {
-            result = {};
-            var tag = tags[i];
-            result = tag;
-            // result.location = {};
-            // result.location.uuid = tag.uuid;
-            returnObject.locations.push(result);
-            unmatchedMacs = _.without(unmatchedMacs, tag.mac);
-          }
-          returnObject.matched = _.difference(macs, unmatchedMacs);
-          returnObject.unmatched = unmatchedMacs;
         }
+        var result;
+        var unmatchedMacs = macs;
+        for(var i = 0, l = tags.length; i < l; i++) {
+          result = {};
+          var tag = tags[i];
+          result = tag;
+          returnObject.locations.push(result);
+          unmatchedMacs = _.without(unmatchedMacs, tag.mac);
+        }
+        returnObject.matched = _.difference(macs, unmatchedMacs);
+        returnObject.unmatched = unmatchedMacs;
 
+        if(returnObject.matched.length === 0) {
+          return cb(new restify.ResourceNotFoundError(
+            'No tags located')
+          );
+        }
         return cb(null, returnObject);
     });
   }

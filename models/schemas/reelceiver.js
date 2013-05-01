@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var TagSchema = new mongoose.Schema({
+var ReelceiverSchema = new mongoose.Schema({
   uuid: String,
   mac: String,
   vendor: String,
@@ -17,30 +17,6 @@ var TagSchema = new mongoose.Schema({
       updateDate: Date
     }
   },
-  location: {
-    poi: {
-      uuid: String,
-      mac: String,
-      uri: {
-        reelceiver: {
-          href: String
-        }
-      }
-    },
-    updateDate: Date,
-    lastChangeEvent: {
-      poi: {
-        uuid: String,
-        mac: String,
-        uri: {
-          reelceiver: {
-            href: String
-          }
-        }
-      },
-      updateDate: Date
-    }
-  },
   temperature: {
     value: Number,
     updateDate: Date,
@@ -49,13 +25,9 @@ var TagSchema = new mongoose.Schema({
       updateDate: Date
     }
   },
-  batteryLevel: {
-    value: Number,
-    updateDate: Date,
-    lastChangeEvent: {
-      value: Number,
-      updateDate: Date
-    }
+  undervoltage: {
+    value: Boolean,
+    updateDate: Date
   },
   lqi: {
     value: Number,
@@ -65,22 +37,25 @@ var TagSchema = new mongoose.Schema({
       updateDate: Date
     }
   },
+  led: {
+   value: String
+  },
   radioDecodings: {
-    transmitDataDecoded: {
+    transmitDataDecoded: {},
+    receivedDataDecoded: {
       values: [{
         uuid: String,
         mac: String,
         uri: {
-          reelceiver: {
+          tag: {
             href: String
           }
         },
         rssi: Number
       }],
       updateDate: Date
-    },
-    receivedDataDecoded: {}
+    }
   }
 });
 
-module.exports = mongoose.model('Tag', TagSchema, 'device');
+module.exports = mongoose.model('Reelceiver', ReelceiverSchema, 'device');

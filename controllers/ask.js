@@ -42,7 +42,7 @@ var AskController = {
   },
 
   /**
-   * Find where is a tag
+   * Find where is a(many) tag(s)
    * @param  {[type]}   req  request
    * @param  {[type]}   res  response
    * @param  {Function} next callback

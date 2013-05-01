@@ -1,41 +1,58 @@
 var Tag = require('mongoose').model('Tag');
+var Reelceiver = require('mongoose').model('Reelceiver');
 
 var MgmtController = {
-  dropTagCollection: function(req, res, next) {
-    var tag = new Tag();
-    tag.collection.drop(function(err) {
+  /**
+   * Drop (flush) the device collection
+   */
+  dropDeviceCollection: function(req, res, next) {
+    var device = new Tag();
+    device.collection.drop(function(err) {
       if(err) {
         return next(err);
       } else {
-        res.json(200, 'Tag collection successfully dropped');
+        res.json(200, 'Device collection successfully dropped');
         return next();
       }
     });
   },
-  generateTags: function(req, res, next) {
+
+  /**
+   * Generate fake devices infos for tests purposes
+   */
+  generateDevices: function(req, res, next) {
     var tag = new Tag({
       uuid: 'random',
       mac: '00-10-00-57',
       vendor: 'reelyActive',
       type: 'Tag',
       model: 'RA-T411-02',
-      radioProtocol: 'RA-Proprietary-915MHz'
+      radioProtocol: 'RA-Proprietary-915MHz',
+      visibility: {
+        value: 'visible'
+      }
     });
     var tag2 = new Tag({
       uuid: 'random2',
-      mac: '00-15-11-07',
+      mac: '00-10-11-07',
       vendor: 'reelyActive',
       type: 'Tag',
       model: 'RA-T411-02',
-      radioProtocol: 'RA-Proprietary-915MHz'
+      radioProtocol: 'RA-Proprietary-915MHz',
+      visibility: {
+        value: 'visible'
+      }
     });
     var tag3 = new Tag({
       uuid: 'random3',
-      mac: '00-22-22-13',
+      mac: '00-10-22-13',
       vendor: 'reelyActive',
       type: 'Tag',
       model: 'RA-T411-02',
-      radioProtocol: 'RA-Proprietary-915MHz'
+      radioProtocol: 'RA-Proprietary-915MHz',
+      visibility: {
+        value: 'visible'
+      }
     });
     var tag4 = new Tag({
       uuid: 'random4',
@@ -43,13 +60,57 @@ var MgmtController = {
       vendor: 'reelyActive',
       type: 'Tag',
       model: 'RA-T411-02',
-      radioProtocol: 'RA-Proprietary-915MHz'
+      radioProtocol: 'RA-Proprietary-915MHz',
+      visibility: {
+        value: 'invisible'
+      }
     });
     var tag5 = new Tag({
       uuid: 'random5',
       mac: '00-10-00-23',
       vendor: 'reelyActive',
       type: 'Tag',
+      model: 'RA-T411-02',
+      radioProtocol: 'RA-Proprietary-915MHz',
+    });
+
+    var reelceiver = new Reelceiver({
+      uuid: 'random',
+      mac: '00-80-00-57',
+      vendor: 'reelyActive',
+      type: 'Reelceiver',
+      model: 'RA-T411-02',
+      radioProtocol: 'RA-Proprietary-915MHz'
+    });
+    var reelceiver2 = new Reelceiver({
+      uuid: 'random2',
+      mac: '00-80-11-27',
+      vendor: 'reelyActive',
+      type: 'Reelceiver',
+      model: 'RA-T411-02',
+      radioProtocol: 'RA-Proprietary-915MHz'
+    });
+    var reelceiver3 = new Reelceiver({
+      uuid: 'random3',
+      mac: '00-80-22-45',
+      vendor: 'reelyActive',
+      type: 'Reelceiver',
+      model: 'RA-T411-02',
+      radioProtocol: 'RA-Proprietary-915MHz'
+    });
+    var reelceiver4 = new Reelceiver({
+      uuid: 'random4',
+      mac: '00-80-77-55',
+      vendor: 'reelyActive',
+      type: 'Reelceiver',
+      model: 'RA-T411-02',
+      radioProtocol: 'RA-Proprietary-915MHz'
+    });
+    var reelceiver5 = new Reelceiver({
+      uuid: 'random5',
+      mac: '00-80-00-23',
+      vendor: 'reelyActive',
+      type: 'Reelceiver',
       model: 'RA-T411-02',
       radioProtocol: 'RA-Proprietary-915MHz'
     });
@@ -62,7 +123,13 @@ var MgmtController = {
     tag4.save();
     tag5.save();
 
-    res.json(200, 'Tags successfully added. (maybe not..)');
+    reelceiver.save();
+    reelceiver2.save();
+    reelceiver3.save();
+    reelceiver4.save();
+    reelceiver5.save();
+
+    res.json(200, 'Devices successfully added. (maybe not..)');
     return next();
   }
 };
