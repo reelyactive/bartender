@@ -1,10 +1,10 @@
 var restify = require('restify');
 
-var DeviceModel = {
+var TagModel = {
   /**
-   * Fake DB for devices
+   * Fake DB for tags
    */
-  devices: [
+  tags: [
     {
       id: '00-10-00-57',
       location: 'Rouen',
@@ -48,29 +48,29 @@ var DeviceModel = {
   ],
 
   /**
-   * Find a device
+   * Find a tag
    */
-  findDevice: function(id, cb) {
-    for(var i =0, l = this.devices.length; i < l; i++) {
-      if(this.devices[i].id === id) {
-        return cb(null, this.devices[i]);
+  findTag: function(id, cb) {
+    for(var i =0, l = this.tags.length; i < l; i++) {
+      if(this.tags[i].id === id) {
+        return cb(null, this.tags[i]);
       }
     }
-    return cb(new restify.ResourceNotFoundError('No device  with id ' + id + ' found'));
+    return cb(new restify.ResourceNotFoundError('No tag  with id ' + id + ' found'));
   },
 
   /**
-   * Find all devices
+   * Find all tags
    */
-  findDevices: function(params, cb) {
+  findTags: function(params, cb) {
     var offset = params.offset;
     var limit = params.limit;
-    var result = this.devices.slice(offset, limit);
+    var result = this.tags.slice(offset, limit);
 
     if(result.length === 0) {
-      return cb(new restify.ResourceNotFoundError('No devices found'));
+      return cb(new restify.ResourceNotFoundError('No tags found'));
     }
-    var total = this.devices.length;
+    var total = this.tags.length;
     var paginationResult = {
       pagination: {
           offset: offset,
@@ -85,26 +85,14 @@ var DeviceModel = {
   /**
    * Proceed a find request
    */
-  findDeviceRequest: function(id, cb) {
-    this.findDevice(id, function deviceFound(err, device) {
+  findTagRequest: function(id, cb) {
+    this.findTag(id, function tagFound(err, tag) {
       if(err) {
         return cb(err);
       }
-      return cb(null, device);
-    });
-  },
-
-  /**
-   * Locate a device
-   */
-  location: function(id, cb) {
-    this.findDevice(id, function deviceFound(err, device) {
-      if(err) {
-        return cb(err);
-      }
-      return cb(null, device);
+      return cb(null, tag);
     });
   }
 };
 
-module.exports = DeviceModel;
+module.exports = TagModel;

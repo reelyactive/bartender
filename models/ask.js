@@ -1,6 +1,6 @@
 var restify = require('restify');
 var _ = require('underscore');
-var Tag = require('./schemas/tag')();
+var Tag = require('mongoose').model('Tag');
 
 var paginator = require('../utils/paginator');
 
@@ -107,16 +107,17 @@ var AskModel = {
     var returnObject = {};
     returnObject._metadata = {};
     returnObject._links = {};
+    returnObject.matched = [];
     returnObject.unmatched = [];
     returnObject.locations = [];
 
     // Metadata handling
     returnObject._metadata.statusCode = 200;
     returnObject._metadata.message = 'ok';
-    // returnObject._metadata.developerMessage = 'ok';
-    // returnObject._metadata.userMessage = 'ok';
-    // returnObject._metadata.errorCode = null;
-    // returnObject._metadata.moreInfo = 'ok';
+    returnObject._metadata.developerMessage = 'ok';
+    returnObject._metadata.userMessage = 'ok';
+    returnObject._metadata.errorCode = null;
+    returnObject._metadata.moreInfo = 'ok';
     returnObject._metadata.totalCount = totalCount;
     returnObject._metadata.offset = offset;
     returnObject._metadata.limit = limit;
@@ -139,13 +140,13 @@ var AskModel = {
           for(var i = 0, l = tags.length; i < l; i++) {
             result = {};
             var tag = tags[i];
-            result.mac = tag.mac;
-            result.location = tag;
+            result = tag;
             // result.location = {};
             // result.location.uuid = tag.uuid;
             returnObject.locations.push(result);
             unmatchedMacs = _.without(unmatchedMacs, tag.mac);
           }
+          returnObject.matched = _.difference(macs, unmatchedMacs);
           returnObject.unmatched = unmatchedMacs;
         }
 

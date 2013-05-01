@@ -10,7 +10,7 @@ var AccountPolicy = {
      */
     requireParams: function(req, res, next) {
       req.steps.push(validator.requireAccountUid);
-      req.steps.push(validator.requireDeviceUid);
+      req.steps.push(validator.requireTagUid);
       helper.runSteps(req, res, next);
     }
 };

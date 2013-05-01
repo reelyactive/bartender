@@ -81,18 +81,18 @@ describe('Policies validation', function() {
       });
     });
 
-    describe('Require deviceUid', function() {
-      it('should set an error if an "deviceUid" isn\'t present in the req.params', function() {
-        validator.requireDeviceUid(req, res, function() {
-          should.not.exist(req.params.deviceUid);
+    describe('Require tagUid', function() {
+      it('should set an error if an "tagUid" isn\'t present in the req.params', function() {
+        validator.requireTagUid(req, res, function() {
+          should.not.exist(req.params.tagUid);
           should.exist(req.error);
         });
       });
 
-      it('should check if an "deviceUid" is present in the req.params', function() {
-        req.params.deviceUid = '00-10-00-57';
-        validator.requireDeviceUid(req, res, function() {
-          should.exist(req.params.deviceUid);
+      it('should check if an "tagUid" is present in the req.params', function() {
+        req.params.tagUid = '00-10-00-57';
+        validator.requireTagUid(req, res, function() {
+          should.exist(req.params.tagUid);
           should.not.exist(req.error);
         });
       });

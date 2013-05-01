@@ -54,14 +54,14 @@ var Validator = {
   },
 
   /**
-   * Check if the param deviceUid is present in the request
+   * Check if the param tagUid is present in the request
    * @param  {[type]}   req request
    * @param  {[type]}   res response
    * @param  {Function} fn  callback
    */
-  requireDeviceUid: function(req, res, next) {
-    if(!req.params.deviceUid) {
-      req.error = new restify.MissingParameterError('Missing required parameter : deviceUid.');
+  requireTagUid: function(req, res, next) {
+    if(!req.params.tagUid) {
+      req.error = new restify.MissingParameterError('Missing required parameter : tagUid.');
     }
     return next();
   }

@@ -10,14 +10,13 @@ var VERSION = '/v' + parseInt(CONF.VERSION, 10) + '/';
 
 describe('Status code testing', function() {
 
-  var routes200 = ['devices',
-    'devices/00-10-00-57', 'devices/00-16-00-31/location',
+  var routes200 = ['tags', 'tags/00-10-00-57',
     'ask', 'ask/whatat?macs=00-00-00-02', 'ask/whereis?macs=00-10-00-57',
-    'accounts/132/devices/00-10-00-57'
+    'accounts/132/tags/00-10-00-57'
   ];
   var routes404 = ['404',
-    'devices/FF-FF-FF-FF-FF', 'devices/FF-FF-FF-FF-FF/location',
-    'accounts', 'accounts/132/devices'
+    'tags/FF-FF-FF-FF-FF', 'tags/FF-FF-FF-FF-FF',
+    'accounts', 'accounts/132/tags'
   ];
   var routes409 = ['ask/whatat', 'ask/whereis'];
 

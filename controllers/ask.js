@@ -42,13 +42,13 @@ var AskController = {
   },
 
   /**
-   * Find where is a device
+   * Find where is a tag
    * @param  {[type]}   req  request
    * @param  {[type]}   res  response
    * @param  {Function} next callback
    */
   whereIs: function(req, res, next) {
-    askModel.whereIs(req, function devicesFound(err, result) {
+    askModel.whereIs(req, function tagsFound(err, result) {
       if(err) {
         return next(err);
       }

@@ -1,4 +1,4 @@
-var Tag = require('../models/schemas/tag')();
+var Tag = require('mongoose').model('Tag');
 
 var MgmtController = {
   dropTagCollection: function(req, res, next) {

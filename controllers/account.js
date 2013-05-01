@@ -1,51 +1,21 @@
 // var accountModel = require('../models/account');
-var deviceModel = require('../models/device');
+var tagModel = require('../models/tag');
 
 var AccountController = {
   /**
    * Proceed a find request
    */
-  findDevice: function(req, res, next) {
+  findTag: function(req, res, next) {
     var accountUid = req.params.accountUid || 0;
-    var deviceUid = req.params.deviceUid || 0;
+    var tagUid = req.params.tagUid || 0;
 
-    deviceModel.findDeviceRequest(deviceUid, function deviceFound(err, device) {
+    tagModel.findTagRequest(tagUid, function tagFound(err, tag) {
       if(err) {
         return next(err);
       }
       res.json(200, {
         'account': accountUid,
-        'device': device
-      });
-      return next();
-    });
-  },
-
-  findDeviceLocation: function(req, res, next) {
-    var accountUid = req.params.accountUid || 0;
-    var deviceUid = req.params.deviceUid || 0;
-
-    deviceModel.findDeviceRequest(deviceUid, function deviceFound(err, device) {
-      if(err) {
-        return next(err);
-      }
-      res.json(200, {
-        location: device.location
-      });
-      return next();
-    });
-  },
-
-  findDeviceSensors: function(req, res, next) {
-    var accountUid = req.params.accountUid || 0;
-    var deviceUid = req.params.deviceUid || 0;
-
-    deviceModel.findDeviceRequest(deviceUid, function deviceFound(err, device) {
-      if(err) {
-        return next(err);
-      }
-      res.json(200, {
-        sensors: device.sensors
+        'tag': tag
       });
       return next();
     });
