@@ -1,4 +1,5 @@
 var askModel = require('../models/ask');
+var apiResponse = require('../utils/apiResponse');
 
 var AskController = {
   /**
@@ -8,9 +9,10 @@ var AskController = {
    * @param  {Function} next callback
    */
   root: function(req, res, next) {
-    var result = {};
-    result.description = 'Allow you to ask the API';
-    result.supportedActions = [
+    var returnObject = {};
+    returnObject._metadata = apiResponse.ok();
+    returnObject.description = 'Allow you to ask the API';
+    returnObject.supportedActions = [
       {
         'href': 'whatAt',
         'versionsSupported': ['v0']
@@ -20,7 +22,7 @@ var AskController = {
         'versionsSupported': ['v0']
       }
     ];
-    res.json(200, result);
+    res.json(200, returnObject);
     return next();
   },
 

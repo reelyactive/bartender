@@ -7,25 +7,31 @@ var Paginator = {
    * @param  {Int} totalCount   totalCount of ressources
    * @return {Object}           links object
    */
+
   createLinks: function(url, offset, limit, totalCount) {
+    var isQuestioMarkPresent = /\?/.test(url);
+    var firstSymbol = isQuestioMarkPresent ? '&' : '?';
+
+    url = url + firstSymbol;
+
     var next = ((offset + limit) < totalCount) ? (offset + limit) : null;
     if(next) {
-      next = url + '&offset=' + next + '&limit=' + limit;
+      next = url + 'offset=' + next + '&limit=' + limit;
     }
 
-    var prev = ((offset - limit) > 0) ? (offset - limit) : null;
-    if(prev) {
-      prev = url + '&offset=' + prev + '&limit=' + limit;
+    var prev = ((offset - limit) >= 0) ? (offset - limit) : null;
+    if(prev !== null) {
+      prev = url + 'offset=' + prev + '&limit=' + limit;
     }
 
-    var last = ((totalCount - limit) > 0) ? totalCount - limit : 0;
-    last = url + '&offset=' + last + '&limit=' + limit;
+    var last = ((Math.ceil(totalCount / limit) * limit) > 0) ? (Math.ceil(totalCount / limit) * limit) - limit : 0;
+    last = url + 'offset=' + last + '&limit=' + limit;
 
     var links = {
       'self' : {
-        'href' : url + '&offset=' + offset + '&limit=' + limit
+        'href' : url + 'offset=' + offset + '&limit=' + limit
       },
-      'first' : url + '&offset=0&limit=' + limit,
+      'first' : url + 'offset=0&limit=' + limit,
       'next' : next,
       'prev' : prev,
       'last' : last
@@ -48,6 +54,8 @@ var Paginator = {
 
     var offset = params.offset || 0;
     var limit = params.limit || 10;
+    offset = parseInt(offset, 10);
+    limit = parseInt(limit, 10);
 
     if(offset < 0) {
       offset = 0;
@@ -55,6 +63,10 @@ var Paginator = {
 
     if(limit > 100 ) {
       limit = 100;
+    }
+
+    if(limit <= 0) {
+      limit = 10;
     }
 
     params.offset = offset;

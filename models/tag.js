@@ -2,6 +2,7 @@ var restify = require('restify');
 var Tag = require('mongoose').model('Tag');
 
 var paginator = require('../utils/paginator');
+var apiResponse = require('../utils/apiResponse');
 
 var TagModel = {
 
@@ -17,16 +18,9 @@ var TagModel = {
 
     // Instantiate returnObject
     var returnObject = {};
-    returnObject._metadata = {};
-    returnObject._links = {};
 
     // Metadata handling
-    returnObject._metadata.statusCode = 200;
-    returnObject._metadata.message = 'ok';
-    returnObject._metadata.developerMessage = 'ok';
-    returnObject._metadata.userMessage = 'ok';
-    returnObject._metadata.errorCode = null;
-    returnObject._metadata.moreInfo = 'ok';
+    returnObject._metadata = apiResponse.ok();
     returnObject._metadata.offset = offset;
     returnObject._metadata.limit = limit;
 
@@ -35,23 +29,33 @@ var TagModel = {
     var url = urlBase;
 
     // Business logic
-    Tag.find({
-      type: 'Tag'
-    }, function tagsFound(err, tags) {
+    Tag.count({type: 'Tag'}, function tagsCount(err, count) {
       if(err) {
         return cb(err);
       }
-      if(!tags) {
-          return cb(new restify.ResourceNotFoundError(
-            'No tags found'));
-        }
-        totalCount = tags.length;
-        returnObject._metadata.totalCount = totalCount;
-        returnObject.tags = tags;
+      totalCount = count;
 
-        returnObject._links = paginator.createLinks(url, offset, limit, totalCount);
+      Tag
+        .find({
+          type: 'Tag'
+        })
+        .skip(offset)
+        .limit(limit)
+        .exec(function tagsFound(err, tags) {
+          if(err) {
+            return cb(err);
+          }
+          if(!tags) {
+            return cb(new restify.ResourceNotFoundError(
+              'No tags found'));
+          }
+          returnObject._metadata.totalCount = totalCount;
+          returnObject.tags = tags;
 
-        return  cb(null, returnObject);
+          returnObject._links = paginator.createLinks(url, offset, limit, totalCount);
+
+          return  cb(null, returnObject);
+      });
     });
   },
 
@@ -60,17 +64,10 @@ var TagModel = {
    */
   findTag: function(id, cb) {
     // Instantiate returnObject
-    var returnObject = {};
-    returnObject._metadata = {};
-    returnObject._links = {};
+    var returnObject = {}
 
     // Metadata handling
-    returnObject._metadata.statusCode = 200;
-    returnObject._metadata.message = 'ok';
-    returnObject._metadata.developerMessage = 'ok';
-    returnObject._metadata.userMessage = 'ok';
-    returnObject._metadata.errorCode = null;
-    returnObject._metadata.moreInfo = 'ok';
+    returnObject._metadata = apiResponse.ok();
 
     // Links handling
     var urlBase = 'api/v0/tags/' + id;
@@ -105,17 +102,9 @@ var TagModel = {
 
     // Instantiate returnObject
     var returnObject = {};
-    returnObject._metadata = {};
-    returnObject._links = {};
-    returnObject.tags = [];
 
     // Metadata handling
-    returnObject._metadata.statusCode = 200;
-    returnObject._metadata.message = 'ok';
-    returnObject._metadata.developerMessage = 'ok';
-    returnObject._metadata.userMessage = 'ok';
-    returnObject._metadata.errorCode = null;
-    returnObject._metadata.moreInfo = 'ok';
+    returnObject._metadata = apiResponse.ok();
     returnObject._metadata.totalCount = totalCount;
     returnObject._metadata.offset = offset;
     returnObject._metadata.limit = limit;
@@ -125,24 +114,34 @@ var TagModel = {
     var url = urlBase;
 
     // Business logic
-    Tag
-      .where('type').equals('Tag')
-      .where('visibility.value').equals(visibility)
-      .exec(function tagsFoundDB(err, tags) {
-        if(err) {
-          return cb(err);
-        }
-        if(!tags) {
-          return cb(new restify.ResourceNotFoundError(
-            'No tags found for visibility: ' + visibility));
-        }
-        totalCount = tags.length;
-        returnObject._metadata.totalCount = totalCount;
-        returnObject.tags = tags;
+    Tag.count({
+      type: 'Tag',
+      'visibility.value': visibility
+    }, function tagsCount(err, count) {
+      if(err) {
+        return cb(err);
+      }
+      totalCount = count;
+      Tag
+        .where('type').equals('Tag')
+        .where('visibility.value').equals(visibility)
+        .skip(offset)
+        .limit(limit)
+        .exec(function tagsFoundDB(err, tags) {
+          if(err) {
+            return cb(err);
+          }
+          if(!tags) {
+            return cb(new restify.ResourceNotFoundError(
+              'No tags found for visibility: ' + visibility));
+          }
+          returnObject._metadata.totalCount = totalCount;
+          returnObject.tags = tags;
 
-        returnObject._links = paginator.createLinks(url, offset, limit, totalCount);
+          returnObject._links = paginator.createLinks(url, offset, limit, totalCount);
 
-        return  cb(null, returnObject);
+          return  cb(null, returnObject);
+      });
     });
   }
 };

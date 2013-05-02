@@ -62,7 +62,7 @@ describe('Policies validation', function() {
       res = {};
     });
 
-    it('should set a defaults paginaton params in the req', function() {
+    it('should set a defaults pagination params in the req', function() {
       paginator.paginate(req, res, function() {
         should.exist(req.params.offset);
         should.exist(req.params.limit);
@@ -71,7 +71,7 @@ describe('Policies validation', function() {
       });
     });
 
-    it('should set paginaton params based on the params', function() {
+    it('should set pagination params based on the params', function() {
       req.params.offset = 3;
       req.params.limit = 23;
       paginator.paginate(req, res, function() {
@@ -82,7 +82,7 @@ describe('Policies validation', function() {
       });
     });
 
-    it('should set paginaton params based on the params and validate them', function() {
+    it('should set pagination params based on the params and validate them', function() {
       req.params.offset = 7;
       req.params.limit = 1500;
       paginator.paginate(req, res, function() {
@@ -91,6 +91,19 @@ describe('Policies validation', function() {
         req.params.offset.should.equal(7);
         req.params.limit.should.equal(100);
       });
+    });
+
+    it('should return correct links based on the params', function() {
+      var url = 'test';
+      var offset = 30;
+      var limit = 15;
+      var totalCount = 57;
+      var links = paginator.createLinks(url, offset, limit, totalCount);
+      links.self.href.should.equal(url+'?offset='+offset+'&limit='+limit);
+      links.first.should.equal(url+'?offset=0&limit='+limit);
+      links.next.should.equal(url+'?offset=45&limit='+limit);
+      links.prev.should.equal(url+'?offset=15&limit='+limit);
+      links.last.should.equal(url+'?offset=45&limit='+limit);
     });
   });
 });

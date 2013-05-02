@@ -3,6 +3,7 @@ var _ = require('underscore');
 var Tag = require('mongoose').model('Tag');
 
 var paginator = require('../utils/paginator');
+var apiResponse = require('../utils/apiResponse');
 
 var AskModel = {
   /**
@@ -104,30 +105,24 @@ var AskModel = {
 
     // Instantiate returnObject
     var returnObject = {};
-    returnObject._metadata = {};
-    returnObject._links = {};
-    returnObject.matched = [];
-    returnObject.unmatched = [];
-    returnObject.locations = [];
 
     // Metadata handling
-    returnObject._metadata.statusCode = 200;
-    returnObject._metadata.message = 'ok';
-    returnObject._metadata.developerMessage = 'ok';
-    returnObject._metadata.userMessage = 'ok';
-    returnObject._metadata.errorCode = null;
-    returnObject._metadata.moreInfo = 'ok';
+    returnObject._metadata = apiResponse.ok();
     returnObject._metadata.totalCount = totalCount;
     returnObject._metadata.offset = offset;
     returnObject._metadata.limit = limit;
 
     // Links handling
     var urlBase = 'api/v0/ask/whereis';
-    var macsUrl = '/?macs=' + params.macs;
+    var macsUrl = '?macs=' + params.macs;
     var url = urlBase + macsUrl;
     returnObject._links = paginator.createLinks(url, offset, limit, totalCount);
 
+    macs = macs.slice(offset, offset + limit);
+
     // Business logic
+    returnObject.locations = [];
+
     Tag
       .where('type').equals('Tag')
       .where('mac').in(macs)
