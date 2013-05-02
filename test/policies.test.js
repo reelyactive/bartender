@@ -2,7 +2,9 @@ var should = require('should');
 var validator = require('../utils/validator');
 var paginator = require('../utils/paginator');
 
-
+/**
+ * This file tests all policies that we have defined
+ */
 describe('Policies validation', function() {
 
   describe('Validator testing', function() {
@@ -36,7 +38,7 @@ describe('Policies validation', function() {
       });
     }
 
-    // Tests
+    // Require param tests
     describe('Require id', function() {
       requireParam('id', '00-10-00-57');
     });
@@ -54,6 +56,9 @@ describe('Policies validation', function() {
     });
   });
 
+  /**
+   * Tests for the pagination functions
+   */
   describe('Paginator', function() {
     var req, res;
     beforeEach(function() {

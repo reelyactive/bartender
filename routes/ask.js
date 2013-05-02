@@ -1,10 +1,15 @@
+/**
+ * Router for the ask routes
+ */
+
 var askController = require('../controllers/ask');
 var policies = require('../policies/common');
 
+// Combination of multiple policies
 var policiesAsk = [policies.requireMacs, policies.paginate];
 
-module.exports = function(server, VERSION) {
-  server.get(VERSION + '/ask/', askController.root);
-  server.get(VERSION + '/ask/whatat', policiesAsk, askController.whatAt);
-  server.get(VERSION + '/ask/whereis', policiesAsk, askController.whereIs);
+module.exports = function(server, version) {
+  server.get(version + '/ask', askController.root);
+  server.get(version + '/ask/whatat', policiesAsk, askController.whatAt);
+  server.get(version + '/ask/whereis', policiesAsk, askController.whereIs);
 };

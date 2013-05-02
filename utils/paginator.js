@@ -1,6 +1,12 @@
+/**
+ * Paginator is an helper class to handle all paginations functions
+ * @type {Object}
+ */
 var Paginator = {
   /**
-   * Create links section for the response object
+   * Create links section for the response object based on the url,
+   * the offset, the limit and the total count of objects.
+   * It returns a predefined object links.
    * @param  {String} url       base url of the current ressource
    * @param  {Int} offset       offset of the query
    * @param  {Int} limit        limit of the query
@@ -44,6 +50,7 @@ var Paginator = {
    * Construct a pagination object from request params
    * and attach it to the request param
    * req.params.offset can't be less than 0
+   * req.params.limit can't be less than 0
    * req.params.limit can't be more than 100
    * @param  {[type]}   req  request
    * @param  {[type]}   res  response

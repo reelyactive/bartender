@@ -1,6 +1,10 @@
 var _ = require('underscore');
 var paginator = require('./paginator');
 
+/**
+ * APIResponse is an object that create a standard response
+ * @type {Object}
+ */
 var APIResponse = {
   returnObject: {
     _metadata: {},

@@ -1,8 +1,19 @@
+/**
+ * Helper is used by the policies.
+ * His main goal his to add a "steps" array in each requests.
+ * Then, we can stack actions in these steps that will be
+ * executed before the controller is called.
+ * The main utility is to check for parameters, validate
+ * pagination infos, and so on.
+ *
+ * @type {Object}
+ */
 var Helper = {
   /**
    * Set steps in request object that is used for
    * stacking actions that need to be done before
-   * actions.
+   * the controller is called.
+   * This array is added to each requests.
    * @param {[type]}   req  request
    * @param {[type]}   res  response
    * @param {Function} next callback
@@ -13,8 +24,10 @@ var Helper = {
   },
 
   /**
-   * Run all function add to req.stack before
-   * rendering an option
+   * Run all functions added to req.steps before
+   * calling a controller.
+   * If an error is found, the execution stack is
+   * stopped and the error is returned.
    * @param  {[type]}   req  request
    * @param  {[type]}   res  response
    * @param  {Function} next callback
@@ -26,8 +39,8 @@ var Helper = {
 
     var fn = req.steps.shift();
     if(fn) {
-        return fn(req, res, function() {
-        module.exports.runSteps(req, res, next);
+      return fn(req, res, function() {
+        Helper.runSteps(req, res, next);
       });
     }
     next();

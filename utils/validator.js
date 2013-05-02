@@ -1,3 +1,9 @@
+/**
+ * Validator is here for validation purposes
+ * For example he check the presence of a required paramater
+ * on a request.
+ */
+
 var restify = require('restify');
 
 var Validator = {

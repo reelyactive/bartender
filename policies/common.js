@@ -1,3 +1,11 @@
+/**
+ * Common policies are saved here
+ * A policy is an action that can be attached to a route
+ * and be executed before the controller is called
+ * A policy can check the presence of a param, or validate one.
+ * @type {[Object}
+ */
+
 var validator = require('../utils/validator');
 var paginator = require('../utils/paginator');
 var helper = require('../utils/helper');

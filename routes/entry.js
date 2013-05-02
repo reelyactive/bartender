@@ -1,23 +1,12 @@
-var restify = require('restify');
+/**
+ * Router for the entry point
+ * His goal his to answer to requests made on
+ * the entry point of the API
+ */
+var entryController = require('../controllers/entry');
 
-function entryPoint(req, res, next) {
-  var result = {};
-  result.supportedVersions = [
-    {
-      'v': 'v0',
-      'href': 'http://localhost:7777/v0'
-    }
-  ];
-  res.json(200, result);
-  return next();
-}
-
-function notFound (req, res, next) {
-  return next(new restify.ResourceNotFoundError('Why did you request the 404 ? ' +
-    ' Now, you\'re lost.. '));
-}
-
-module.exports = function(server, VERSION) {
-  server.get(VERSION + '/', entryPoint);
-  server.get(VERSION + '/404', notFound);
+module.exports = function(server, version) {
+  server.get('/', entryController.root);
+  server.get('/404', entryController.notFound);
+  server.get('/:version', entryController.version);
 };

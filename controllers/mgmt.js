@@ -1,6 +1,13 @@
 var Tag = require('mongoose').model('Tag');
 var Reelceiver = require('mongoose').model('Reelceiver');
 
+/**
+ * MgmtController
+ * Management controller is only required during development
+ * phase.
+ * It used to drop the database and create fake data.
+ * @type {Object}
+ */
 var MgmtController = {
   /**
    * Drop (flush) the device collection
@@ -18,7 +25,7 @@ var MgmtController = {
   },
 
   /**
-   * Generate fake devices infos for tests purposes
+   * Generate fake devices infos in database
    */
   generateDevices: function(req, res, next) {
     var tag = new Tag({
@@ -115,8 +122,10 @@ var MgmtController = {
       radioProtocol: 'RA-Proprietary-915MHz'
     });
 
-    // Should use callback but this is just for
-    // tests purpose.
+    /**
+     * Should use callback but this is just for
+     * tests purpose.
+     */
     tag.save();
     tag2.save();
     tag3.save();
