@@ -5,10 +5,10 @@
   * how to use this file in the README
   */
 
- /**
-  * General configuration for the restify server
-  */
- var CONFIGURATION = {
+/**
+ * General configuration for the restify server
+ */
+var CONFIGURATION = {
   APP_NAME: 'Bartender',
   HOST: 'http://localhost',
   PORT: 7777,
@@ -20,7 +20,7 @@
  */
 var DB_CONFIGURATION = {
   HOST: 'localhost',
-  PORT: '27017',
+  PORT: 27017,
   DATABASE: 'bartender',
   OPTIONS: {
     server: {

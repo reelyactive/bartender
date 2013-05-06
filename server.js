@@ -10,36 +10,88 @@ var restify = require('restify');
 var mongoose = require('mongoose');
 
 var helper = require('./utils/helper');
+var configurationValidator = require('./utils/configurationValidator');
 var CONF = require('./conf').CONF;
 
+console.log('\n# Initialization');
+
 /**
- * Restify initialization
+ * Validate the configuration file to avoid errors
  */
-var server = restify.createServer({
-  name: CONF.APP_NAME,
-  url: CONF.HOST,
-  version: CONF.VERSION
+configurationValidator.validate(function confValidated(err) {
+  if(err) {
+    process.exit();
+  }
+
+  createServer();
 });
-server.use(restify.acceptParser(server.acceptable));
-server.use(restify.queryParser());
-server.use(restify.bodyParser());
-server.use(helper.setSteps);
 
 /**
- * Database connection
+ * Create a server and launch initialization
  */
-require('./setupdb');
+function createServer() {
+  /**
+   * Restify initialization
+   */
+  var server = restify.createServer({
+    name: CONF.APP_NAME,
+    version: CONF.VERSION
+  });
+  server.use(restify.acceptParser(server.acceptable));
+  server.use(restify.queryParser());
+  server.use(restify.bodyParser());
+  server.use(helper.setSteps);
+
+  /**
+   * Database connection
+   */
+  require('./setupdb')(function databaseConnected(err) {
+    if(err) {
+      console.log(err);
+      process.exit();
+    }
+
+    serverInit();
+  });
+
+  /**
+   * Once the database connection has been initiated, this function is called
+   */
+  function serverInit() {
+
+    /**
+     * Routes initialization
+     */
+    var versionNumber = parseInt(CONF.VERSION, 10);
+    var version = '/v' + versionNumber;
+    require('./routes')(server, version);
+
+    /**
+     * Server listening
+     */
+    console.log('\n## Starting the server');
+
+    server.listen(CONF.PORT, function serverListenning() {
+      console.log('-  %s is ready and listening at %s', server.name, server.url);
+    });
+
+    server.on('error', function serverError(err) {
+      if(err && err.code === 'EADDRINUSE') {
+        console.log('- The port ' + CONF.PORT + ' is already in use.');
+      }
+      console.log(err);
+      process.exit();
+    });
+  }
+}
 
 /**
- * Routes initialization
+ * When the process exit,
+ * close the conenctions with the database
  */
-var versionNumber = parseInt(CONF.VERSION, 10);
-var version = '/v' + versionNumber;
-require('./routes')(server, version);
-
-/**
- * Server listening
- */
-server.listen(CONF.PORT, function () {
-  console.log('%s is ready and listening at %s', server.name, server.url);
+process.on('exit', function() {
+  console.log('\n## Proccess exiting');
+  mongoose.disconnect(function mongooseDisconnected() {
+    console.log('- Database disconnected');
+  });
 });

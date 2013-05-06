@@ -5,7 +5,7 @@
  */
 var entryController = require('../controllers/entry');
 
-module.exports = function(server, version) {
+module.exports = function(server) {
   server.get('/', entryController.root);
   server.get('/404', entryController.notFound);
   server.get('/:version', entryController.version);

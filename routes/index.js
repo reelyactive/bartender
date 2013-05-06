@@ -6,7 +6,7 @@
  * @param  {String} version Current version of the API
  */
 module.exports = function(server, version) {
-  require('./entry')(server, version);
+  require('./entry')(server);
   require('./tag')(server, version);
   require('./mgmt')(server, version);
   require('./ask')(server, version);
