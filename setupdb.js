@@ -6,22 +6,20 @@
  * Then continue the execution by calling the callback
  */
 
-module.exports = function(callback) {
+module.exports = function(DB_CONF, callback) {
   var mongoose = require('mongoose');
 
   /**
    * Load the database configuration
    */
-  var DB_CONF = require('./conf').DB_CONF;
-  var options = DB_CONF.OPTIONS || null;
 
   var uri = 'mongodb://' +
-             DB_CONF.HOST + ':' + DB_CONF.PORT + '/' + DB_CONF.DATABASE;
+            DB_CONF.HOST + ':' + DB_CONF.PORT + '/' + DB_CONF.DATABASE;
 
   /**
    * Connect to the database
    */
-  mongoose.connect(uri, options, function mongodbConnection(err) {
+  mongoose.connect(uri, DB_CONF.OPTIONS, function mongodbConnection(err) {
     console.log('\n## Database connection');
     /**
      * If an error occured during the connection

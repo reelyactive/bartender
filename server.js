@@ -11,17 +11,21 @@ var mongoose = require('mongoose');
 
 var stepManager = require('./utils/stepManager');
 var configurationValidator = require('./utils/configurationValidator');
-var CONF = require('./conf').CONF;
+
+var CONF, DB_CONF;
 
 console.log('\n# Initialization');
 
 /**
  * Validate the configuration file to avoid errors
  */
-configurationValidator.validate(function confValidated(err) {
+configurationValidator.validate(function confValidated(err, CONFIGURATION) {
   if(err) {
     process.exit();
   }
+
+  CONF = CONFIGURATION.CONF;
+  DB_CONF = CONFIGURATION.DB_CONF;
 
   createServer();
 });
@@ -57,7 +61,7 @@ function createServer() {
   /**
    * Database connection
    */
-  require('./setupdb')(function databaseConnected(err) {
+  require('./setupdb')(DB_CONF, function databaseConnected(err) {
     if(err) {
       console.log(err);
       process.exit();

@@ -2,6 +2,7 @@
  * ConfigurationValidator is here to validate the configuration file
  * @type {Object}
  */
+var _ = require('underscore');
 var configuration = require('../conf');
 
 var ConfigurationValidator = {
@@ -19,36 +20,66 @@ var ConfigurationValidator = {
 
     console.log('\n## Validation of the configuration file');
 
-    var confValidator = ConfigurationValidator;
-    confValidator.err = '';
+    var ConfValidator = ConfigurationValidator;
+    ConfValidator.err = '';
 
+    /**
+     * Extend default CONFs
+     */
+
+    // Default CONF settings
+    var defaults = {
+      APP_NAME: 'Bartender',
+      HOST: 'localhost',
+      PORT: 7777,
+      VERSION: '1.0.0',
+    };
+    ConfValidator.CONF = _.extend(defaults, ConfValidator.CONF);
+
+    // Defaults DB_CONF settings
+    defaults = {
+      HOST: 'localhost',
+      PORT: 27017,
+      DATABASE: 'reelyActiveDB',
+      OPTIONS: null
+    };
+    ConfValidator.DB_CONF = _.extend(defaults, ConfValidator.DB_CONF);
+
+    /**
+     * Validate each configuration value
+     */
     // Define simple alias
-    var vValue = confValidator.validateValue;
-    var vPort = confValidator.validatePort;
+    var vValue = ConfValidator.validateValue;
+    var vPort = ConfValidator.validatePort;
 
-    confValidator.currentConf = '\n- CONFIGURATION.';
+    ConfValidator.currentConf = '\n- CONFIGURATION.';
 
-    vValue(confValidator.CONF.APP_NAME, 'APP_NAME');
-    vValue(confValidator.CONF.HOST, 'HOST');
-    vPort(confValidator.CONF.PORT);
-    vValue(confValidator.CONF.VERSION, 'VERSION');
+    vValue(ConfValidator.CONF.APP_NAME, 'APP_NAME');
+    vValue(ConfValidator.CONF.HOST, 'HOST');
+    vPort(ConfValidator.CONF.PORT);
+    vValue(ConfValidator.CONF.VERSION, 'VERSION');
 
-    confValidator.currentConf = '\n- DB_CONFIGURATION.';
+    ConfValidator.currentConf = '\n- DB_CONFIGURATION.';
 
-    vValue(confValidator.DB_CONF.HOST, 'HOST');
-    vPort(confValidator.DB_CONF.PORT);
-    vValue(confValidator.DB_CONF.DATABASE, 'DATABASE');
-    vValue(confValidator.DB_CONF.OPTIONS, 'OPTIONS', 'object');
+    vValue(ConfValidator.DB_CONF.HOST, 'HOST');
+    vPort(ConfValidator.DB_CONF.PORT);
+    vValue(ConfValidator.DB_CONF.DATABASE, 'DATABASE');
+    vValue(ConfValidator.DB_CONF.OPTIONS, 'OPTIONS', 'object');
 
-    var err = confValidator.err;
+    var err = ConfValidator.err;
 
     if(err) {
       console.log('- Configuration file is not valid.');
       console.log(err);
+
       return next(err);
     }
     console.log('- Configuration file is valid.');
-    return next();
+
+    return next(null, {
+      CONF: ConfValidator.CONF,
+      DB_CONF: ConfigurationValidator.DB_CONF
+    });
   },
 
   /**
