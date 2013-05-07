@@ -23,6 +23,23 @@ describe('Configuration validator testing', function() {
     });
   });
 
+  it('should set default values on an empty configuration', function() {
+    configurationValidator.CONF = null;
+    configurationValidator.DB_CONF = null;
+    configurationValidator.validate(function confValidated(err, CONFIGURATION) {
+
+      CONFIGURATION.CONF.APP_NAME.should.equal('Bartender');
+      CONFIGURATION.CONF.HOST.should.equal('localhost');
+      CONFIGURATION.CONF.PORT.should.equal(7777);
+      CONFIGURATION.CONF.VERSION.should.equal('1.0.0');
+      CONFIGURATION.DB_CONF.HOST.should.equal('localhost');
+      CONFIGURATION.DB_CONF.PORT.should.equal(27017);
+      CONFIGURATION.DB_CONF.DATABASE.should.equal('reelyActiveDB');
+      should.not.exist(CONFIGURATION.DB_CONF.OPTIONS);
+      should.not.exist(err);
+    });
+  });
+
   it('should set an error on a wrong configuration', function() {
     var WRONG_CONF = {
       APP_NAME: 123,
