@@ -1,5 +1,5 @@
 /**
- * Helper is used by the policies.
+ * StepManager is used by the policies.
  * His main goal his to add a "steps" array in each requests.
  * Then, we can stack actions in these steps that will be
  * executed before the controller is called.
@@ -8,7 +8,7 @@
  *
  * @type {Object}
  */
-var Helper = {
+var StepManager = {
   /**
    * Set steps in request object that is used for
    * stacking actions that need to be done before
@@ -40,11 +40,11 @@ var Helper = {
     var fn = req.steps.shift();
     if(fn) {
       return fn(req, res, function() {
-        Helper.runSteps(req, res, next);
+        StepManager.runSteps(req, res, next);
       });
     }
     next();
   }
 };
 
-module.exports = Helper;
+module.exports = StepManager;

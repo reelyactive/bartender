@@ -8,7 +8,7 @@
 
 var validator = require('../utils/validator');
 var paginator = require('../utils/paginator');
-var helper = require('../utils/helper');
+var stepManager = require('../utils/stepManager');
 
 var Common = {
     /**
@@ -19,7 +19,7 @@ var Common = {
      */
     requireId: function(req, res, next) {
       req.steps.push(validator.requireId);
-      helper.runSteps(req, res, next);
+      stepManager.runSteps(req, res, next);
     },
 
     /**
@@ -30,7 +30,7 @@ var Common = {
      */
     requireMacs: function(req, res, next) {
       req.steps.push(validator.requireMacs);
-      helper.runSteps(req, res, next);
+      stepManager.runSteps(req, res, next);
     },
 
     /**
@@ -41,7 +41,7 @@ var Common = {
      */
     requireUids: function(req, res, next) {
       req.steps.push(validator.requireUids);
-      helper.runSteps(req, res, next);
+      stepManager.runSteps(req, res, next);
     },
 
     /**
@@ -52,7 +52,7 @@ var Common = {
      */
     paginate: function(req, res, next) {
       req.steps.push(paginator.paginate);
-      helper.runSteps(req, res, next);
+      stepManager.runSteps(req, res, next);
     }
 };
 

@@ -9,7 +9,7 @@
 var restify = require('restify');
 var mongoose = require('mongoose');
 
-var helper = require('./utils/helper');
+var stepManager = require('./utils/stepManager');
 var configurationValidator = require('./utils/configurationValidator');
 var CONF = require('./conf').CONF;
 
@@ -35,12 +35,24 @@ function createServer() {
    */
   var server = restify.createServer({
     name: CONF.APP_NAME,
-    version: CONF.VERSION
+    version: CONF.VERSION,
   });
+  server.acceptable = ['application/json'];
   server.use(restify.acceptParser(server.acceptable));
   server.use(restify.queryParser());
   server.use(restify.bodyParser());
-  server.use(helper.setSteps);
+  server.use(stepManager.setSteps);
+
+  // Handle the '.:format' extension
+  server.pre(function setHeaderAccept(req, res, next) {
+    var acceptJson = (req.url.indexOf('.json') !== -1);
+    if(acceptJson) {
+      req.headers.accept = "application/json";
+    }
+    // Clean the url
+    req.url = req.url.replace(/\.json$/, "");
+    return next();
+  });
 
   /**
    * Database connection
