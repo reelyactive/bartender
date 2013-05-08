@@ -57,7 +57,7 @@ function createServer() {
      */
     var versionNumber = parseInt(CONF.VERSION, 10);
     var version = '/v' + versionNumber;
-    require('./routes')(server, version);
+    require('./routes/routeManager').initRoutes(server, version);
 
     /**
      * Server listening

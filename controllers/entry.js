@@ -1,7 +1,6 @@
 var responseTemplate = require('../utils/responseTemplate');
 var apiResponse = require('../utils/apiResponse');
 
-
 /**
  * EntryController
  * @type {Object}
@@ -25,6 +24,10 @@ var EntryController = {
         'href': '/v0'
       }
     ];
+
+    var topRoutes = require('../routes/routeManager').listTopRoutes(true);
+    result.versions[0].routes = topRoutes;
+
     res.json(200, result);
     return next();
   },
@@ -40,7 +43,11 @@ var EntryController = {
     var result = {};
     var message = 'Version ' + version + ' is not implemented yet.';
     result._meta = new responseTemplate.notImplemented(message);
-    res.json(result._meta.statusCode, result);
+
+    var topRoutes = require('../routes/routeManager').listTopRoutes(true);
+    result.routes = topRoutes;
+
+    res.json(200, result);
     return next();
   },
 
