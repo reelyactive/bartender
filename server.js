@@ -9,7 +9,7 @@
 var restify = require('restify');
 var mongoose = require('mongoose');
 
-var stepManager = require('./utils/stepManager');
+var serverUtils = require('./utils/serverUtils');
 var configurationValidator = require('./utils/configurationValidator');
 
 var CONF, DB_CONF;
@@ -39,24 +39,9 @@ function createServer() {
    */
   var server = restify.createServer({
     name: CONF.APP_NAME,
-    version: CONF.VERSION,
+    version: CONF.VERSION
   });
-  server.acceptable = ['application/json'];
-  server.use(restify.acceptParser(server.acceptable));
-  server.use(restify.queryParser());
-  server.use(restify.bodyParser());
-  server.use(stepManager.setSteps);
-
-  // Handle the '.:format' extension
-  server.pre(function setHeaderAccept(req, res, next) {
-    var acceptJson = (req.url.indexOf('.json') !== -1);
-    if(acceptJson) {
-      req.headers.accept = "application/json";
-    }
-    // Clean the url
-    req.url = req.url.replace(/\.json$/, "");
-    return next();
-  });
+  serverUtils.configure(server, CONF);
 
   /**
    * Database connection
@@ -66,14 +51,6 @@ function createServer() {
       console.log(err);
       process.exit();
     }
-
-    serverInit();
-  });
-
-  /**
-   * Once the database connection has been initiated, this function is called
-   */
-  function serverInit() {
 
     /**
      * Routes initialization
@@ -90,15 +67,7 @@ function createServer() {
     server.listen(CONF.PORT, function serverListenning() {
       console.log('-  %s is ready and listening at %s', server.name, server.url);
     });
-
-    server.on('error', function serverError(err) {
-      if(err && err.code === 'EADDRINUSE') {
-        console.log('- The port ' + CONF.PORT + ' is already in use.');
-      }
-      console.log(err);
-      process.exit();
-    });
-  }
+  });
 }
 
 /**
