@@ -1,4 +1,5 @@
 var Tag = require('mongoose').model('Tag');
+var responseTemplate = require('../utils/responseTemplate');
 var restify = require('restify');
 var paginator = require('../utils/paginator');
 var apiResponse = require('../utils/apiResponse');
@@ -23,9 +24,9 @@ var TagController = {
     var returnObject = {};
 
     // Metadata handling
-    returnObject._metadata = apiResponse.ok();
-    returnObject._metadata.offset = offset;
-    returnObject._metadata.limit = limit;
+    returnObject._meta = apiResponse.ok();
+    returnObject._meta.offset = offset;
+    returnObject._meta.limit = limit;
 
     // Links handling
     var urlBase = 'api/v0/tags';
@@ -48,7 +49,7 @@ var TagController = {
           if(err) {
             return next(err);
           }
-          returnObject._metadata.totalCount = totalCount;
+          returnObject._meta.totalCount = totalCount;
           returnObject.tags = tags;
 
           returnObject._links = paginator.createLinks(url, offset, limit, totalCount);
@@ -69,7 +70,7 @@ var TagController = {
     var returnObject = {}
 
     // Metadata handling
-    returnObject._metadata = apiResponse.ok();
+    returnObject._meta = apiResponse.ok();
 
     // Links handling
     var urlBase = 'api/v0/tags/' + id;
@@ -84,7 +85,9 @@ var TagController = {
           return next(err);
         }
         if(!tag) {
-          return next(new restify.ResourceNotFoundError('No tag  with id ' + id + ' found'));
+          var result = {};
+          result._meta = new responseTemplate.notFound('No tag  with id ' + id + ' found');
+          return res.json(result._meta.statusCode, result);
         }
         returnObject.tag = tag;
 
@@ -121,10 +124,10 @@ var TagController = {
     var returnObject = {};
 
     // Metadata handling
-    returnObject._metadata = apiResponse.ok();
-    returnObject._metadata.totalCount = totalCount;
-    returnObject._metadata.offset = offset;
-    returnObject._metadata.limit = limit;
+    returnObject._meta = apiResponse.ok();
+    returnObject._meta.totalCount = totalCount;
+    returnObject._meta.offset = offset;
+    returnObject._meta.limit = limit;
 
     // Links handling
     var urlBase = 'api/v0/tags/' + visibility;
@@ -149,10 +152,12 @@ var TagController = {
             return next(err);
           }
           if(!tags) {
-            return next(new restify.ResourceNotFoundError(
-              'No tags found for visibility: ' + visibility));
+            var result = {};
+            var message = 'No tags found for visibility: ' + visibility
+            result._meta = new responseTemplate.notFound(message);
+            return res.json(result._meta.statusCode, result);
           }
-          returnObject._metadata.totalCount = totalCount;
+          returnObject._meta.totalCount = totalCount;
           returnObject.tags = tags;
 
           returnObject._links = paginator.createLinks(url, offset, limit, totalCount);

@@ -1,8 +1,13 @@
+var responseTemplate = require('../utils/responseTemplate');
+var apiResponse = require('../utils/apiResponse');
+
+
 /**
  * EntryController
  * @type {Object}
  */
 var EntryController = {
+
   /**
    * Requests made on the / of our API
    * Return all versions currently supported
@@ -10,16 +15,17 @@ var EntryController = {
    * versions.
    */
   root: function(req, res, next) {
-    // var result = {};
-    // result.supportedVersions = [
-    //   {
-    //     'v': 'v0',
-    //     'href': 'http://localhost:7777/v0'
-    //   }
-    // ];
-    // res.json(200, result);
-    // return next();
-    res.json(501, 'Entry point of the API is not implemented yet.');
+    var result = {};
+
+    // Metadata handling
+    result._meta = apiResponse.ok();
+    result.versions = [
+      {
+        'name': 'v0',
+        'href': '/v0'
+      }
+    ];
+    res.json(200, result);
     return next();
   },
 
@@ -31,7 +37,10 @@ var EntryController = {
    */
   version: function(req, res, next) {
     var version = req.params.version || 1;
-    res.json(501, 'Version ' + version + ' is not implemented yet.');
+    var result = {};
+    var message = 'Version ' + version + ' is not implemented yet.';
+    result._meta = new responseTemplate.notImplemented(message);
+    res.json(result._meta.statusCode, result);
     return next();
   },
 
@@ -42,19 +51,11 @@ var EntryController = {
    * a 404.
    */
   notFound: function (req, res, next) {
+    var message = 'Why did you request the 404 ? ' +
+        ' Now, you\'re lost..';
     var result = {};
-    result._metadata = {
-      statusCode: 404,
-      message: 'Why did you request the 404 ? ' +
-        ' Now, you\'re lost..',
-      developerMessage: 'Lost ! But that\'s what ' +
-        'you were looking for, right ?',
-      userMessage: 'The developer wanted you ' +
-        'to get lost.. Sorry.',
-      errorCode: 404,
-      moreInfofs: 'Lost'
-    };
-    res.json(404, result);
+    result._meta = new responseTemplate.notFound(message);
+    res.json(result._meta.statusCode, result);
   }
 };
 

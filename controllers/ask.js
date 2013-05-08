@@ -1,5 +1,6 @@
 var Tag = require('mongoose').model('Tag');
 var _ = require('underscore');
+var responseTemplate = require('../utils/responseTemplate');
 var apiResponse = require('../utils/apiResponse');
 var paginator = require('../utils/paginator');
 
@@ -16,7 +17,7 @@ var AskController = {
    */
   root: function(req, res, next) {
     // var returnObject = {};
-    // returnObject._metadata = apiResponse.ok();
+    // returnObject._meta = apiResponse.ok();
     // returnObject.description = 'Allow you to ask the API';
     // returnObject.supportedActions = [
     //   {
@@ -29,7 +30,9 @@ var AskController = {
     //   }
     // ];
     // res.json(200, returnObject);
-    res.json(501, '/ask is not implemented yet.');
+    var result = {};
+    result._meta = new responseTemplate.notImplemented('/ask is not yet implemented');
+    res.json(result._meta.statusCode, result);
     return next();
   },
 
@@ -40,7 +43,9 @@ var AskController = {
    * @param  {Function} next callback
    */
   whatAt: function(req, res, next) {
-    res.json(501, '/whatAt is not implemented yet.');
+    var result = {};
+    result._meta = new responseTemplate.notImplemented('/whatAt is not implemented yet.');
+    res.json(result._meta.statusCode, result);
     return next();
   },
 
@@ -63,10 +68,10 @@ var AskController = {
     var returnObject = {};
 
     // Metadata handling
-    returnObject._metadata = apiResponse.ok();
-    returnObject._metadata.totalCount = totalCount;
-    returnObject._metadata.offset = offset;
-    returnObject._metadata.limit = limit;
+    returnObject._meta = apiResponse.ok();
+    returnObject._meta.totalCount = totalCount;
+    returnObject._meta.offset = offset;
+    returnObject._meta.limit = limit;
 
     // Links handling
     var urlBase = 'api/v0/ask/whereis';

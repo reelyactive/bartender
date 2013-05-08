@@ -17,96 +17,82 @@ var VERSION = '/v' + parseInt(CONF.VERSION, 10) + '/';
 
 describe('Status code testing', function() {
 
+  var routes = {};
+
   // Routes that should return a 200 status code
   // 200 - ok
-  var routes200 = ['tags', 'tags/00-10-00-57',
+  routes[200] = ['tags', 'tags/00-10-00-57',
     'tags', 'tags/00-10-00-57',
     'tags/visible', 'tags/invisible',
     'ask/whereis?macs=00-10-00-57',
     'ask/whereis?macs=00-10-00-57,00-10-00-00,00-10-00-23'
   ];
 
+  // Routes that should return a 400 status code
+  // 400 - Bad Request
+  routes[400] = ['ask/whatat', 'ask/whereis'];
+
   // Routes that should return a 404 status code
   // 404 - not found
-  var routes404 = ['404',
+  routes[404] = ['404',
     'tags/FF-FF-FF-FF-FF', 'tags/FF-FF-FF-FF-FF'
   ];
 
-  // Routes that should return a 409 status code
-  // 409 - Missing parameter
-  var routes409 = ['ask/whatat', 'ask/whereis'];
-
   // Routes that should return a 501 status code
   // 501 - Not implemented
-  var routes501 = [
+  routes[501] = [
     'ask',
     'ask/whatat?macs=00-00-00-02',
     'ask/whatat?macs=00-00-00-02,00-00-00-01,00-00-00-06',
   ];
 
-  var routes = [
-    {
-      'status': 200,
-      'routes': routes200
-    },
-    {
-      'status': 404,
-      'routes': routes404
-    },
-    {
-      'status': 409,
-      'routes': routes409
-    },
-    {
-      'status': 501,
-      'routes': routes501
-    }
-  ];
-
   var routeGroupNum = -1;
-  var routeNum = -1;
+  var currentRoute = -1;
 
-  processNextRouteGroup();
+  processNextRouteStatus();
 
   /**
-   * For each road groups check his routes
+   * For each routes status, check his routes
    */
-  function processNextRouteGroup() {
-    if(++routeGroupNum < routes.length) {
-      var routeGroup = routes[routeGroupNum];
-      describe(routeGroup.status + ' response check', function() {
-        processNextRoute(routeGroup);
+  function processNextRouteStatus() {
+    var keys = Object.keys(routes);
+    var routesLenght = keys.length;
+    if(++routeGroupNum < routesLenght) {
+      var status = keys[routeGroupNum];
+
+      describe(status + ' response check', function() {
+        processNextRoute(status, routes[status]);
       });
     }
   }
 
   /**
-   * For each routes in a group, check his response status code
-   * @param  {Object}  routeGroup JSON Object representing a status code
-   *                              and an array of routes to test
+   * For each routes under a status, check his response status code
+   * @param  {String}  status  The current status in test
+   * @param  {Array}   routes  Routes to test for the current status
    */
-  function processNextRoute(routeGroup) {
-    if(++routeNum < routeGroup.routes.length) {
-      var route = routeGroup.routes[routeNum];
-      checkStatusCode(route, routeGroup, processNextRoute);
+  function processNextRoute(status, routes) {
+    if(++currentRoute < routes.length) {
+      var route = routes[currentRoute];
+      checkStatusCode(route, status, routes, processNextRoute);
     } else {
-      routeNum = -1;
-      processNextRouteGroup();
+      currentRoute = -1;
+      processNextRouteStatus();
     }
   }
 
   /**
-   * Check the response status code for given road
+   * Check the response status code for given route
    * @param  {String}   route      Url we want to test
-   * @param  {Object}   routeGroup JSON Object representing a status code
-   *                              and an array of routes to test
+   * @param  {String}   status     Status we excpect
+   * @param  {Array}    routeGroup Routes to test (use only for callback)
    * @param  {Function} next       Callback for the next url
    */
-  function checkStatusCode(route, routeGroup, next) {
-    var status = routeGroup.status;
+  function checkStatusCode(route, status, routes, next) {
     it('should get a ' + status + ' response for ' + VERSION + route, function(done) {
       client.get(VERSION + route, function(err, req, res, data) {
-        if(res.statusCode !== status) {
+        var statusNumber = parseInt(status, 10);
+        if(res.statusCode !== statusNumber || data._meta.statusCode !== statusNumber) {
           var errMessage = 'Invalid response ' + res.statusCode +
                            ' from /' + route;
           errMessage += '\n Expected ' + res.statusCode + ' to equal ' + status;
@@ -115,6 +101,6 @@ describe('Status code testing', function() {
         done();
       });
     });
-    next(routeGroup);
+    next(status, routes);
   }
 });

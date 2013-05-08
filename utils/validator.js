@@ -3,6 +3,7 @@
  * For example he check the presence of a required paramater
  * on a request.
  */
+var responseTemplate = require('./responseTemplate');
 
 var restify = require('restify');
 
@@ -14,10 +15,7 @@ var Validator = {
    * @param  {Function} fn  callback
    */
   requireId: function(req, res, next) {
-    if(!req.params.id) {
-      req.error = new restify.MissingParameterError('Missing required parameter : id.');
-    }
-    return next();
+    Validator.requireParam('id', req, res, next);
   },
 
   /**
@@ -27,10 +25,7 @@ var Validator = {
    * @param  {Function} fn  callback
    */
   requireMacs: function(req, res, next) {
-    if(!req.params.macs) {
-      req.error = new restify.MissingParameterError('Missing required parameter : macs.');
-    }
-    return next();
+    Validator.requireParam('macs', req, res, next);
   },
 
   /**
@@ -40,23 +35,7 @@ var Validator = {
    * @param  {Function} fn  callback
    */
   requireUids: function(req, res, next) {
-    if(!req.params.uids) {
-      req.error = new restify.MissingParameterError('Missing required parameter : uids.');
-    }
-    return next();
-  },
-
-  /**
-   * Check if the param accountUid is present in the request
-   * @param  {[type]}   req request
-   * @param  {[type]}   res response
-   * @param  {Function} fn  callback
-   */
-  requireAccountUid: function(req, res, next) {
-    if(!req.params.accountUid) {
-      req.error = new restify.MissingParameterError('Missing required parameter : accountUid.');
-    }
-    return next();
+    Validator.requireParam('uids', req, res, next);
   },
 
   /**
@@ -66,8 +45,18 @@ var Validator = {
    * @param  {Function} fn  callback
    */
   requireTagUid: function(req, res, next) {
-    if(!req.params.tagUid) {
-      req.error = new restify.MissingParameterError('Missing required parameter : tagUid.');
+    Validator.requireParam('tagUid', req, res, next);
+  },
+
+  /**
+   * Check if a given param is present in the request
+   * @param  {[type]}   req request
+   * @param  {[type]}   res response
+   * @param  {Function} fn  callback
+   */
+  requireParam: function(paramName, req, res, next) {
+    if(!req.params[paramName]) {
+      req.error = new responseTemplate.badRequest('Missing required parameter : ' + paramName);
     }
     return next();
   }
