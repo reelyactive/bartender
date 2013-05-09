@@ -2,7 +2,6 @@ var Tag = require('mongoose').model('Tag');
 var responseTemplate = require('../utils/responseTemplate');
 var restify = require('restify');
 var paginator = require('../utils/paginator');
-var apiResponse = require('../utils/apiResponse');
 
 /**
  * TagController
@@ -22,11 +21,14 @@ var TagController = {
 
     // Instantiate returnObject
     var returnObject = {};
+    returnObject._meta = {};
 
     // Metadata handling
-    returnObject._meta = apiResponse.ok();
-    returnObject._meta.offset = offset;
-    returnObject._meta.limit = limit;
+    var options = {
+      limit: limit,
+      offset: offset
+    };
+    returnObject._meta = new responseTemplate.ok("ok", options);
 
     // Links handling
     var urlBase = 'api/v0/tags';
@@ -54,7 +56,7 @@ var TagController = {
 
           returnObject._links = paginator.createLinks(url, offset, limit, totalCount);
 
-          res.json(200, returnObject);
+          res.json(returnObject);
           return next();
       });
     });
@@ -67,10 +69,8 @@ var TagController = {
     var id = req.params.id;
 
     // Instantiate returnObject
-    var returnObject = {}
-
-    // Metadata handling
-    returnObject._meta = apiResponse.ok();
+    var returnObject = {};
+    returnObject._meta = {};
 
     // Links handling
     var urlBase = 'api/v0/tags/' + id;
@@ -91,7 +91,10 @@ var TagController = {
         }
         returnObject.tag = tag;
 
-        res.json(200, returnObject);
+        // Metadata handling
+        returnObject._meta = new responseTemplate.ok("ok");
+
+        res.json(returnObject);
         return next();
     });
   },
@@ -122,12 +125,7 @@ var TagController = {
 
     // Instantiate returnObject
     var returnObject = {};
-
-    // Metadata handling
-    returnObject._meta = apiResponse.ok();
-    returnObject._meta.totalCount = totalCount;
-    returnObject._meta.offset = offset;
-    returnObject._meta.limit = limit;
+    returnObject._meta = {};
 
     // Links handling
     var urlBase = 'api/v0/tags/' + visibility;
@@ -157,12 +155,18 @@ var TagController = {
             result._meta = new responseTemplate.notFound(message);
             return res.json(result._meta.statusCode, result);
           }
-          returnObject._meta.totalCount = totalCount;
           returnObject.tags = tags;
+          // Metadata handling
+          var options = {
+            limit: limit,
+            offset: offset,
+          };
+          returnObject._meta = new responseTemplate.ok("ok", options);
 
+          returnObject._meta.totalCount = totalCount;
           returnObject._links = paginator.createLinks(url, offset, limit, totalCount);
 
-          res.json(200, returnObject);
+          res.json(returnObject);
           return next();
       });
     });

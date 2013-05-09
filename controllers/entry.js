@@ -1,5 +1,4 @@
 var responseTemplate = require('../utils/responseTemplate');
-var apiResponse = require('../utils/apiResponse');
 
 /**
  * EntryController
@@ -17,7 +16,7 @@ var EntryController = {
     var result = {};
 
     // Metadata handling
-    result._meta = apiResponse.ok();
+    result._meta = new responseTemplate.ok("ok");
     result.versions = [
       {
         'name': 'v0',
@@ -28,7 +27,7 @@ var EntryController = {
     var topRoutes = require('../routes/routeManager').listTopRoutes(true);
     result.versions[0].routes = topRoutes;
 
-    res.json(200, result);
+    res.json(result);
     return next();
   },
 
@@ -47,7 +46,7 @@ var EntryController = {
     var topRoutes = require('../routes/routeManager').listTopRoutes(true);
     result.routes = topRoutes;
 
-    res.json(200, result);
+    res.json(result._meta.statusCode, result);
     return next();
   },
 

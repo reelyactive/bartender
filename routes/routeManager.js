@@ -26,7 +26,8 @@ var RouteManager = {
 
   /**
    * Return an array of the top routes we support
-   * @return {Array} topRoutes supported
+   * @param  {boolean}  format    Do we format the output for public display ?
+   * @return {Array}    topRoutes supported
    */
   listTopRoutes: function(format) {
     var topRoutes = fs.readdirSync('./routes');
@@ -47,13 +48,13 @@ var RouteManager = {
    */
   formatTopRoutes: function(topRoutes) {
     // We don't want to display entry routes on entry point..
-    topRoutes = _.without(topRoutes, 'entry.js');
+    topRoutes = _.without(topRoutes, 'entry');
 
     var routes = [];
     for(var i = 0, l = topRoutes.length; i < l; i++) {
       var route = topRoutes[i];
-      if(route == 'tag') {
-        route = 'tags';
+      if(route !== 'ask' && route !== 'mgmt') {
+        route = route + 's';
       }
       routes.push( {
         name: route,

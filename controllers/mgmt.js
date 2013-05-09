@@ -18,7 +18,7 @@ var MgmtController = {
       if(err) {
         return next(err);
       } else {
-        res.json(200, 'Device collection successfully dropped');
+        res.json('Device collection successfully dropped');
         return next();
       }
     });
@@ -138,7 +138,7 @@ var MgmtController = {
     reelceiver4.save();
     reelceiver5.save();
 
-    res.json(200, 'Devices successfully added. (maybe not..)');
+    res.json('Devices successfully added. (maybe not..)');
     return next();
   }
 };

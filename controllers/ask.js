@@ -1,7 +1,6 @@
 var Tag = require('mongoose').model('Tag');
 var _ = require('underscore');
 var responseTemplate = require('../utils/responseTemplate');
-var apiResponse = require('../utils/apiResponse');
 var paginator = require('../utils/paginator');
 
 /**
@@ -17,7 +16,7 @@ var AskController = {
    */
   root: function(req, res, next) {
     // var returnObject = {};
-    // returnObject._meta = apiResponse.ok();
+    // returnObject._meta = new responseTemplate.ok("ok");
     // returnObject.description = 'Allow you to ask the API';
     // returnObject.supportedActions = [
     //   {
@@ -29,7 +28,7 @@ var AskController = {
     //     'versionsSupported': ['v0']
     //   }
     // ];
-    // res.json(200, returnObject);
+    // res.json(returnObject);
     var result = {};
     result._meta = new responseTemplate.notImplemented('/ask is not yet implemented');
     res.json(result._meta.statusCode, result);
@@ -66,12 +65,7 @@ var AskController = {
 
     // Instantiate returnObject
     var returnObject = {};
-
-    // Metadata handling
-    returnObject._meta = apiResponse.ok();
-    returnObject._meta.totalCount = totalCount;
-    returnObject._meta.offset = offset;
-    returnObject._meta.limit = limit;
+    returnObject._meta = {};
 
     // Links handling
     var urlBase = 'api/v0/ask/whereis';
@@ -103,7 +97,15 @@ var AskController = {
         returnObject.matched = _.difference(macs, unmatchedMacs);
         returnObject.unmatched = unmatchedMacs;
 
-        res.json(200, returnObject);
+        // Metadata handling
+        var options = {
+          totalCount: totalCount,
+          offset: offset,
+          limit: limit
+        };
+        returnObject._meta = new responseTemplate.ok("ok", options);
+
+        res.json(returnObject);
         return next();
     });
   }
