@@ -3,11 +3,11 @@
  * @type {Object}
  */
 var _ = require('underscore');
-var configuration = require('../conf');
+var configurationManager = require('../conf');
 
 var ConfigurationValidator = {
-  CONF: configuration.CONF,
-  DB_CONF: configuration.DB_CONF,
+  CONF: configurationManager.CONF,
+  DB_CONF: configurationManager.DB_CONF,
   err: '',
   // currentConf allow us to know if we're on CONF or DB_CONF
   currentConf: '',

@@ -92,7 +92,7 @@ var TagController = {
         returnObject.tag = tag;
 
         // Metadata handling
-        returnObject._meta = new responseTemplate.ok("ok");
+        returnObject._meta = new responseTemplate.ok();
 
         res.json(returnObject);
         return next();

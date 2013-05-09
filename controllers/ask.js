@@ -16,7 +16,7 @@ var AskController = {
    */
   root: function(req, res, next) {
     // var returnObject = {};
-    // returnObject._meta = new responseTemplate.ok("ok");
+    // returnObject._meta = new responseTemplate.ok();
     // returnObject.description = 'Allow you to ask the API';
     // returnObject.supportedActions = [
     //   {

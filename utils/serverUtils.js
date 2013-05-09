@@ -28,20 +28,24 @@ var ServerUtils = {
    * @param  {Object}   server the server himself
    */
   _setAcceptHeader: function(server) {
-    server.pre(function setHeaderAccept(req, res, next) {
+    server.pre(function setAcceptHeader(req, res, next) {
       var acceptJson = (req.url.indexOf('.json') !== -1);
       if(acceptJson) {
-        req.headers.accept = "application/json";
+        req.headers.accept = 'application/json';
       }
+
       // Clean the url
-      req.url = req.url.replace(/\.json$/, "");
+      req.url = req.url.replace(/\.json$/, '');
       return next();
     });
   },
 
   /**
    * Let's the server handle some default events like NotFound
-   * @param  {Object}   server the server himself
+   * Override default error handlers, so we can return our
+   * common responseTemplate
+   * @param  {Object}   server  the server himself
+   * @param  {Object}   CONF    the server configuration
    */
   _handleDefaultEvents: function(server, CONF) {
     // On error (example : Address in use)

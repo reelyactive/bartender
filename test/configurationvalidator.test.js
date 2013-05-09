@@ -1,7 +1,9 @@
 var should = require('should');
+var _ = require('underscore');
 var configurationValidator = require('../utils/configurationValidator');
-var CONF = require('../conf').CONF;
-var DB_CONF = require('../conf').DB_CONF;
+var configurationManager = require('../conf');
+var CONF = configurationManager.CONF;
+var DB_CONF = configurationManager.DB_CONF;
 
 /**
  * Tests for configurationValidator
@@ -13,8 +15,8 @@ describe('Configuration validator testing', function() {
   beforeEach(function() {
     // Object.create is used to create a copy and don't change
     // the default object
-    configurationValidator.CONF = Object.create(CONF);
-    configurationValidator.DB_CONF = Object.create(DB_CONF);
+    configurationValidator.CONF = _.extend({}, CONF);
+    configurationValidator.DB_CONF = _.extend({}, DB_CONF);
   });
 
   it('should not set an error on a default configuration', function() {

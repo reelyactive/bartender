@@ -4,8 +4,7 @@ var util = require('util');
 var ResponseTemplate = {
   // 200
   ok: function(message, options) {
-    this.restCode         = 'OK',
-    this.message          = message;
+    this.message          = message || 'ok';
     this.statusCode       = 200;
     this.developerMessage = 'ok';
     this.userMessage      = 'Everything is ok.';

@@ -2,7 +2,8 @@ var fs = require('fs');
 var _ = require('underscore');
 
 /**
- * Actions on the route
+ * His goal is to init the routes of our API
+ * He can also return a list of the available topRoutes
  * @type {Object}
  */
 var RouteManager = {
@@ -31,6 +32,7 @@ var RouteManager = {
    */
   listTopRoutes: function(format) {
     var topRoutes = fs.readdirSync('./routes');
+    // Remove himself
     topRoutes = _.without(topRoutes, 'routeManager.js');
     topRoutes = _.map(topRoutes, function removeJsExtension(file) {
       return file.replace('.js', '');
@@ -53,6 +55,7 @@ var RouteManager = {
     var routes = [];
     for(var i = 0, l = topRoutes.length; i < l; i++) {
       var route = topRoutes[i];
+      // Pluralize the route when it's a ressource
       if(route !== 'ask' && route !== 'mgmt') {
         route = route + 's';
       }
