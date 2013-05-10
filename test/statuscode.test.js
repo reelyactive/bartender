@@ -34,7 +34,7 @@ describe('Status code testing', function() {
 
   // Routes that should return a 404 status code
   // 404 - not found
-  routes[404] = ['404',
+  routes[404] = [
     'tags/FF-FF-FF-FF-FF', 'tags/FF-FF-FF-FF-FF'
   ];
 

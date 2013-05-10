@@ -33,7 +33,7 @@ var EntryController = {
         self: responseLinks.generateLink('/' + version.name, req)
       };
 
-      var isCurrentVersion = version.name === versionManager.version;
+      var isCurrentVersion = version.name === versionManager.currentVersion;
       if(isCurrentVersion) {
         var topRoutes = routeManager.listTopRoutes(req, version.name);
         version._embedded = {};
@@ -95,10 +95,11 @@ var EntryController = {
   notFound: function (req, res, next) {
     var result = {};
     var message = 'Why did you request the 404 ? ' +
-                  'Now, you\'re lost..';
+                  'Now, you\'re lost.. And so am I.';
     result._meta = new responseMeta.notFound(message);
-    result._links = responseLinks.setDefault(req.href());
-    res.json(result._meta.statusCode, result);
+    result._links = responseLinks.setDefault(req);
+    res.send(result._meta.statusCode, result);
+    return next();
   }
 };
 
