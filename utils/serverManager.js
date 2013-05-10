@@ -6,7 +6,7 @@ var responseMeta = require('./responseBoilerplate').ResponseMeta;
  * Usefull methods for the server to work.
  */
 
-var ServerUtils = {
+var ServerManager = {
   /**
    * Configure the server with some default options
    * @param  {Object}   server the server himself
@@ -18,8 +18,8 @@ var ServerUtils = {
     server.use(restify.bodyParser());
     server.use(stepManager.setSteps);
 
-    ServerUtils._setAcceptHeader(server);
-    ServerUtils._handleDefaultEvents(server, CONF);
+    ServerManager._setAcceptHeader(server);
+    ServerManager._handleDefaultEvents(server, CONF);
   },
 
   /**
@@ -74,4 +74,4 @@ var ServerUtils = {
   }
 };
 
-module.exports = ServerUtils;
+module.exports = ServerManager;

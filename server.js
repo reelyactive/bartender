@@ -29,8 +29,8 @@
 var restify = require('restify');
 
 var configurationValidator = require('./utils/configurationValidator');
-var serverUtils = require('./utils/serverUtils');
-var databaseManager = require('./databaseManager');
+var serverManager = require('./utils/serverManager');
+var databaseManager = require('./utils/databaseManager');
 
 var CONF, DB_CONF;
 
@@ -61,7 +61,7 @@ function createServer() {
     name: CONF.APP_NAME,
     version: CONF.VERSION
   });
-  serverUtils.configure(server, CONF);
+  serverManager.configure(server, CONF);
 
   /**
    * Database connection

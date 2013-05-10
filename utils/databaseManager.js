@@ -43,8 +43,8 @@ var DatabaseManager = {
       /**
        * Load each models in mongoose
        */
-      require('./models/tag');
-      require('./models/reelceiver');
+      require('../models/tag');
+      require('../models/reelceiver');
       callback();
     });
   },
