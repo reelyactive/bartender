@@ -43,7 +43,7 @@ describe('Status code testing', function() {
   routes[501] = [
     'ask',
     'ask/whatat?macs=00-00-00-02',
-    'ask/whatat?macs=00-00-00-02,00-00-00-01,00-00-00-06',
+    'ask/whatat?macs=00-00-00-02,00-00-00-01,00-00-00-06'
   ];
 
   var routeGroupNum = -1;

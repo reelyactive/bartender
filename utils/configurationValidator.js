@@ -32,7 +32,7 @@ var ConfigurationValidator = {
       APP_NAME: 'Bartender',
       HOST: 'localhost',
       PORT: 7777,
-      VERSION: '1.0.0',
+      VERSION: '1.0.0'
     };
     ConfValidator.CONF = _.extend(defaults, ConfValidator.CONF);
 

@@ -78,7 +78,7 @@ var MgmtController = {
       vendor: 'reelyActive',
       type: 'Tag',
       model: 'RA-T411-02',
-      radioProtocol: 'RA-Proprietary-915MHz',
+      radioProtocol: 'RA-Proprietary-915MHz'
     });
 
     var reelceiver = new Reelceiver({

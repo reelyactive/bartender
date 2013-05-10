@@ -34,11 +34,11 @@ var StepManager = {
    */
   runSteps: function(req, res, next) {
     if(req.hasOwnProperty('error')) {
-        var result = {};
-        result._meta = req.error;
-        // Return directly the error
-        return res.json(result._meta.statusCode, result);
-        // return next(req.error);
+      var result = {};
+      result._meta = req.error;
+      // Return directly the error
+      return res.json(result._meta.statusCode, result);
+      // return next(req.error);
     }
 
     var fn = req.steps.shift();
