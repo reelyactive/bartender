@@ -1,5 +1,7 @@
 var _ = require('underscore');
-var responseTemplate = require('../utils/responseTemplate');
+var responseBoilerplate = require('../utils/responseBoilerplate');
+var responseMeta = responseBoilerplate.ResponseMeta;
+var responseLinks = responseBoilerplate.ResponseLinks;
 var routeManager = require('../routes/routeManager');
 var versionManager = require('../versionManager');
 
@@ -17,23 +19,33 @@ var EntryController = {
    */
   root: function(req, res, next) {
     var result = {};
-
-    // Metadata handling
-    result._meta = new responseTemplate.ok();
+    result._meta = {};
+    result._links = {};
 
     // Made a copy of the array (to avoid a reference)
     result.versions = versionManager.versions.slice(0);
 
-    result._meta.totalCount = result.versions.length;
-    var topRoutes = routeManager.listTopRoutes(true);
+    // Find the current version and add _embedded section to it (with routes)
     _.each(result.versions, function findCurrentVersion(version, index) {
-      if(version.name === versionManager.currentVersion ) {
-        // Make a copy of the object (to avoid a reference)
-        var currentVersion = _.extend({}, result.versions[index]);
-        currentVersion.routes = topRoutes;
-        result.versions[index] = currentVersion;
+      // Make a copy of the object (to avoid a reference)
+      version = _.extend({}, result.versions[index]);
+      version._links = {
+        self: responseLinks.generateLink('/' + version.name, req)
+      };
+
+      var isCurrentVersion = version.name === versionManager.version;
+      if(isCurrentVersion) {
+        var topRoutes = routeManager.listTopRoutes(req, version.name);
+        version._embedded = {};
+        version._embedded.routes = topRoutes;
       }
+
+      result.versions[index] = version;
     });
+
+    result._meta = new responseMeta.ok();
+    result._meta.totalCount = result.versions.length;
+    result._links = responseLinks.setDefault(req);
 
     res.json(result);
     return next();
@@ -47,26 +59,28 @@ var EntryController = {
   version: function(req, res, next) {
     var versionParam = req.params.version || 'v1';
     var result = {};
-    result._meta = {};
 
+    // Try to find the requested version in the supported version
     _.each(versionManager.versions, function findCurrentVersion(version, index) {
       if(version.name === versionParam) {
-        result.version = versionManager.versions[index];
+        result = _.extend({}, versionManager.versions[index]);
       }
     });
 
+    result._links = responseLinks.setDefault(req);
+
     // If the requested version doesn't exist return 404
-    if(!result.version) {
-      message = 'Version not supported for now';
-      result._meta = new responseTemplate.notFound(message);
-      res.json(result._meta.statusCode, result);
-      return next();
+    if(!result.name) {
+      var message = 'The version you request, doesn\'t exist.';
+      result._meta = new responseMeta.notFound(message);
+    } else {
+      result._meta = new responseMeta.ok();
+      result._links.root = responseLinks.generateLink('/', req);
+      // Add _embedded section with the supported routes
+      var topRoutes = routeManager.listTopRoutes(req, result.name);
+      result._embedded = {};
+      result._embedded.routes = topRoutes;
     }
-
-    result._meta = new responseTemplate.ok();
-
-    var topRoutes = routeManager.listTopRoutes(true);
-    result.routes = topRoutes;
 
     res.json(result._meta.statusCode, result);
     return next();
@@ -82,7 +96,8 @@ var EntryController = {
     var result = {};
     var message = 'Why did you request the 404 ? ' +
                   'Now, you\'re lost..';
-    result._meta = new responseTemplate.notFound(message);
+    result._meta = new responseMeta.notFound(message);
+    result._links = responseLinks.setDefault(req.href());
     res.json(result._meta.statusCode, result);
   }
 };

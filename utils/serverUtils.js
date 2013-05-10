@@ -1,6 +1,6 @@
 var restify = require('restify');
 var stepManager = require('./stepManager');
-var responseTemplate = require('./responseTemplate');
+var responseMeta = require('./responseBoilerplate').ResponseMeta;
 
 /**
  * Usefull methods for the server to work.
@@ -35,7 +35,7 @@ var ServerUtils = {
       }
 
       // Clean the url
-      req.url = req.url.replace(/\.json$/, '');
+      req.url = server.url +  req.url.replace(/\.json$/, '');
       return next();
     });
   },
@@ -43,7 +43,7 @@ var ServerUtils = {
   /**
    * Let's the server handle some default events like NotFound
    * Override default error handlers, so we can return our
-   * common responseTemplate
+   * common responseMeta
    * @param  {Object}   server  the server himself
    * @param  {Object}   CONF    the server configuration
    */
@@ -60,7 +60,7 @@ var ServerUtils = {
     // 404 - Not found
     server.on('NotFound', function notFound(req, res, next) {
       var result = {};
-      result._meta = new responseTemplate.notFound('Ressource not found');
+      result._meta = new responseMeta.notFound('Ressource not found');
       res.json(result._meta.statusCode, result);
       return next();
     });
@@ -68,7 +68,7 @@ var ServerUtils = {
     // 500 - Internal error
     server.on('uncaughtException', function after(req, res, route, err) {
       var result = {};
-      result._meta = new responseTemplate.internalServerError(err.message);
+      result._meta = new responseMeta.internalServerError(err.message);
       res.json(result._meta.statusCode, result);
     });
   }

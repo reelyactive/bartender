@@ -12,15 +12,8 @@ var VersionManager = {
   versions: [
     {
       'name': 'v0',
-      'href': '/v0',
-      'releaseDate': '2013-05-09T00:00:01Z'
-    },
-    {
-      'name': 'v1',
-      'href': '/v1',
-      'releaseDate': '77777777'
+      'releaseDate': '2013-05-09T00:00:01Z',
     }
-
   ]
 };
 

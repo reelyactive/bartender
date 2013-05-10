@@ -1,5 +1,7 @@
 var Tag = require('mongoose').model('Tag');
-var responseTemplate = require('../utils/responseTemplate');
+var responseBoilerplate = require('../utils/responseBoilerplate');
+var responseMeta = responseBoilerplate.ResponseMeta;
+var responseLinks = responseBoilerplate.ResponseLinks;
 var restify = require('restify');
 var paginator = require('../utils/paginator');
 
@@ -28,7 +30,7 @@ var TagController = {
       limit: limit,
       offset: offset
     };
-    returnObject._meta = new responseTemplate.ok("ok", options);
+    returnObject._meta = new responseMeta.ok('ok', options);
 
     // Links handling
     var urlBase = 'api/v0/tags';
@@ -58,7 +60,8 @@ var TagController = {
 
           res.json(returnObject);
           return next();
-      });
+        }
+      );
     });
   },
 
@@ -86,17 +89,18 @@ var TagController = {
         }
         if(!tag) {
           var result = {};
-          result._meta = new responseTemplate.notFound('No tag  with id ' + id + ' found');
+          result._meta = new responseMeta.notFound('No tag  with id ' + id + ' found');
           return res.json(result._meta.statusCode, result);
         }
         returnObject.tag = tag;
 
         // Metadata handling
-        returnObject._meta = new responseTemplate.ok();
+        returnObject._meta = new responseMeta.ok();
 
         res.json(returnObject);
         return next();
-    });
+      }
+    );
   },
 
   /**
@@ -151,24 +155,25 @@ var TagController = {
           }
           if(!tags) {
             var result = {};
-            var message = 'No tags found for visibility: ' + visibility
-            result._meta = new responseTemplate.notFound(message);
+            var message = 'No tags found for visibility: ' + visibility;
+            result._meta = new responseMeta.notFound(message);
             return res.json(result._meta.statusCode, result);
           }
           returnObject.tags = tags;
           // Metadata handling
           var options = {
             limit: limit,
-            offset: offset,
+            offset: offset
           };
-          returnObject._meta = new responseTemplate.ok("ok", options);
+          returnObject._meta = new responseMeta.ok('ok', options);
 
           returnObject._meta.totalCount = totalCount;
           returnObject._links = paginator.createLinks(url, offset, limit, totalCount);
 
           res.json(returnObject);
           return next();
-      });
+        }
+      );
     });
   }
 };

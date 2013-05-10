@@ -1,6 +1,8 @@
 var Tag = require('mongoose').model('Tag');
 var _ = require('underscore');
-var responseTemplate = require('../utils/responseTemplate');
+var responseBoilerplate = require('../utils/responseBoilerplate');
+var responseMeta = responseBoilerplate.ResponseMeta;
+var responseLinks = responseBoilerplate.ResponseLinks;
 var paginator = require('../utils/paginator');
 
 /**
@@ -16,7 +18,7 @@ var AskController = {
    */
   root: function(req, res, next) {
     // var returnObject = {};
-    // returnObject._meta = new responseTemplate.ok();
+    // returnObject._meta = new responseMeta.ok();
     // returnObject.description = 'Allow you to ask the API';
     // returnObject.supportedActions = [
     //   {
@@ -30,7 +32,7 @@ var AskController = {
     // ];
     // res.json(returnObject);
     var result = {};
-    result._meta = new responseTemplate.notImplemented('/ask is not yet implemented');
+    result._meta = new responseMeta.notImplemented('/ask is not yet implemented');
     res.json(result._meta.statusCode, result);
     return next();
   },
@@ -43,7 +45,7 @@ var AskController = {
    */
   whatAt: function(req, res, next) {
     var result = {};
-    result._meta = new responseTemplate.notImplemented('/whatAt is not implemented yet.');
+    result._meta = new responseMeta.notImplemented('/whatAt is not implemented yet.');
     res.json(result._meta.statusCode, result);
     return next();
   },
@@ -103,11 +105,12 @@ var AskController = {
           offset: offset,
           limit: limit
         };
-        returnObject._meta = new responseTemplate.ok("ok", options);
+        returnObject._meta = new responseMeta.ok('ok', options);
 
         res.json(returnObject);
         return next();
-    });
+      }
+    );
   }
 };
 

@@ -3,7 +3,7 @@
  * For example he check the presence of a required paramater
  * on a request.
  */
-var responseTemplate = require('./responseTemplate');
+var responseMeta = require('./responseBoilerplate').ResponseMeta;
 
 var restify = require('restify');
 
@@ -56,7 +56,7 @@ var Validator = {
    */
   requireParam: function(paramName, req, res, next) {
     if(!req.params[paramName]) {
-      req.error = new responseTemplate.badRequest('Missing required parameter : ' + paramName);
+      req.error = new responseMeta.badRequest('Missing required parameter : ' + paramName);
     }
     return next();
   }
