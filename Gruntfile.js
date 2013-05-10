@@ -11,9 +11,9 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
-      files: ['*.js', 'routes/**/*.js', '<%= mochaTest.files %>'],
+      files: ['**/**/*.js', '!**/node_modules/**'],
       options: {
-        jshintrc: 'test/.gruntjshintrc',
+        jshintrc: '.jshintrc'
       }
     }
   });
