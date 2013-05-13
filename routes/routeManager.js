@@ -70,13 +70,15 @@ var RouteManager = {
       var routeName = topRoutes[i];
 
       var route = '/' + routeName;
-      // Add the version to the absolute url
-      route = '/' + version + route;
 
       // Pluralize the route when it's a ressource
       if(route !== '/ask' && route !== '/mgmt') {
         route = route + 's';
+        routeName = routeName + 's';
       }
+
+      // Add the version to the absolute url
+      route = '/' + version + route;
 
       // Generate the absolute path
       if(req) {

@@ -41,7 +41,7 @@ var ResponseBoilerplate = {
     badRequest: function(message) {
       restify.RestError.call(this, {
         statusCode     : 400,
-        message        : message,
+        message        : message || 'badRequest',
         constructorOpt : ResponseBoilerplate.ResponseMeta.badRequest
       });
       delete this.body;
@@ -56,7 +56,7 @@ var ResponseBoilerplate = {
     notFound: function(message) {
       restify.RestError.call(this, {
         statusCode     : 404,
-        message        : message,
+        message        : message || 'notFound',
         constructorOpt : ResponseBoilerplate.ResponseMeta.notFound
       });
       delete this.body;
@@ -71,7 +71,7 @@ var ResponseBoilerplate = {
     notAcceptable: function(message) {
       restify.RestError.call(this, {
         statusCode     : 406,
-        message        : message,
+        message        : message || 'notAcceptable',
         constructorOpt : ResponseBoilerplate.ResponseMeta.notAcceptable
       });
       delete this.body;
@@ -86,7 +86,7 @@ var ResponseBoilerplate = {
     internalServerError: function(message) {
       restify.RestError.call(this, {
         statusCode     : 500,
-        message        : message,
+        message        : message || 'internalServerError',
         constructorOpt : ResponseBoilerplate.ResponseMeta.internalServerError
       });
       delete this.body;
@@ -101,7 +101,7 @@ var ResponseBoilerplate = {
     notImplemented: function(message) {
       restify.RestError.call(this, {
         statusCode     : 501,
-        message        : message,
+        message        : message || 'notImplemented',
         constructorOpt : ResponseBoilerplate.ResponseMeta.notFound
       });
       delete this.body;
@@ -124,9 +124,10 @@ var ResponseBoilerplate = {
      * @return {Object}      default section _links
      */
     setDefault: function(req) {
+      var format = req.urlFormatRequest || '';
       var _links = {
         self: {
-          href: req.href()
+          href: req.href() + format
         }
       };
       return _links;
@@ -143,6 +144,9 @@ var ResponseBoilerplate = {
       // Create an absolute link
       if(req) {
         url = ResponseBoilerplate.ResponseLinks.toAbsolute(url, req);
+      } else {
+        var format = req.urlFormatRequest || '';
+        url = url + format;
       }
       var link = {
         href: url
@@ -160,6 +164,10 @@ var ResponseBoilerplate = {
       var urlUtil = require('url');
       var parseUrl = urlUtil.parse(req.url);
       url = parseUrl.protocol + '//' + parseUrl.host + url;
+
+      var format = req.urlFormatRequest || '';
+      url = url + format;
+
       return url;
     }
   }
