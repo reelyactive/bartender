@@ -38,7 +38,7 @@ describe('Entry point testing', function() {
         _meta.statusCode.should.equal(200);
         _meta.developerMessage.should.equal('ok');
         _meta.userMessage.should.be.a('string');
-        should.not.exist(_meta.errorCode)
+        should.not.exist(_meta.errorCode);
         _meta.moreInfo.should.be.a('string');
         _meta.totalCount.should.be.above(0);
         done();
@@ -60,8 +60,8 @@ describe('Entry point testing', function() {
         var firstVersion = data.versions[0];
         firstVersion.should.be.a('object');
         firstVersion.should.have.property('name');
-        firstVersion.should.have.property('releaseDate')
-        firstVersion.should.have.property('_links')
+        firstVersion.should.have.property('releaseDate');
+        firstVersion.should.have.property('_links');
         firstVersion.should.have.property('_embedded');
         done();
       });
@@ -88,7 +88,7 @@ describe('Entry point testing', function() {
         _meta.statusCode.should.equal(200);
         _meta.developerMessage.should.equal('ok');
         _meta.userMessage.should.be.a('string');
-        should.not.exist(_meta.errorCode)
+        should.not.exist(_meta.errorCode);
         _meta.moreInfo.should.be.a('string');
         _meta.totalCount.should.be.above(0);
         done();

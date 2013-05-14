@@ -21,16 +21,10 @@ var TagController = {
     var limit = params.limit;
     var totalCount = 0;
 
-    // Instantiate returnObject
-    var returnObject = {};
-    returnObject._meta = {};
-
-    // Metadata handling
-    var options = {
-      limit: limit,
-      offset: offset
-    };
-    returnObject._meta = new responseMeta.ok('ok', options);
+    // Instantiate result
+    var result = {};
+    result._meta = {};
+    result._links = {};
 
     // Links handling
     var urlBase = 'api/v0/tags';
@@ -53,12 +47,21 @@ var TagController = {
           if(err) {
             return next(err);
           }
-          returnObject._meta.totalCount = totalCount;
-          returnObject.tags = tags;
 
-          returnObject._links = paginator.createLinks(url, offset, limit, totalCount);
+          // Metadata handling
+          var options = {
+            limit: limit,
+            offset: offset
+          };
 
-          res.json(returnObject);
+          result._meta = new responseMeta.ok('ok', options);
+          result._meta.totalCount = totalCount;
+
+          result.tags = tags;
+
+          result._links = paginator.createLinks(url, offset, limit, totalCount);
+
+          res.json(result);
           return next();
         }
       );
@@ -71,9 +74,9 @@ var TagController = {
   findTag: function(req, res, next) {
     var id = req.params.id;
 
-    // Instantiate returnObject
-    var returnObject = {};
-    returnObject._meta = {};
+    // Instantiate result
+    var result = {};
+    result._meta = {};
 
     // Links handling
     var urlBase = 'api/v0/tags/' + id;
@@ -88,16 +91,17 @@ var TagController = {
           return next(err);
         }
         if(!tag) {
-          var result = {};
-          result._meta = new responseMeta.notFound('No tag  with id ' + id + ' found');
+          result = {};
+          var message = 'No tag  with id ' + id + ' found';
+          result._meta = new responseMeta.notFound(message);
           return res.json(result._meta.statusCode, result);
         }
-        returnObject.tag = tag;
+        result.tag = tag;
 
         // Metadata handling
-        returnObject._meta = new responseMeta.ok();
+        result._meta = new responseMeta.ok();
 
-        res.json(returnObject);
+        res.json(result);
         return next();
       }
     );
@@ -127,9 +131,9 @@ var TagController = {
     var limit = params.limit;
     var totalCount = 0;
 
-    // Instantiate returnObject
-    var returnObject = {};
-    returnObject._meta = {};
+    // Instantiate result
+    var result = {};
+    result._meta = {};
 
     // Links handling
     var urlBase = 'api/v0/tags/' + visibility;
@@ -154,23 +158,23 @@ var TagController = {
             return next(err);
           }
           if(!tags) {
-            var result = {};
+            result = {};
             var message = 'No tags found for visibility: ' + visibility;
             result._meta = new responseMeta.notFound(message);
             return res.json(result._meta.statusCode, result);
           }
-          returnObject.tags = tags;
+          result.tags = tags;
           // Metadata handling
           var options = {
             limit: limit,
             offset: offset
           };
-          returnObject._meta = new responseMeta.ok('ok', options);
+          result._meta = new responseMeta.ok('ok', options);
 
-          returnObject._meta.totalCount = totalCount;
-          returnObject._links = paginator.createLinks(url, offset, limit, totalCount);
+          result._meta.totalCount = totalCount;
+          result._links = paginator.createLinks(url, offset, limit, totalCount);
 
-          res.json(returnObject);
+          res.json(result);
           return next();
         }
       );

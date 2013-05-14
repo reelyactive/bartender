@@ -12,7 +12,7 @@ var stepManager = require('../utils/stepManager');
 
 var Common = {
   /**
-   * Policy cheking for the presence of params.id
+   * Policy checking for the presence of params.id
    * @param  {[type]}   req  request
    * @param  {[type]}   res  response
    * @param  {Function} next callback
@@ -23,7 +23,7 @@ var Common = {
   },
 
   /**
-   * Policy cheking for the presence of params.macs
+   * Policy checking for the presence of params.macs
    * @param  {[type]}   req  request
    * @param  {[type]}   res  response
    * @param  {Function} next callback
@@ -34,13 +34,35 @@ var Common = {
   },
 
   /**
-   * Policy cheking for the presence of params.uids
+   * Policy checking for the presence of params.uuids
    * @param  {[type]}   req  request
    * @param  {[type]}   res  response
    * @param  {Function} next callback
    */
-  requireUids: function(req, res, next) {
-    req.steps.push(validator.requireUids);
+  requireUuids: function(req, res, next) {
+    req.steps.push(validator.requireUuids);
+    stepManager.runSteps(req, res, next);
+  },
+
+  /**
+   * Policy checking for validity of params.macs
+   * @param  {[type]}   req  request
+   * @param  {[type]}   res  response
+   * @param  {Function} next callback
+   */
+  isValidMacs: function(req, res, next) {
+    req.steps.push(validator.isValidMacs);
+    stepManager.runSteps(req, res, next);
+  },
+
+  /**
+   * Policy checking for validity of params.uuids
+   * @param  {[type]}   req  request
+   * @param  {[type]}   res  response
+   * @param  {Function} next callback
+   */
+  isValidUuids: function(req, res, next) {
+    req.steps.push(validator.isValidUuids);
     stepManager.runSteps(req, res, next);
   },
 

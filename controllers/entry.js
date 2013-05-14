@@ -61,11 +61,13 @@ var EntryController = {
     var result = {};
 
     // Try to find the requested version in the supported version
-    _.each(versionManager.versions, function findCurrentVersion(version, index) {
-      if(version.name === versionParam) {
-        result = _.extend({}, versionManager.versions[index]);
+    _.each(versionManager.versions,
+      function findCurrentVersion(version, index) {
+        if(version.name === versionParam) {
+          result = _.extend({}, versionManager.versions[index]);
+        }
       }
-    });
+    );
 
     result._links = responseLinks.setDefault(req);
 
