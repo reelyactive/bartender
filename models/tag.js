@@ -63,29 +63,22 @@ var TagSchema = new mongoose.Schema({
       updateDate: Date
     }
   },
-  lqi: {
-    value: Number,
-    updateDate: Date,
-    lastChangeEvent: {
-      value: Number,
-      updateDate: Date
-    }
-  },
   radioDecodings: {
-    transmitDataDecoded: {
-      values: [{
+    receivers: {
+      values : [{
         uuid: String,
         mac: String,
-        uri: {
-          reelceiver: {
-            href: String
-          }
-        },
+        uri: { reelceiver: { href: String }},
+        rssi: Number
+      }, {
+        uuid: String,
+        mac: String,
+        uri: { reelceiver: { href: String }},
         rssi: Number
       }],
       updateDate: Date
     },
-    receiveDataDecoded: {}
+    transmitters: {}
   }
 });
 
