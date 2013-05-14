@@ -29,8 +29,9 @@
 var restify = require('restify');
 
 var configurationValidator = require('./utils/configurationValidator');
-var serverManager = require('./utils/serverManager');
-var databaseManager = require('./utils/databaseManager');
+var serverManager          = require('./utils/serverManager');
+var databaseManager        = require('./utils/databaseManager');
+var routeManager           = require('./routes/routeManager')
 
 var CONF, DB_CONF;
 
@@ -44,7 +45,7 @@ configurationValidator.validate(function confValidated(err, CONFIGURATION) {
     process.exit();
   }
 
-  CONF = CONFIGURATION.CONF;
+  CONF    = CONFIGURATION.CONF;
   DB_CONF = CONFIGURATION.DB_CONF;
 
   createServer();
@@ -77,7 +78,7 @@ function createServer() {
      */
     var versionNumber = parseInt(CONF.VERSION, 10);
     var version = '/v' + versionNumber;
-    require('./routes/routeManager').initRoutes(server, version);
+    routeManager.initRoutes(server, version);
 
     /**
      * Server listening

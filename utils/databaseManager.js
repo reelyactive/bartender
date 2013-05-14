@@ -43,8 +43,9 @@ var DatabaseManager = {
       /**
        * Load each models in mongoose
        */
-      require('../models/tag');
-      require('../models/reelceiver');
+      var modelManager = require('../models/modelManager');
+      modelManager.initModels();
+
       callback();
     });
   },

@@ -69,16 +69,13 @@ var RouteManager = {
     for(var i = 0, l = topRoutes.length; i < l; i++) {
       var routeName = topRoutes[i];
 
-      var route = '/' + routeName;
-
-      // Pluralize the route when it's a ressource
-      if(route !== '/ask' && route !== '/mgmt') {
-        route = route + 's';
+      // Pluralize the routeName when it's a ressource
+      if(routeName !== 'ask' && routeName !== 'mgmt') {
         routeName = routeName + 's';
       }
 
       // Add the version to the absolute url
-      route = '/' + version + route;
+      var route = '/' + version + '/' + routeName;
 
       // Generate the absolute path
       if(req) {
