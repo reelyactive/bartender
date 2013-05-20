@@ -5,7 +5,7 @@ var NotAcceptableError = responseBoilerplate.ResponseMeta.notAcceptable;
 var responseLinks = responseBoilerplate.ResponseLinks;
 
 /**
- * Returns a plugin that will check the client's Accept header can be handled
+ * Returns a plugin that will check if the client's Accept header can be handled
  * by this server.
  *
  * @param {String}      array of accept types.
@@ -30,7 +30,6 @@ function acceptParser(acceptable) {
       return;
     } else {
       var result = {};
-      result._links = responseLinks.setDefault(req);
       result._meta = new NotAcceptableError('Server accepts: ' + acceptable.join());
       res.json(result._meta.statusCode, result);
       next(false);

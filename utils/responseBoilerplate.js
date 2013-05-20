@@ -25,10 +25,10 @@ var ResponseBoilerplate = {
       options = options || {};
       this.totalCount       = options.totalCount || 1;
 
-      if(options.limit) {
+      if(options.limit !== undefined) {
         this.limit          = options.limit;
       }
-      if(options.offset) {
+      if(options.offset !== undefined) {
         this.offset         = options.offset;
       }
     },
@@ -176,7 +176,7 @@ var ResponseBoilerplate = {
 // Inherit from restify errors
 for (var key in ResponseBoilerplate.ResponseMeta) {
   if (ResponseBoilerplate.ResponseMeta.hasOwnProperty(key) &&
-     (key !== 'ok' && key !== 'defaultLinks' && key !== 'generateLink')) {
+     (key !== 'ok')) {
     var obj = ResponseBoilerplate.ResponseMeta[key];
     util.inherits(obj, restify.RestError);
   }

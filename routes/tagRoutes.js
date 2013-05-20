@@ -2,7 +2,7 @@
  * Router for tag ressource
  */
 
-var tagController = require('../controllers/tag');
+var tagController = require('../controllers/tagController');
 var policies = require('../policies/common');
 
 module.exports = function(server, version) {

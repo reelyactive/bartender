@@ -62,12 +62,12 @@ var RouteManager = {
     });
 
     // We don't want to display entry routes on entry point..
-    topRoutes = _.without(topRoutes, 'entry');
+    topRoutes = _.without(topRoutes, 'entryRoutes');
 
     // For each route, make a beautiful display
     var routes = [];
     for(var i = 0, l = topRoutes.length; i < l; i++) {
-      var routeName = topRoutes[i];
+      var routeName = topRoutes[i].replace('Routes', '');
 
       // Pluralize the routeName when it's a ressource
       if(routeName !== 'ask' && routeName !== 'mgmt') {
@@ -85,12 +85,8 @@ var RouteManager = {
       }
 
       routes.push( {
-        name: routeName,
-        _links: {
-          self: {
-            href: route
-          }
-        }
+        href: route,
+        name: routeName
       });
     }
     return routes;

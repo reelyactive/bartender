@@ -26,10 +26,6 @@ var TagController = {
     result._meta = {};
     result._links = {};
 
-    // Links handling
-    var urlBase = 'api/v0/tags';
-    var url = urlBase;
-
     // Business logic
     Tag.count({type: 'Tag'}, function tagsCount(err, count) {
       if(err) {
@@ -59,7 +55,16 @@ var TagController = {
 
           result.tags = tags;
 
-          result._links = paginator.createLinks(url, offset, limit, totalCount);
+          // Links handling
+          result._links = paginator.createLinks(req.href(), offset, limit, totalCount);
+          result._links.tagsVisible      = '';
+          result._links.tagsInvisible    = '';
+          result._links.whereis          = '';
+          result._links.whereisVisible   = '';
+          result._links.whereisInvisible = '';
+          result._links.howis            = '';
+          result._links.howisVisible     = '';
+          result._links.howisInvisible   = '';
 
           res.json(result);
           return next();
@@ -79,8 +84,7 @@ var TagController = {
     result._meta = {};
 
     // Links handling
-    var urlBase = 'api/v0/tags/' + id;
-    var url = urlBase;
+    var url = req.href();
 
     // Business logic
     Tag.findOne({
@@ -136,8 +140,7 @@ var TagController = {
     result._meta = {};
 
     // Links handling
-    var urlBase = 'api/v0/tags/' + visibility;
-    var url = urlBase;
+    var url = req.href();
 
     // Business logic
     Tag.count({

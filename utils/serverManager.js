@@ -30,17 +30,18 @@ var ServerManager = {
    */
   _setAcceptHeader: function(server) {
     server.pre(function setAcceptHeader(req, res, next) {
-      var acceptJson = (req.url.indexOf('.json') !== -1);
+      var acceptJson = /(\.json\?)|(\.json$)/;
       req.url = server.url + req.url;
-      if(acceptJson) {
+
+      if(acceptJson.test(req.url)) {
         // Force accept header to JSON
         req.headers.accept = 'application/json';
         // Clean the url
-        req.url = req.url.replace(/\.json$/, '');
-
+        req.url = req.url.replace(/\.json/, '');
         // Keep the info that .json was in the url
         req.urlFormatRequest = '.json';
       }
+
       return next();
     });
   },

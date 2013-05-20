@@ -55,14 +55,12 @@ describe('Entry point testing', function() {
 
     it('should have correct properties', function(done) {
       client.get('/', function(err, req, res, data) {
-        data.versions.should.be.an.instanceOf(Array);
+        data._links.versions.should.be.an.instanceOf(Array);
 
-        var firstVersion = data.versions[0];
+        var firstVersion = data._links.versions[0];
         firstVersion.should.be.a('object');
+        firstVersion.should.have.property('href');
         firstVersion.should.have.property('name');
-        firstVersion.should.have.property('releaseDate');
-        firstVersion.should.have.property('_links');
-        firstVersion.should.have.property('_embedded');
         done();
       });
     });
@@ -99,6 +97,11 @@ describe('Entry point testing', function() {
       client.get(VERSION, function(err, req, res, data) {
         data._links.should.be.a('object').and.have.property('self');
         data._links.should.have.property('root');
+        data._links.should.have.property('routes');
+        var firstRoute = data._links.routes[0];
+        firstRoute.should.be.a('object');
+        firstRoute.should.have.property('href');
+        firstRoute.should.have.property('name');
         done();
       });
     });
@@ -108,13 +111,6 @@ describe('Entry point testing', function() {
       client.get(VERSION, function(err, req, res, data) {
         data.name.should.be.a('string');
         data.releaseDate.should.be.a('string');
-        done();
-      });
-    });
-
-    it('should have correct _embedded section', function(done) {
-      client.get(VERSION, function(err, req, res, data) {
-        data._embedded.should.be.a('object').and.have.property('routes');
         done();
       });
     });
@@ -146,13 +142,6 @@ describe('Entry point testing', function() {
         done();
       });
     });
-
-    it('should set a correct _links section', function(done) {
-      client.get('/v999', function(err, req, res, data) {
-        data._links.should.be.a('object').and.have.property('self');
-        done();
-      });
-    });
   });
 
   /**
@@ -177,13 +166,6 @@ describe('Entry point testing', function() {
         _meta.userMessage.should.be.a('string');
         _meta.errorCode.should.equal(404);
         _meta.moreInfo.should.be.a('string');
-        done();
-      });
-    });
-
-    it('should set a correct _links section', function(done) {
-      client.get('/404', function(err, req, res, data) {
-        data._links.should.be.a('object').and.have.property('self');
         done();
       });
     });
