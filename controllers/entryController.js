@@ -24,17 +24,14 @@ var EntryController = {
     result._meta = new responseMeta.ok();
     result._links = responseLinks.setDefault(req);
 
-    // Made a copy of the array (to avoid a reference)
+    // Make a copy of the array (to avoid a reference)
     var versions = versionManager.versions.slice(0);
     result._links.versions = versions;
 
-    // Find the current version and add _embedded section to it (with routes)
-    _.each(result._links.versions, function findCurrentVersion(version, index) {
-      // Make a copy of the object (to avoid a reference)
-      version = responseLinks.generateLink('/' + version.name, req);
-      version = _.extend(version, result._links.versions[index]);
-
-      result._links.versions[index] = version;
+    // Generate links for versions
+    _.each(result._links.versions, function getVersion(version, index) {
+      var versionLinks = responseLinks.generateLink('/' + version.name, req);
+      result._links.versions[index] = _.extend(versionLinks, version);
     });
 
     result._meta.totalCount = result._links.versions.length;
@@ -50,13 +47,15 @@ var EntryController = {
    */
   version: function(req, res, next) {
     var versionParam = req.params.version || versionManager.currentVersion;
-    var result = {};
+    var result    = {};
+    result._meta  = {};
+    result._links = {};
 
     // Try to find the requested version in the supported version
     _.each(versionManager.versions,
       function findCurrentVersion(version, index) {
         if(version.name === versionParam) {
-          result = _.extend({}, versionManager.versions[index]);
+          result = _.extend(result, versionManager.versions[index]);
         }
       }
     );

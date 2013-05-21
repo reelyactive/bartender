@@ -111,6 +111,19 @@ var AskController = {
         return next();
       }
     );
+  },
+
+  /**
+   * Find how is at a Tag or a Point of Interest
+   * @param  {[type]}   req  request
+   * @param  {[type]}   res  response
+   * @param  {Function} next callback
+   */
+  howIs: function(req, res, next) {
+    var result = {};
+    result._meta = new responseMeta.notImplemented('/howIs is not implemented yet.');
+    res.json(result._meta.statusCode, result);
+    return next();
   }
 };
 

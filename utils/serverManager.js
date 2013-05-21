@@ -14,6 +14,7 @@ var ServerManager = {
    */
   configure: function(server, CONF) {
     server.acceptable = ['application/json'];
+    server.pre(restify.pre.sanitizePath());
     server.use(acceptParser(server.acceptable));
     server.use(restify.queryParser());
     server.use(restify.bodyParser());

@@ -1,9 +1,11 @@
-var Tag = require('mongoose').model('Tag');
+var _                   = require('underscore');
+var Tag                 = require('mongoose').model('Tag');
 var responseBoilerplate = require('../utils/responseBoilerplate');
-var responseMeta = responseBoilerplate.ResponseMeta;
-var responseLinks = responseBoilerplate.ResponseLinks;
-var restify = require('restify');
-var paginator = require('../utils/paginator');
+var responseMeta        = responseBoilerplate.ResponseMeta;
+var responseLinks       = responseBoilerplate.ResponseLinks;
+var restify             = require('restify');
+var paginator           = require('../utils/paginator');
+var versionManager      = require('../versionManager');
 
 /**
  * TagController
@@ -16,27 +18,44 @@ var TagController = {
    */
   findTags: function(req, res, next) {
     // Get params
-    var params = req.params;
-    var offset = params.offset;
-    var limit = params.limit;
+    var params     = req.params;
+    var offset     = params.offset;
+    var limit      = params.limit;
+    var visibility = params.visibility;
     var totalCount = 0;
 
     // Instantiate result
-    var result = {};
-    result._meta = {};
-    result._links = {};
+    var result     = {};
+    result._meta   = {};
+    result._links  = {};
 
-    // Business logic
-    Tag.count({type: 'Tag'}, function tagsCount(err, count) {
+    var currentVersion = '/' + versionManager.currentVersion;
+
+    /**
+     * Business logic
+     */
+
+    // Set conditions for the request
+    var conditions = {
+      type: 'Tag'
+    };
+    if(visibility) {
+      conditions.visibility = {
+        value: visibility
+      }
+    }
+
+    // First, count the total number of tags we can access
+    Tag.count(conditions, function tagCount(err, count) {
       if(err) {
         return next(err);
       }
       totalCount = count;
 
+      // Then we find the tags based on offset/limit
       Tag
-        .find({
-          type: 'Tag'
-        })
+        .find(conditions,
+              'uuid mac')
         .skip(offset)
         .limit(limit)
         .exec(function tagsFound(err, tags) {
@@ -49,22 +68,39 @@ var TagController = {
             limit: limit,
             offset: offset
           };
-
           result._meta = new responseMeta.ok('ok', options);
           result._meta.totalCount = totalCount;
 
           result.tags = tags;
 
+          // Contain the list of each macs we've got
+          var tagsMacs = [];
+
+          _.each(result.tags, function addHrefToTag(tag, index) {
+            // Transform the mongoose model instance to a plain object
+            tag = tag.toObject();
+            // Remove _id as we don't want it in the answer
+            delete tag._id;
+
+            tagsMacs.push(tag.mac);
+
+            var tagUrl = responseLinks.generateLink(currentVersion + '/tags/' + tag.mac, req);
+            tag = _.extend(tagUrl, tag);
+            result.tags[index] = tag;
+          });
+
           // Links handling
           result._links = paginator.createLinks(req.href(), offset, limit, totalCount);
-          result._links.tagsVisible      = '';
-          result._links.tagsInvisible    = '';
-          result._links.whereis          = '';
-          result._links.whereisVisible   = '';
-          result._links.whereisInvisible = '';
-          result._links.howis            = '';
-          result._links.howisVisible     = '';
-          result._links.howisInvisible   = '';
+          if(visibility != 'visible') {
+            result._links.visible = responseLinks.generateLink(currentVersion + '/tags?visibility=visible', req);
+          }
+          if (visibility !== 'invisible') {
+            result._links.invisible = responseLinks.generateLink(currentVersion + '/tags?visibility=invisible', req);
+          }
+          if(totalCount > 0) {
+            result._links.whereAreTags = responseLinks.generateLink(currentVersion + '/ask/whereis?macs=' + tagsMacs, req);
+            result._links.howAreTags   = responseLinks.generateLink(currentVersion + '/ask/howis?macs=' + tagsMacs, req);
+          }
 
           res.json(result);
           return next();
@@ -109,79 +145,6 @@ var TagController = {
         return next();
       }
     );
-  },
-
-  /**
-   * Find visible tags
-   */
-  findTagsVisible: function(req, res, next) {
-    TagController.findTagsByVisibility('visible', req, res, next);
-  },
-
-  /**
-   * Find invisible tags
-   */
-  findTagsInvisible: function(req, res, next) {
-    TagController.findTagsByVisibility('invisible', req, res, next);
-  },
-
-  /**
-   * Common function for finding tag by their visibility
-   */
-  findTagsByVisibility: function(visibility, req, res, next) {
-    // Get params
-    var params = req.params;
-    var offset = params.offset;
-    var limit = params.limit;
-    var totalCount = 0;
-
-    // Instantiate result
-    var result = {};
-    result._meta = {};
-
-    // Links handling
-    var url = req.href();
-
-    // Business logic
-    Tag.count({
-      type: 'Tag',
-      'visibility.value': visibility
-    }, function tagsCount(err, count) {
-      if(err) {
-        return next(err);
-      }
-      totalCount = count;
-      Tag
-        .where('type').equals('Tag')
-        .where('visibility.value').equals(visibility)
-        .skip(offset)
-        .limit(limit)
-        .exec(function tagsFoundDB(err, tags) {
-          if(err) {
-            return next(err);
-          }
-          if(!tags) {
-            result = {};
-            var message = 'No tags found for visibility: ' + visibility;
-            result._meta = new responseMeta.notFound(message);
-            return res.json(result._meta.statusCode, result);
-          }
-          result.tags = tags;
-          // Metadata handling
-          var options = {
-            limit: limit,
-            offset: offset
-          };
-          result._meta = new responseMeta.ok('ok', options);
-
-          result._meta.totalCount = totalCount;
-          result._links = paginator.createLinks(url, offset, limit, totalCount);
-
-          res.json(result);
-          return next();
-        }
-      );
-    });
   }
 };
 
