@@ -1,4 +1,4 @@
-var should = require('should');
+var should    = require('should');
 var validator = require('../utils/validator');
 var paginator = require('../utils/paginator');
 

@@ -1,15 +1,13 @@
-var _ = require('underscore');
+var _            = require('underscore');
+var responseMeta = require('./responseboilerplate').responseMeta;
+var restify      = require('restify');
 
 /**
  * Validator is here for validation purposes
  * For example he check the presence of a required paramater
  * on a request.
  */
-var responseMeta = require('./responseboilerplate').ResponseMeta;
-
-var restify = require('restify');
-
-var Validator = {
+var validator = {
   /**
    * Check if the param id is present in the request
    * @param  {Object}   req   request
@@ -17,7 +15,7 @@ var Validator = {
    * @param  {Function} next  callback
    */
   requireId: function(req, res, next) {
-    Validator.requireParam('id', req, res, next);
+    validator.requireParam('id', req, res, next);
   },
 
   /**
@@ -27,7 +25,7 @@ var Validator = {
    * @param  {Function} next  callback
    */
   requireMacs: function(req, res, next) {
-    Validator.requireParam('macs', req, res, next);
+    validator.requireParam('macs', req, res, next);
   },
 
   /**
@@ -37,7 +35,7 @@ var Validator = {
    * @param  {Function} next  callback
    */
   requireUuids: function(req, res, next) {
-    Validator.requireParam('uuids', req, res, next);
+    validator.requireParam('uuids', req, res, next);
   },
 
   /**
@@ -47,7 +45,7 @@ var Validator = {
    * @param  {Function} next  callback
    */
   requireTagUuid: function(req, res, next) {
-    Validator.requireParam('tagUuid', req, res, next);
+    validator.requireParam('tagUuid', req, res, next);
   },
 
   /**
@@ -59,7 +57,7 @@ var Validator = {
    */
   requireParam: function(paramName, req, res, next) {
     if(!req.params[paramName]) {
-      req.error = new responseMeta.badRequest('Missing required parameter : ' + paramName);
+      req.error = new responseMeta.BadRequest('Missing required parameter : ' + paramName);
     }
     return next();
   },
@@ -80,7 +78,7 @@ var Validator = {
         // and separated by hyphens or colons
         var isValid = /(([\w]{2}[-|:]){7}[\w]{2})/;
         if(!req.error && !isValid.test(mac)) {
-          req.error = new responseMeta.badRequest('macs parameters has a bad formatting.');
+          req.error = new responseMeta.BadRequest('macs parameters has a bad formatting.');
           return next();
         }
 
@@ -107,7 +105,7 @@ var Validator = {
       _.each(uuids, function validateUuid(uuid){
         var isValid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
         if(!req.error && !isValid.test(uuid)) {
-          req.error = new responseMeta.badRequest('uuids parameters has a bad formatting.');
+          req.error = new responseMeta.BadRequest('uuids parameters has a bad formatting.');
           return next();
         }
 
@@ -121,4 +119,4 @@ var Validator = {
   }
 };
 
-module.exports = Validator;
+module.exports = validator;

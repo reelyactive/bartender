@@ -6,11 +6,12 @@
  * @type {[Object}
  */
 
-var validator = require('../utils/validator');
-var paginator = require('../utils/paginator');
+var validator   = require('../utils/validator');
+var paginator   = require('../utils/paginator');
 var stepManager = require('../utils/stepmanager');
 
-var Common = {
+var commonPolicies = {
+
   /**
    * Policy checking for the presence of params.id
    * @param  {[type]}   req  request
@@ -78,4 +79,4 @@ var Common = {
   }
 };
 
-module.exports = Common;
+module.exports = commonPolicies;

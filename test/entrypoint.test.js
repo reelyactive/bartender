@@ -1,5 +1,5 @@
-var should = require('should');
-var CONF = require('../conf').CONF;
+var should  = require('should');
+var conf    = require('../conf').conf;
 var restify = require('restify');
 
 /**
@@ -10,10 +10,10 @@ var restify = require('restify');
 // Launch a restify client, to connect to our server.
 var client = restify.createJsonClient({
   version: '*',
-  url: CONF.HOST + ':' + CONF.PORT
+  url: conf.host + ':' + conf.port
 });
 
-var VERSION = '/v' + parseInt(CONF.VERSION, 10);
+var version = '/v' + parseInt(conf.version, 10);
 
 describe('Entry point testing', function() {
 
@@ -66,7 +66,7 @@ describe('Entry point testing', function() {
    */
   describe('/v0 should send a valid response', function() {
     it('should not set an error and return a 200', function(done) {
-      client.get(VERSION, function(err, req, res, data) {
+      client.get(version, function(err, req, res, data) {
         should.not.exist(err);
         res.should.be.json;
         res.should.have.status(200);
@@ -75,7 +75,7 @@ describe('Entry point testing', function() {
     });
 
     it('should set a correct _meta section', function(done) {
-      client.get(VERSION, function(err, req, res, data) {
+      client.get(version, function(err, req, res, data) {
         var _meta = data._meta;
         _meta.message.should.equal('ok');
         _meta.statusCode.should.equal(200);
@@ -89,7 +89,7 @@ describe('Entry point testing', function() {
     });
 
     it('should set a correct _links section', function(done) {
-      client.get(VERSION, function(err, req, res, data) {
+      client.get(version, function(err, req, res, data) {
         data._links.should.be.a('object').and.have.property('self');
         data._links.should.have.property('root');
         data._links.should.have.property('routes');
@@ -103,7 +103,7 @@ describe('Entry point testing', function() {
 
 
     it('should have correct properties', function(done) {
-      client.get(VERSION, function(err, req, res, data) {
+      client.get(version, function(err, req, res, data) {
         data.name.should.be.a('string');
         data.releaseDate.should.be.a('string');
         done();

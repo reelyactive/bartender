@@ -1,18 +1,17 @@
-var restify = require('restify');
-var stepManager = require('./stepmanager');
-var responseMeta = require('./responseboilerplate').ResponseMeta;
+var restify      = require('restify');
+var stepManager  = require('./stepmanager');
+var responseMeta = require('./responseboilerplate').responseMeta;
 var acceptParser = require('./acceptparser');
 
 /**
  * Usefull methods for the server to work.
  */
-
-var ServerManager = {
+var serverManager = {
   /**
    * Configure the server with some default options
    * @param  {Object}   server the server himself
    */
-  configure: function(server, CONF) {
+  configure: function(server, Conf) {
     server.acceptable = ['application/json'];
     server.pre(restify.pre.sanitizePath());
     server.use(acceptParser(server.acceptable));
@@ -20,8 +19,8 @@ var ServerManager = {
     server.use(restify.bodyParser());
     server.use(stepManager.setSteps);
 
-    ServerManager._setAcceptHeader(server);
-    ServerManager._handleDefaultEvents(server, CONF);
+    serverManager._setAcceptHeader(server);
+    serverManager._handleDefaultEvents(server, Conf);
   },
 
   /**
@@ -52,13 +51,13 @@ var ServerManager = {
    * Override default error handlers, so we can return our
    * common responseMeta
    * @param  {Object}   server  the server himself
-   * @param  {Object}   CONF    the server configuration
+   * @param  {Object}   Conf    the server configuration
    */
-  _handleDefaultEvents: function(server, CONF) {
+  _handleDefaultEvents: function(server, conf) {
     // On error (example : Address in use)
     server.on('error', function serverError(err) {
       if(err && err.code === 'EADDRINUSE') {
-        console.log('- The port ' + CONF.PORT + ' is already in use.');
+        console.log('- The port ' + conf.port + ' is already in use.');
       }
       console.log(err);
       process.exit();
@@ -67,7 +66,7 @@ var ServerManager = {
     // 404 - Not found
     server.on('NotFound', function notFound(req, res, next) {
       var result = {};
-      result._meta = new responseMeta.notFound('Ressource not found');
+      result._meta = new responseMeta.NotFound('Ressource not found');
       res.json(result._meta.statusCode, result);
       return next();
     });
@@ -75,10 +74,10 @@ var ServerManager = {
     // 500 - Internal error
     server.on('uncaughtException', function after(req, res, route, err) {
       var result = {};
-      result._meta = new responseMeta.internalServerError(err.message);
+      result._meta = new responseMeta.InternalServerError(err.message);
       res.json(result._meta.statusCode, result);
     });
   }
 };
 
-module.exports = ServerManager;
+module.exports = serverManager;

@@ -1,5 +1,5 @@
-var Tag = require('mongoose').model('Tag');
-var Reelceiver = require('mongoose').model('Reelceiver');
+var Tag         = require('../models/tag');
+var Reelceiver  = require('../models/reelceiver');
 
 /**
  * MgmtController
@@ -8,7 +8,8 @@ var Reelceiver = require('mongoose').model('Reelceiver');
  * It used to drop the database and create fake data.
  * @type {Object}
  */
-var MgmtController = {
+var mgmtController = {
+
   /**
    * Drop (flush) the device collection
    */
@@ -143,4 +144,4 @@ var MgmtController = {
   }
 };
 
-module.exports = MgmtController;
+module.exports = mgmtController;

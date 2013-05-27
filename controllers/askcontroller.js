@@ -1,15 +1,16 @@
-var Tag = require('mongoose').model('Tag');
-var _ = require('underscore');
+var Tag                 = require('../models/tag');
+var _                   = require('underscore');
 var responseBoilerplate = require('../utils/responseboilerplate');
-var responseMeta = responseBoilerplate.ResponseMeta;
-var responseLinks = responseBoilerplate.ResponseLinks;
-var paginator = require('../utils/paginator');
+var responseMeta        = responseBoilerplate.responseMeta;
+var responseLinks       = responseBoilerplate.responseLinks;
+var paginator           = require('../utils/paginator');
 
 /**
  * AskController
  * @type {Object}
  */
-var AskController = {
+var askController = {
+
   /**
    * Specify which actions are available for this ressource
    * @param  {[type]}   req  request
@@ -32,7 +33,7 @@ var AskController = {
     // ];
     // res.json(returnObject);
     var result = {};
-    result._meta = new responseMeta.notImplemented('/ask is not yet implemented');
+    result._meta = new responseMeta.NotImplemented('/ask is not yet implemented');
     res.json(result._meta.statusCode, result);
     return next();
   },
@@ -45,7 +46,7 @@ var AskController = {
    */
   whatAt: function(req, res, next) {
     var result = {};
-    result._meta = new responseMeta.notImplemented('/whatAt is not implemented yet.');
+    result._meta = new responseMeta.NotImplemented('/whatAt is not implemented yet.');
     res.json(result._meta.statusCode, result);
     return next();
   },
@@ -105,7 +106,7 @@ var AskController = {
           offset: offset,
           limit: limit
         };
-        returnObject._meta = new responseMeta.ok('ok', options);
+        returnObject._meta = new responseMeta.Ok('ok', options);
 
         res.json(returnObject);
         return next();
@@ -121,10 +122,10 @@ var AskController = {
    */
   howIs: function(req, res, next) {
     var result = {};
-    result._meta = new responseMeta.notImplemented('/howIs is not implemented yet.');
+    result._meta = new responseMeta.NotImplemented('/howIs is not implemented yet.');
     res.json(result._meta.statusCode, result);
     return next();
   }
 };
 
-module.exports = AskController;
+module.exports = askController;

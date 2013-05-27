@@ -1,8 +1,6 @@
-var mime = require('mime');
-
-var responseBoilerplate = require('../utils/responseboilerplate');
-var NotAcceptableError = responseBoilerplate.ResponseMeta.notAcceptable;
-var responseLinks = responseBoilerplate.ResponseLinks;
+var mime               = require('mime');
+var responseMeta       = require('../utils/responseboilerplate').responseMeta;
+var NotAcceptableError = responseMeta.NotAcceptable;
 
 /**
  * Returns a plugin that will check if the client's Accept header can be handled

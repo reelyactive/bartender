@@ -1,12 +1,12 @@
 var mongoose = require('mongoose');
 
 /**
- * Reelceiver model
+ * Reelceiver schema
  * This is the schema representation of a reelceiver
  * in MongoDB.
  * @type {Schema}
  */
-var ReelceiverSchema = new mongoose.Schema({
+var reelceiverSchema = new mongoose.Schema({
   uuid: String,
   mac: String,
   vendor: String,
@@ -64,4 +64,6 @@ var ReelceiverSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Reelceiver', ReelceiverSchema, 'device');
+var Reelceiver = mongoose.model('Reelceiver', reelceiverSchema, 'device');
+
+module.exports = Reelceiver;

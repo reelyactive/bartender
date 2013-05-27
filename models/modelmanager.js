@@ -1,12 +1,12 @@
 var fs = require('fs');
-var _ = require('underscore');
+var _  = require('underscore');
 
 /**
  * ModelsManager
  * His goal is to load every models we defined
  * @type {Object}
  */
-var ModelManager = {
+var modelManager = {
 
   /**
    * Require all our models
@@ -23,4 +23,4 @@ var ModelManager = {
   }
 };
 
-module.exports = ModelManager;
+module.exports = modelManager;

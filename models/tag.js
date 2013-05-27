@@ -1,12 +1,12 @@
 var mongoose = require('mongoose');
 
 /**
- * Tag model
+ * Tag schema
  * This is the schema representation of a tag
  * in MongoDB.
  * @type {Schema}
  */
-var TagSchema = new mongoose.Schema({
+var tagSchema = new mongoose.Schema({
   uuid: String,
   mac: String,
   vendor: String,
@@ -82,4 +82,8 @@ var TagSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Tag', TagSchema, 'device');
+// Compile our tagSchema into a tagModel
+// A model is a class with which we construct documents.
+var Tag = mongoose.model('Tag', tagSchema, 'device');
+
+module.exports = Tag;

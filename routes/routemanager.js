@@ -1,12 +1,12 @@
 var fs = require('fs');
-var _ = require('underscore');
+var _  = require('underscore');
 
 /**
  * His goal is to init the routes of our API
  * He can also return a list of the available topRoutes
  * @type {Object}
  */
-var RouteManager = {
+var routeManager = {
 
   /**
    * Main router
@@ -16,7 +16,7 @@ var RouteManager = {
    * @param  {String} version Current version of the API
    */
   initRoutes: function(server, version) {
-    var topRoutes = RouteManager.listTopRoutes();
+    var topRoutes = routeManager.listTopRoutes();
 
     // For each topRoutes, require the corresponding file
     for(var i = 0, l = topRoutes.length; i < l; i++) {
@@ -42,7 +42,7 @@ var RouteManager = {
 
     // Format and create absolute links if req is set
     if(req) {
-      return RouteManager.formatTopRoutes(topRoutes, req, version);
+      return routeManager.formatTopRoutes(topRoutes, req, version);
     } else {
       return topRoutes;
     }
@@ -80,7 +80,7 @@ var RouteManager = {
       // Generate the absolute path
       if(req) {
         var responseBoilerplate = require('../utils/responseboilerplate');
-        var responseLinks = responseBoilerplate.ResponseLinks;
+        var responseLinks = responseBoilerplate.responseLinks;
         route = responseLinks.toAbsolute(route, req);
       }
 
@@ -93,4 +93,4 @@ var RouteManager = {
   }
 };
 
-module.exports = RouteManager;
+module.exports = routeManager;

@@ -2,7 +2,8 @@
  * Paginator is an helper class to handle all paginations functions
  * @type {Object}
  */
-var Paginator = {
+var paginator = {
+
   /**
    * Create links section for the response object based on the url,
    * the offset, the limit and the total count of objects.
@@ -13,7 +14,6 @@ var Paginator = {
    * @param  {Int} totalCount   totalCount of ressources
    * @return {Object}           links object
    */
-
   createLinks: function(url, offset, limit, totalCount) {
     var isQuestioMarkPresent = /\?/.test(url);
     var firstSymbol = isQuestioMarkPresent ? '&' : '?';
@@ -83,4 +83,4 @@ var Paginator = {
   }
 };
 
-module.exports = Paginator;
+module.exports = paginator;

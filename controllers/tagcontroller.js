@@ -1,8 +1,8 @@
 var _                   = require('underscore');
-var Tag                 = require('mongoose').model('Tag');
+var Tag                 = require('../models/tag');
 var responseBoilerplate = require('../utils/responseboilerplate');
-var responseMeta        = responseBoilerplate.ResponseMeta;
-var responseLinks       = responseBoilerplate.ResponseLinks;
+var responseMeta        = responseBoilerplate.responseMeta;
+var responseLinks       = responseBoilerplate.responseLinks;
 var restify             = require('restify');
 var paginator           = require('../utils/paginator');
 var versionManager      = require('../versionmanager');
@@ -12,7 +12,8 @@ var versionManager      = require('../versionmanager');
  * Controller for the ressource Tag
  * @type {Object}
  */
-var TagController = {
+var tagController = {
+
   /**
    * Find all tags
    */
@@ -68,7 +69,7 @@ var TagController = {
             limit: limit,
             offset: offset
           };
-          result._meta = new responseMeta.ok('ok', options);
+          result._meta = new responseMeta.Ok('ok', options);
           result._meta.totalCount = totalCount;
 
           result.tags = tags;
@@ -133,13 +134,13 @@ var TagController = {
         if(!tag) {
           result = {};
           var message = 'No tag  with id ' + id + ' found';
-          result._meta = new responseMeta.notFound(message);
+          result._meta = new responseMeta.NotFound(message);
           return res.json(result._meta.statusCode, result);
         }
         result.tag = tag;
 
         // Metadata handling
-        result._meta = new responseMeta.ok();
+        result._meta = new responseMeta.Ok();
 
         res.json(result);
         return next();
@@ -148,4 +149,4 @@ var TagController = {
   }
 };
 
-module.exports = TagController;
+module.exports = tagController;

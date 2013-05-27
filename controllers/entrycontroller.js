@@ -1,15 +1,15 @@
-var _ = require('underscore');
+var _                   = require('underscore');
 var responseBoilerplate = require('../utils/responseboilerplate');
-var responseMeta = responseBoilerplate.ResponseMeta;
-var responseLinks = responseBoilerplate.ResponseLinks;
-var routeManager = require('../routes/routemanager');
-var versionManager = require('../versionmanager');
+var responseMeta        = responseBoilerplate.responseMeta;
+var responseLinks       = responseBoilerplate.responseLinks;
+var routeManager        = require('../routes/routemanager');
+var versionManager      = require('../versionmanager');
 
 /**
  * EntryController
  * @type {Object}
  */
-var EntryController = {
+var entryController = {
 
   /**
    * Requests made on the / of our API
@@ -21,7 +21,7 @@ var EntryController = {
     result._meta = {};
     result._links = {};
 
-    result._meta = new responseMeta.ok();
+    result._meta = new responseMeta.Ok();
     result._links = responseLinks.setDefault(req);
 
     // Make a copy of the array (to avoid a reference)
@@ -64,9 +64,9 @@ var EntryController = {
     if(!result.name) {
       delete result._links;
       var message = 'The version you request, doesn\'t exist.';
-      result._meta = new responseMeta.notFound(message);
+      result._meta = new responseMeta.NotFound(message);
     } else {
-      result._meta = new responseMeta.ok();
+      result._meta = new responseMeta.Ok();
       result._links = responseLinks.setDefault(req);
       result._links.root = responseLinks.generateLink('/', req);
 
@@ -88,10 +88,10 @@ var EntryController = {
     var result = {};
     var message = 'Why did you request the 404 ? ' +
                   'Now, you\'re lost.. And so am I.';
-    result._meta = new responseMeta.notFound(message);
+    result._meta = new responseMeta.NotFound(message);
     res.send(result._meta.statusCode, result);
     return next();
   }
 };
 
-module.exports = EntryController;
+module.exports = entryController;

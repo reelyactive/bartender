@@ -1,15 +1,16 @@
+var _                    = require('underscore');
+var configurationManager = require('../conf');
+
 /**
  * ConfigurationValidator is here to validate the configuration file
  * @type {Object}
  */
-var _ = require('underscore');
-var configurationManager = require('../conf');
+var configurationValidator = {
 
-var ConfigurationValidator = {
-  CONF: configurationManager.CONF,
-  DB_CONF: configurationManager.DB_CONF,
+  conf: configurationManager.conf,
+  dbConf: configurationManager.dbConf,
   err: '',
-  // currentConf allow us to know if we're on CONF or DB_CONF
+  // currentConf allow us to know if we're on Conf or DbConf
   currentConf: '',
 
   /**
@@ -19,54 +20,54 @@ var ConfigurationValidator = {
   validate: function(next) {
 
     console.log('\n## Validation of the configuration file');
-    ConfigurationValidator.err = '';
+    configurationValidator.err = '';
 
     /**
-     * Extend default CONFs
+     * Extend default Confs
      */
 
-    // Default CONF settings
+    // Default Conf settings
     var defaults = {
-      APP_NAME: 'Bartender',
-      HOST: 'localhost',
-      PORT: 7777,
-      VERSION: '1.0.0'
+      appName: 'Bartender',
+      host: 'localhost',
+      port: 7777,
+      version: '1.0.0'
     };
-    ConfigurationValidator.CONF = _.extend(defaults, ConfigurationValidator.CONF);
+    configurationValidator.conf = _.extend(defaults, configurationValidator.conf);
 
-    // Defaults DB_CONF settings
+    // Defaults DbConf settings
     defaults = {
-      HOST: 'localhost',
-      PORT: 27017,
-      DATABASE: 'reelyActiveDB',
-      OPTIONS: null
+      host: 'localhost',
+      port: 27017,
+      database: 'reelyActiveDB',
+      options: null
     };
-    ConfigurationValidator.DB_CONF = _.extend(defaults, ConfigurationValidator.DB_CONF);
+    configurationValidator.dbConf = _.extend(defaults, configurationValidator.dbConf);
 
     /**
      * Validate each configuration value
      */
     // Define simple alias
-    var validateValue = ConfigurationValidator.validateValue;
-    var validatePort = ConfigurationValidator.validatePort;
+    var validateValue = configurationValidator.validateValue;
+    var validatePort = configurationValidator.validatePort;
 
-    ConfigurationValidator.currentConf = '\n- CONFIGURATION.';
-    var conf = ConfigurationValidator.CONF;
+    configurationValidator.currentConf = '\n- Configuration.';
+    var conf = configurationValidator.conf;
 
-    validateValue(conf.APP_NAME, 'APP_NAME');
-    validateValue(conf.HOST, 'HOST');
-    validatePort(conf.PORT);
-    validateValue(conf.VERSION, 'VERSION');
+    validateValue(conf.appName, 'appName');
+    validateValue(conf.host, 'host');
+    validatePort(conf.port);
+    validateValue(conf.version, 'version');
 
-    ConfigurationValidator.currentConf = '\n- DB_CONFIGURATION.';
-    var dbconf = ConfigurationValidator.DB_CONF;
+    configurationValidator.currentConf = '\n- DbConfiguration.';
+    var dbconf = configurationValidator.dbConf;
 
-    validateValue(dbconf.HOST, 'HOST');
-    validatePort(dbconf.PORT);
-    validateValue(dbconf.DATABASE, 'DATABASE');
-    validateValue(dbconf.OPTIONS, 'OPTIONS', 'object');
+    validateValue(dbconf.host, 'host');
+    validatePort(dbconf.port);
+    validateValue(dbconf.database, 'database');
+    validateValue(dbconf.options, 'options', 'object');
 
-    var err = ConfigurationValidator.err;
+    var err = configurationValidator.err;
 
     if(err) {
       console.log('- Configuration file is not valid.');
@@ -77,8 +78,8 @@ var ConfigurationValidator = {
     console.log('- Configuration file is valid.');
 
     return next(null, {
-      CONF: ConfigurationValidator.CONF,
-      DB_CONF: ConfigurationValidator.DB_CONF
+      conf: configurationValidator.conf,
+      dbConf: configurationValidator.dbConf
     });
   },
 
@@ -90,9 +91,9 @@ var ConfigurationValidator = {
    */
   validateValue: function(value, valueName, type) {
     type = type || 'string';
-    var currentConf = ConfigurationValidator.currentConf;
+    var currentConf = configurationValidator.currentConf;
     if(value && (typeof value !== type)) {
-      ConfigurationValidator.err += currentConf + valueName + ' should be a ' + type;
+      configurationValidator.err += currentConf + valueName + ' should be a ' + type;
     }
   },
 
@@ -102,11 +103,11 @@ var ConfigurationValidator = {
    * @param  {[type]} value we want to validate
    */
   validatePort: function(value) {
-    var currentConf = ConfigurationValidator.currentConf;
+    var currentConf = configurationValidator.currentConf;
     if(value && (typeof value !== 'number' && typeof value !== 'string')) {
-      ConfigurationValidator.err += currentConf + 'PORT should be a number or a string';
+      configurationValidator.err += currentConf + 'PORT should be a number or a string';
     }
   }
 };
 
-module.exports = ConfigurationValidator;
+module.exports = configurationValidator;

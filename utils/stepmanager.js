@@ -8,7 +8,7 @@
  *
  * @type {Object}
  */
-var StepManager = {
+var stepManager = {
   /**
    * Set steps in request object that is used for
    * stacking actions that need to be done before
@@ -44,11 +44,11 @@ var StepManager = {
     var fn = req.steps.shift();
     if(fn) {
       return fn(req, res, function() {
-        StepManager.runSteps(req, res, next);
+        stepManager.runSteps(req, res, next);
       });
     }
     next();
   }
 };
 
-module.exports = StepManager;
+module.exports = stepManager;

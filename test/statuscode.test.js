@@ -1,4 +1,4 @@
-var CONF = require('../conf').CONF;
+var conf    = require('../conf').conf;
 var restify = require('restify');
 
 /**
@@ -10,10 +10,10 @@ var restify = require('restify');
 // Launch a restify client, to connect to our server.
 var client = restify.createJsonClient({
   version: '*',
-  url: CONF.HOST + ':' + CONF.PORT
+  url: conf.host + ':' + conf.port
 });
 
-var VERSION = '/v' + parseInt(CONF.VERSION, 10) + '/';
+var version = '/v' + parseInt(conf.version, 10) + '/';
 
 describe('Status code testing', function() {
 
@@ -21,7 +21,7 @@ describe('Status code testing', function() {
 
   // Routes that should return a 200 status code
   // 200 - ok
-  routes[200] = ['tags', 'tags/00-10-00-57',
+  routes[200] = [
     'tags', 'tags/00-10-00-57',
     'ask/whereis?macs=00-10-00-57',
     'ask/whereis?macs=00-10-00-57,00-10-00-00,00-10-00-23'
@@ -33,8 +33,8 @@ describe('Status code testing', function() {
 
   // Routes that should return a 404 status code
   // 404 - not found
-  routes[404] = [
-    'tags/FF-FF-FF-FF-FF', 'tags/FF-FF-FF-FF-FF'
+  routes[404] = [ 'notexist',
+    'tags/FF-FF-FF-FF-FF'
   ];
 
   // Routes that should return a 501 status code
@@ -89,8 +89,8 @@ describe('Status code testing', function() {
    * @param  {Function} next       Callback for the next url
    */
   function checkStatusCode(route, status, routes, next) {
-    it('should get a ' + status + ' response for ' + VERSION + route, function(done) {
-      client.get(VERSION + route, function(err, req, res, data) {
+    it('should get a ' + status + ' response for ' + version + route, function(done) {
+      client.get(version + route, function(err, req, res, data) {
         var statusNumber = parseInt(status, 10);
         if(res.statusCode !== statusNumber || data._meta.statusCode !== statusNumber) {
           var errMessage = 'Invalid response ' + res.statusCode +

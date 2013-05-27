@@ -1,20 +1,20 @@
 var restify = require('restify');
-var util = require('util');
+var util    = require('util');
 
 /**
  * Response boilerplate for our API
  * Here is stocked all "templates" for our response in order
  * to have  a common and uniform response
  */
-var ResponseBoilerplate = {
+var responseBoilerplate = {
   /**
    * ResponseMeta is usefull for the meta section
    * It also manage all the error handling
    * @type {Object}
    */
-  ResponseMeta: {
+  responseMeta: {
     // 200
-    ok: function(message, options) {
+    Ok: function(message, options) {
       this.message          = message || 'ok';
       this.statusCode       = 200;
       this.developerMessage = 'ok';
@@ -38,11 +38,11 @@ var ResponseBoilerplate = {
      */
 
     // 400
-    badRequest: function(message) {
+    BadRequest: function(message) {
       restify.RestError.call(this, {
         statusCode     : 400,
         message        : message || 'badRequest',
-        constructorOpt : ResponseBoilerplate.ResponseMeta.badRequest
+        constructorOpt : responseBoilerplate.responseMeta.BadRequest
       });
       delete this.body;
       delete this.restCode;
@@ -53,11 +53,11 @@ var ResponseBoilerplate = {
     },
 
     // 404
-    notFound: function(message) {
+    NotFound: function(message) {
       restify.RestError.call(this, {
         statusCode     : 404,
         message        : message || 'notFound',
-        constructorOpt : ResponseBoilerplate.ResponseMeta.notFound
+        constructorOpt : responseBoilerplate.responseMeta.NotFound
       });
       delete this.body;
       delete this.restCode;
@@ -68,11 +68,11 @@ var ResponseBoilerplate = {
     },
 
     // 406
-    notAcceptable: function(message) {
+    NotAcceptable: function(message) {
       restify.RestError.call(this, {
         statusCode     : 406,
         message        : message || 'notAcceptable',
-        constructorOpt : ResponseBoilerplate.ResponseMeta.notAcceptable
+        constructorOpt : responseBoilerplate.responseMeta.NotAcceptable
       });
       delete this.body;
       delete this.restCode;
@@ -83,11 +83,11 @@ var ResponseBoilerplate = {
     },
 
     // 500
-    internalServerError: function(message) {
+    InternalServerError: function(message) {
       restify.RestError.call(this, {
         statusCode     : 500,
         message        : message || 'internalServerError',
-        constructorOpt : ResponseBoilerplate.ResponseMeta.internalServerError
+        constructorOpt : responseBoilerplate.responseMeta.InternalServerError
       });
       delete this.body;
       delete this.restCode;
@@ -98,11 +98,11 @@ var ResponseBoilerplate = {
     },
 
     // 501
-    notImplemented: function(message) {
+    NotImplemented: function(message) {
       restify.RestError.call(this, {
         statusCode     : 501,
         message        : message || 'notImplemented',
-        constructorOpt : ResponseBoilerplate.ResponseMeta.notFound
+        constructorOpt : responseBoilerplate.responseMeta.NotImplemented
       });
       delete this.body;
       delete this.restCode;
@@ -117,7 +117,7 @@ var ResponseBoilerplate = {
    * ResponseLinks is usefull for the links section
    * @type {Object}
    */
-  ResponseLinks: {
+  responseLinks: {
     /**
      * Generate a default link (self)
      * @param  {String} href url to generate
@@ -143,7 +143,7 @@ var ResponseBoilerplate = {
     generateLink: function(url, req) {
       // Create an absolute link
       if(req) {
-        url = ResponseBoilerplate.ResponseLinks.toAbsolute(url, req);
+        url = responseBoilerplate.responseLinks.toAbsolute(url, req);
       } else {
         var format = req.urlFormatRequest || '';
         url = url + format;
@@ -174,12 +174,12 @@ var ResponseBoilerplate = {
 };
 
 // Inherit from restify errors
-for (var key in ResponseBoilerplate.ResponseMeta) {
-  if (ResponseBoilerplate.ResponseMeta.hasOwnProperty(key) &&
+for (var key in responseBoilerplate.responseMeta) {
+  if (responseBoilerplate.responseMeta.hasOwnProperty(key) &&
      (key !== 'ok')) {
-    var obj = ResponseBoilerplate.ResponseMeta[key];
+    var obj = responseBoilerplate.responseMeta[key];
     util.inherits(obj, restify.RestError);
   }
 }
 
-module.exports = ResponseBoilerplate;
+module.exports = responseBoilerplate;

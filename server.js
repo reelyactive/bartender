@@ -33,20 +33,20 @@ var serverManager          = require('./utils/servermanager');
 var databaseManager        = require('./utils/databasemanager');
 var routeManager           = require('./routes/routemanager');
 
-var CONF, DB_CONF;
+var conf, dbConf;
 
 console.log('\n# Initialization');
 
 /**
  * Validate the configuration file to avoid errors
  */
-configurationValidator.validate(function confValidated(err, CONFIGURATION) {
+configurationValidator.validate(function confValidated(err, configuration) {
   if(err) {
     process.exit();
   }
 
-  CONF    = CONFIGURATION.CONF;
-  DB_CONF = CONFIGURATION.DB_CONF;
+  conf    = configuration.conf;
+  dbConf  = configuration.dbConf;
 
   createServer();
 });
@@ -59,15 +59,15 @@ function createServer() {
    * Restify initialization
    */
   var server = restify.createServer({
-    name: CONF.APP_NAME,
-    version: CONF.VERSION
+    name: conf.appName,
+    version: conf.version
   });
-  serverManager.configure(server, CONF);
+  serverManager.configure(server, conf);
 
   /**
    * Database connection
    */
-  databaseManager.connectDatabase(DB_CONF, function databaseConnected(err) {
+  databaseManager.connectDatabase(dbConf, function databaseConnected(err) {
     if(err) {
       console.log(err);
       process.exit();
@@ -76,7 +76,7 @@ function createServer() {
     /**
      * Routes initialization
      */
-    var versionNumber = parseInt(CONF.VERSION, 10);
+    var versionNumber = parseInt(conf.version, 10);
     var version = '/v' + versionNumber;
     routeManager.initRoutes(server, version);
 
@@ -85,7 +85,7 @@ function createServer() {
      */
     console.log('\n## Starting the server');
 
-    server.listen(CONF.PORT, function serverListenning() {
+    server.listen(conf.port, function serverListenning() {
       console.log('-  %s is ready and waiting for your orders at %s', server.name, server.url);
     });
   });

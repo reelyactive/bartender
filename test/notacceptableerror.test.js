@@ -1,5 +1,5 @@
-var should = require('should');
-var CONF = require('../conf').CONF;
+var should  = require('should');
+var conf    = require('../conf').conf;
 var restify = require('restify');
 
 /**
@@ -11,7 +11,7 @@ var restify = require('restify');
 // Launch a restify client, to connect to our server.
 var client = restify.createJsonClient({
   version: '*',
-  url: CONF.HOST + ':' + CONF.PORT
+  url: conf.host + ':' + conf.port
 });
 
 describe('Not acceptable error (406) testing', function() {
@@ -37,6 +37,7 @@ describe('Not acceptable error (406) testing', function() {
 
     client.get(options, function(err, req, res) {
       should.exist(err);
+      err.body._meta.statusCode.should.equal(406);
       next();
     });
   });

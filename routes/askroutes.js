@@ -3,7 +3,7 @@
  */
 
 var askController = require('../controllers/askcontroller');
-var policies = require('../policies/common');
+var policies      = require('../policies/common');
 
 // Combination of multiple policies
 var policiesAsk = [policies.requireMacs, policies.paginate];

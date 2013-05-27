@@ -1,13 +1,13 @@
-var should = require('should');
-var _ = require('underscore');
+var should                 = require('should');
+var _                      = require('underscore');
 var configurationValidator = require('../utils/configurationvalidator');
-var configurationManager = require('../conf');
-var CONF = configurationManager.CONF;
-var DB_CONF = configurationManager.DB_CONF;
+var configurationManager   = require('../conf');
+var conf                   = configurationManager.conf;
+var dbConf                 = configurationManager.dbConf;
 
 /**
  * Tests for configurationValidator
- * Test his methods of validation against multiple CONF files
+ * Test his methods of validation against multiple conf files
  */
 describe('Configuration validator testing', function() {
 
@@ -15,8 +15,8 @@ describe('Configuration validator testing', function() {
   beforeEach(function() {
     // Object.create is used to create a copy and don't change
     // the default object
-    configurationValidator.CONF = _.extend({}, CONF);
-    configurationValidator.DB_CONF = _.extend({}, DB_CONF);
+    configurationValidator.Conf = _.extend({}, conf);
+    configurationValidator.DbConf = _.extend({}, dbConf);
   });
 
   it('should not set an error on a default configuration', function() {
@@ -26,58 +26,58 @@ describe('Configuration validator testing', function() {
   });
 
   it('should set default values on an empty configuration', function() {
-    configurationValidator.CONF = null;
-    configurationValidator.DB_CONF = null;
-    configurationValidator.validate(function confValidated(err, CONFIGURATION) {
+    configurationValidator.conf = null;
+    configurationValidator.dbConf = null;
+    configurationValidator.validate(function confValidated(err, configuration) {
 
-      CONFIGURATION.CONF.APP_NAME.should.equal('Bartender');
-      CONFIGURATION.CONF.HOST.should.equal('localhost');
-      CONFIGURATION.CONF.PORT.should.equal(7777);
-      CONFIGURATION.CONF.VERSION.should.equal('1.0.0');
-      CONFIGURATION.DB_CONF.HOST.should.equal('localhost');
-      CONFIGURATION.DB_CONF.PORT.should.equal(27017);
-      CONFIGURATION.DB_CONF.DATABASE.should.equal('reelyActiveDB');
-      should.not.exist(CONFIGURATION.DB_CONF.OPTIONS);
+      configuration.conf.appName.should.equal('Bartender');
+      configuration.conf.host.should.equal('localhost');
+      configuration.conf.port.should.equal(7777);
+      configuration.conf.version.should.equal('1.0.0');
+      configuration.dbConf.host.should.equal('localhost');
+      configuration.dbConf.port.should.equal(27017);
+      configuration.dbConf.database.should.equal('reelyActiveDB');
+      should.not.exist(configuration.dbConf.options);
       should.not.exist(err);
     });
   });
 
   it('should set an error on a wrong configuration', function() {
-    var WRONG_CONF = {
-      APP_NAME: 123,
-      HOST: 123,
-      PORT: {},
-      VERSION: 123
+    var wrongConf = {
+      appName: 123,
+      host: 123,
+      port: {},
+      version: 123
     };
 
-    var WRONG_DB_CONF = {
-      HOST: 123,
-      PORT: {},
-      DATABASE: 123,
-      OPTIONS: 123
+    var wrongDbConf = {
+      host: 123,
+      port: {},
+      database: 123,
+      options: 123
     };
 
-    configurationValidator.CONF = WRONG_CONF;
-    configurationValidator.DB_CONF = WRONG_DB_CONF;
+    configurationValidator.conf = wrongConf;
+    configurationValidator.dbConf = wrongDbConf;
     configurationValidator.validate(function confValidated(err) {
       should.exist(err);
     });
   });
 
-  testWrongConfValue('CONF', 'APP_NAME', 123);
-  testWrongConfValue('CONF', 'HOST', 123);
-  testWrongConfValue('CONF', 'PORT', {});
-  testWrongConfValue('CONF', 'VERSION', 123);
+  testWrongConfValue('conf'   , 'appName'  , 123);
+  testWrongConfValue('conf'   , 'host'     , 123);
+  testWrongConfValue('conf'   , 'port'     , {});
+  testWrongConfValue('conf'   , 'version'  , 123);
 
-  testWrongConfValue('DB_CONF', 'HOST', 123);
-  testWrongConfValue('DB_CONF', 'PORT', {});
-  testWrongConfValue('DB_CONF', 'DATABASE', 123);
-  testWrongConfValue('DB_CONF', 'OPTIONS', 123);
+  testWrongConfValue('dbConf' , 'host'     , 123);
+  testWrongConfValue('dbConf' , 'port'     , {});
+  testWrongConfValue('dbConf' , 'database' , 123);
+  testWrongConfValue('dbConf' , 'options'  , 123);
 
   /**
    * testWrongConfValue set a wrong value on a configuration and check
    * that the result is an error
-   * @param  {String} confType   type de configuration (CONF or DB_CONF)
+   * @param  {String} confType   type de configuration (Conf or DbConf)
    * @param  {String} valueName  Name of the value we want to set to a wrong one
    * @param  {[type]} wrongValue Value of the wrong value
    */

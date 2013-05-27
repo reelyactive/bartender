@@ -1,12 +1,14 @@
  /**
   * Versions Manager
+  * A static object containing the current version and a list
+  * of supported versions.
   */
 
-var VersionManager = {
+var versionManager = {
   currentVersion: 'v0',
 
   /**
-   * List of supported version
+   * List of supported versions
    * @type {Array}
    */
   versions: [
@@ -17,4 +19,4 @@ var VersionManager = {
   ]
 };
 
-module.exports = VersionManager;
+module.exports = versionManager;

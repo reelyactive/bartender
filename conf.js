@@ -8,27 +8,27 @@
 /**
  * General configuration for the restify server
  */
-var ConfigurationManager = {
+var configurationManager = {
   /**
    * Server configuration
    * @type {Object}
    */
-  CONF: {
-    APP_NAME: 'Bartender',
-    HOST: 'http://localhost',
-    PORT: 7777,
-    VERSION: '0.0.1'
+  conf: {
+    appName: 'Bartender',
+    host: 'http://localhost',
+    port: 7777,
+    version: '0.0.1'
   },
 
   /**
    * Database configuration
    * @type {Object}
    */
-  DB_CONF : {
-    HOST: 'localhost',
-    PORT: 27017,
-    DATABASE: 'bartender',
-    OPTIONS: {
+  dbConf : {
+    host: 'localhost',
+    port: 27017,
+    database: 'bartender',
+    options: {
       server: {
         poolSize: 5,
         socketOptions: {
@@ -41,4 +41,4 @@ var ConfigurationManager = {
   }
 };
 
-module.exports = ConfigurationManager;
+module.exports = configurationManager;

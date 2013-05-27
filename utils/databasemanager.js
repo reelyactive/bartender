@@ -5,7 +5,8 @@ var mongoose = require('mongoose');
  * the schemas
  * @type {Object}
  */
-var DatabaseManager = {
+var databaseManager = {
+
   /**
    * Open a connection with the database using our configuration
    * Then load our schemas in mongoose to make them available in our app
@@ -13,17 +14,17 @@ var DatabaseManager = {
    * @param  {Object}   DB_CONF  Configuration file for the database
    * @param  {Function} callback once the connection is done, call it
    */
-  connectDatabase: function(DB_CONF, callback) {
+  connectDatabase: function(dbConf, callback) {
     /**
      * Load the database configuration
      */
     var uri = 'mongodb://' +
-              DB_CONF.HOST + ':' + DB_CONF.PORT + '/' + DB_CONF.DATABASE;
+              dbConf.host + ':' + dbConf.port + '/' + dbConf.database;
 
     /**
      * Connect to the database
      */
-    mongoose.connect(uri, DB_CONF.OPTIONS, function mongodbConnection(err) {
+    mongoose.connect(uri, dbConf.options, function mongodbConnection(err) {
       console.log('\n## Database connection');
       /**
        * If an error occured during the connection
@@ -43,8 +44,8 @@ var DatabaseManager = {
       /**
        * Load each models in mongoose
        */
-      var modelManager = require('../models/modelmanager');
-      modelManager.initModels();
+      var ModelManager = require('../models/modelmanager');
+      ModelManager.initModels();
 
       callback();
     });
@@ -60,4 +61,4 @@ var DatabaseManager = {
   }
 };
 
-module.exports = DatabaseManager;
+module.exports = databaseManager;
