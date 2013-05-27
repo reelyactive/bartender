@@ -28,10 +28,10 @@
 
 var restify = require('restify');
 
-var configurationValidator = require('./utils/configurationValidator');
-var serverManager          = require('./utils/serverManager');
-var databaseManager        = require('./utils/databaseManager');
-var routeManager           = require('./routes/routeManager');
+var configurationValidator = require('./utils/configurationvalidator');
+var serverManager          = require('./utils/servermanager');
+var databaseManager        = require('./utils/databasemanager');
+var routeManager           = require('./routes/routemanager');
 
 var CONF, DB_CONF;
 

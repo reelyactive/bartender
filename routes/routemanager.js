@@ -38,7 +38,7 @@ var RouteManager = {
   listTopRoutes: function(req, version) {
     var topRoutes = fs.readdirSync('./routes');
     // Remove himself
-    topRoutes = _.without(topRoutes, 'routeManager.js');
+    topRoutes = _.without(topRoutes, 'routemanager.js');
 
     // Format and create absolute links if req is set
     if(req) {
@@ -62,12 +62,12 @@ var RouteManager = {
     });
 
     // We don't want to display entry routes on entry point..
-    topRoutes = _.without(topRoutes, 'entryRoutes');
+    topRoutes = _.without(topRoutes, 'entryroutes');
 
     // For each route, make a beautiful display
     var routes = [];
     for(var i = 0, l = topRoutes.length; i < l; i++) {
-      var routeName = topRoutes[i].replace('Routes', '');
+      var routeName = topRoutes[i].replace('routes', '');
 
       // Pluralize the routeName when it's a ressource
       if(routeName !== 'ask' && routeName !== 'mgmt') {
@@ -79,7 +79,7 @@ var RouteManager = {
 
       // Generate the absolute path
       if(req) {
-        var responseBoilerplate = require('../utils/responseBoilerplate');
+        var responseBoilerplate = require('../utils/responseboilerplate');
         var responseLinks = responseBoilerplate.ResponseLinks;
         route = responseLinks.toAbsolute(route, req);
       }

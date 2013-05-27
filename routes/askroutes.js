@@ -2,7 +2,7 @@
  * Router for the ask routes
  */
 
-var askController = require('../controllers/askController');
+var askController = require('../controllers/askcontroller');
 var policies = require('../policies/common');
 
 // Combination of multiple policies

@@ -1,6 +1,6 @@
 var mime = require('mime');
 
-var responseBoilerplate = require('../utils/responseBoilerplate');
+var responseBoilerplate = require('../utils/responseboilerplate');
 var NotAcceptableError = responseBoilerplate.ResponseMeta.notAcceptable;
 var responseLinks = responseBoilerplate.ResponseLinks;
 

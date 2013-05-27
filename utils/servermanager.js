@@ -1,7 +1,7 @@
 var restify = require('restify');
-var stepManager = require('./stepManager');
-var responseMeta = require('./responseBoilerplate').ResponseMeta;
-var acceptParser = require('./acceptParser');
+var stepManager = require('./stepmanager');
+var responseMeta = require('./responseboilerplate').ResponseMeta;
+var acceptParser = require('./acceptparser');
 
 /**
  * Usefull methods for the server to work.

@@ -1,11 +1,11 @@
 var _                   = require('underscore');
 var Tag                 = require('mongoose').model('Tag');
-var responseBoilerplate = require('../utils/responseBoilerplate');
+var responseBoilerplate = require('../utils/responseboilerplate');
 var responseMeta        = responseBoilerplate.ResponseMeta;
 var responseLinks       = responseBoilerplate.ResponseLinks;
 var restify             = require('restify');
 var paginator           = require('../utils/paginator');
-var versionManager      = require('../versionManager');
+var versionManager      = require('../versionmanager');
 
 /**
  * TagController
@@ -42,7 +42,7 @@ var TagController = {
     if(visibility) {
       conditions.visibility = {
         value: visibility
-      }
+      };
     }
 
     // First, count the total number of tags we can access
@@ -91,7 +91,7 @@ var TagController = {
 
           // Links handling
           result._links = paginator.createLinks(req.href(), offset, limit, totalCount);
-          if(visibility != 'visible') {
+          if(visibility !== 'visible') {
             result._links.visible = responseLinks.generateLink(currentVersion + '/tags?visibility=visible', req);
           }
           if (visibility !== 'invisible') {

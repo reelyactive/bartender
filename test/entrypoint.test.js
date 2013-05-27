@@ -48,19 +48,14 @@ describe('Entry point testing', function() {
     it('should set a correct _links section', function(done) {
       client.get('/', function(err, req, res, data) {
         data._links.should.be.a('object').and.have.property('self');
-        done();
-      });
-    });
-
-
-    it('should have correct properties', function(done) {
-      client.get('/', function(err, req, res, data) {
+        data._links.should.have.property('versions');
         data._links.versions.should.be.an.instanceOf(Array);
 
         var firstVersion = data._links.versions[0];
         firstVersion.should.be.a('object');
         firstVersion.should.have.property('href');
         firstVersion.should.have.property('name');
+        firstVersion.should.have.property('releaseDate');
         done();
       });
     });

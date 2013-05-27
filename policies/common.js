@@ -8,7 +8,7 @@
 
 var validator = require('../utils/validator');
 var paginator = require('../utils/paginator');
-var stepManager = require('../utils/stepManager');
+var stepManager = require('../utils/stepmanager');
 
 var Common = {
   /**

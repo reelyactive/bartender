@@ -13,7 +13,7 @@ var ModelManager = {
    */
   initModels: function() {
     var models = fs.readdirSync('./models');
-    models = _.without(models, 'modelManager.js');
+    models = _.without(models, 'modelmanager.js');
 
     // For each models, require the corresponding file
     for(var i = 0, l = models.length; i < l; i++) {

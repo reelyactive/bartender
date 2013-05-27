@@ -1,6 +1,6 @@
 var Tag = require('mongoose').model('Tag');
 var _ = require('underscore');
-var responseBoilerplate = require('../utils/responseBoilerplate');
+var responseBoilerplate = require('../utils/responseboilerplate');
 var responseMeta = responseBoilerplate.ResponseMeta;
 var responseLinks = responseBoilerplate.ResponseLinks;
 var paginator = require('../utils/paginator');

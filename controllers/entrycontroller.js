@@ -1,9 +1,9 @@
 var _ = require('underscore');
-var responseBoilerplate = require('../utils/responseBoilerplate');
+var responseBoilerplate = require('../utils/responseboilerplate');
 var responseMeta = responseBoilerplate.ResponseMeta;
 var responseLinks = responseBoilerplate.ResponseLinks;
-var routeManager = require('../routes/routeManager');
-var versionManager = require('../versionManager');
+var routeManager = require('../routes/routemanager');
+var versionManager = require('../versionmanager');
 
 /**
  * EntryController
@@ -62,6 +62,7 @@ var EntryController = {
 
     // If the requested version doesn't exist return 404
     if(!result.name) {
+      delete result._links;
       var message = 'The version you request, doesn\'t exist.';
       result._meta = new responseMeta.notFound(message);
     } else {

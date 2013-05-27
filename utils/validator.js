@@ -5,7 +5,7 @@ var _ = require('underscore');
  * For example he check the presence of a required paramater
  * on a request.
  */
-var responseMeta = require('./responseBoilerplate').ResponseMeta;
+var responseMeta = require('./responseboilerplate').ResponseMeta;
 
 var restify = require('restify');
 

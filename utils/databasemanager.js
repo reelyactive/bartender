@@ -43,7 +43,7 @@ var DatabaseManager = {
       /**
        * Load each models in mongoose
        */
-      var modelManager = require('../models/modelManager');
+      var modelManager = require('../models/modelmanager');
       modelManager.initModels();
 
       callback();

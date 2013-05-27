@@ -3,7 +3,7 @@
  * His goal his to answer to requests made on
  * the entry point of the API
  */
-var entryController = require('../controllers/entryController');
+var entryController = require('../controllers/entrycontroller');
 
 module.exports = function(server) {
   server.get('/'         , entryController.root);
