@@ -1,7 +1,7 @@
 var should                 = require('should');
 var _                      = require('underscore');
-var configurationValidator = require('../utils/configurationvalidator');
-var configurationManager   = require('../conf');
+var configurationValidator = require('../../utils/configurationvalidator');
+var configurationManager   = require('../../conf');
 var conf                   = configurationManager.conf;
 var dbConf                 = configurationManager.dbConf;
 

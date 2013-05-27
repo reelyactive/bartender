@@ -1,5 +1,5 @@
 var should  = require('should');
-var conf    = require('../conf').conf;
+var conf    = require('../../conf').conf;
 var restify = require('restify');
 
 /**

@@ -1,6 +1,6 @@
 var should    = require('should');
-var validator = require('../utils/validator');
-var paginator = require('../utils/paginator');
+var validator = require('../../utils/validator');
+var paginator = require('../../utils/paginator');
 
 /**
  * This file tests all policies that we have defined

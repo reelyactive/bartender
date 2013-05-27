@@ -176,7 +176,7 @@ var responseBoilerplate = {
 // Inherit from restify errors
 for (var key in responseBoilerplate.responseMeta) {
   if (responseBoilerplate.responseMeta.hasOwnProperty(key) &&
-     (key !== 'ok')) {
+     (key !== 'Ok')) {
     var obj = responseBoilerplate.responseMeta[key];
     util.inherits(obj, restify.RestError);
   }
