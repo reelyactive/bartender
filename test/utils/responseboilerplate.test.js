@@ -4,13 +4,13 @@ var responseBoilerplate = require('../../utils/responseboilerplate');
 var responseMeta        = responseBoilerplate.responseMeta;
 
 /**
- * This file tests all policies that we have defined
+ * Test all responses meta that we have defined
  */
 describe('Response boilerplate validation', function() {
 
   describe('Response Meta testing', function() {
 
-    // Foreach response meta  defined, test it
+    // Foreach meta responses defined, test it
     _.each(responseMeta, function testMetaSection(value, key) {
 
       if(responseMeta.hasOwnProperty(key)) {
@@ -35,3 +35,39 @@ describe('Response boilerplate validation', function() {
     });
   });
 });
+
+/**
+ * Each tests for meta responses are exported in a function of the
+ * responsesMeta object
+ * This allow us to use these functions in other tests
+ * For example, if we want to test that a GET request on the entry point
+ * return a meta response of type Ok (200)
+ *
+ * @type {Object}
+ */
+var responsesMeta = {};
+
+// Foreach response meta add a test function to responsesMeta
+_.each(responseMeta, function testMetaSection(value, key) {
+
+  if(responseMeta.hasOwnProperty(key)) {
+
+    // Valid meta that we compare against the one received
+    var validMeta = new responseMeta[key];
+    // Deletes the message and the total count because
+    // it can change depending on the request and fail
+    // our test
+    delete validMeta.message;
+    delete validMeta.totalCount;
+
+    // Lower camel case the key
+    key = key.charAt(0).toLowerCase() + key.slice(1);
+    responsesMeta[key] = function(meta) {
+      delete meta.message;
+      delete meta.totalCount;
+      meta.should.eql(validMeta);
+    };
+  }
+});
+
+module.exports = responsesMeta;

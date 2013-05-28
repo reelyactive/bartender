@@ -1,6 +1,7 @@
-var should  = require('should');
-var conf    = require('../../conf').conf;
-var restify = require('restify');
+var should        = require('should');
+var conf          = require('../../conf').conf;
+var restify       = require('restify');
+var responsesMeta = require('./responseboilerplate.test.js');
 
 /**
  * Tests made for status code of each routes of our API
@@ -37,7 +38,7 @@ describe('Not acceptable error (406) testing', function() {
 
     client.get(options, function(err, req, res) {
       should.exist(err);
-      err.body._meta.statusCode.should.equal(406);
+      responsesMeta.notAcceptable(err.body._meta);
       next();
     });
   });

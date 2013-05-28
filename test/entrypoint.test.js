@@ -1,6 +1,7 @@
-var should  = require('should');
-var conf    = require('../conf').conf;
-var restify = require('restify');
+var should        = require('should');
+var conf          = require('../conf').conf;
+var restify       = require('restify');
+var responsesMeta = require('./utils/responseboilerplate.test.js');
 
 /**
  * Tests for the entry point
@@ -27,20 +28,7 @@ describe('Entry point testing', function() {
         should.not.exist(err);
         res.should.be.json;
         res.should.have.status(200);
-        done();
-      });
-    });
-
-    it('should set a correct _meta section', function(done) {
-      client.get('/', function(err, req, res, data) {
-        var _meta = data._meta;
-        _meta.message.should.equal('ok');
-        _meta.statusCode.should.equal(200);
-        _meta.developerMessage.should.equal('ok');
-        _meta.userMessage.should.be.a('string');
-        should.not.exist(_meta.errorCode);
-        _meta.moreInfo.should.be.a('string');
-        _meta.totalCount.should.be.above(0);
+        responsesMeta.ok(data._meta);
         done();
       });
     });
@@ -70,20 +58,7 @@ describe('Entry point testing', function() {
         should.not.exist(err);
         res.should.be.json;
         res.should.have.status(200);
-        done();
-      });
-    });
-
-    it('should set a correct _meta section', function(done) {
-      client.get(version, function(err, req, res, data) {
-        var _meta = data._meta;
-        _meta.message.should.equal('ok');
-        _meta.statusCode.should.equal(200);
-        _meta.developerMessage.should.equal('ok');
-        _meta.userMessage.should.be.a('string');
-        should.not.exist(_meta.errorCode);
-        _meta.moreInfo.should.be.a('string');
-        _meta.totalCount.should.be.above(0);
+        responsesMeta.ok(data._meta);
         done();
       });
     });
@@ -121,19 +96,7 @@ describe('Entry point testing', function() {
         should.exist(err);
         res.should.be.json;
         res.should.have.status(404);
-        done();
-      });
-    });
-
-    it('should set a correct _meta section', function(done) {
-      client.get('/v999', function(err, req, res, data) {
-        var _meta = data._meta;
-        _meta.message.should.be.a('string');
-        _meta.statusCode.should.equal(404);
-        _meta.developerMessage.should.equal('notFound');
-        _meta.userMessage.should.be.a('string');
-        _meta.errorCode.should.equal(404);
-        _meta.moreInfo.should.be.a('string');
+        responsesMeta.notFound(data._meta);
         done();
       });
     });
@@ -148,19 +111,7 @@ describe('Entry point testing', function() {
         should.exist(err);
         res.should.be.json;
         res.should.have.status(404);
-        done();
-      });
-    });
-
-    it('should set a correct _meta section', function(done) {
-      client.get('/404', function(err, req, res, data) {
-        var _meta = data._meta;
-        _meta.message.should.be.a('string');
-        _meta.statusCode.should.equal(404);
-        _meta.developerMessage.should.equal('notFound');
-        _meta.userMessage.should.be.a('string');
-        _meta.errorCode.should.equal(404);
-        _meta.moreInfo.should.be.a('string');
+        responsesMeta.notFound(data._meta);
         done();
       });
     });
