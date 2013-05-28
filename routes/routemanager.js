@@ -81,7 +81,7 @@ var routeManager = {
       if(req) {
         var responseBoilerplate = require('../utils/responseboilerplate');
         var responseLinks = responseBoilerplate.responseLinks;
-        route = responseLinks.toAbsolute(route, req);
+        route = responseLinks.toAbsolute(route, req, false, true);
       }
 
       routes.push( {

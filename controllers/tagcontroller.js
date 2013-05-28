@@ -30,8 +30,6 @@ var tagController = {
     result._meta   = {};
     result._links  = {};
 
-    var currentVersion = '/' + versionManager.currentVersion;
-
     /**
      * Business logic
      */
@@ -40,10 +38,15 @@ var tagController = {
     var conditions = {
       type: 'Tag'
     };
-    if(visibility) {
+
+    // Check visibilty param
+    var visibilityValues = ['visible', 'invisible'];
+    if(visibility && _.contains(visibilityValues, visibility)) {
       conditions.visibility = {
         value: visibility
       };
+    } else {
+      visibility = 'all';
     }
 
     // First, count the total number of tags we can access
@@ -67,10 +70,11 @@ var tagController = {
           // Metadata handling
           var options = {
             limit: limit,
-            offset: offset
+            offset: offset,
+            totalCount: totalCount
           };
           result._meta = new responseMeta.Ok('ok', options);
-          result._meta.totalCount = totalCount;
+          result._meta.visibility = visibility;
 
           result.tags = tags;
 
@@ -85,22 +89,29 @@ var tagController = {
 
             tagsMacs.push(tag.mac);
 
-            var tagUrl = responseLinks.generateLink(currentVersion + '/tags/' + tag.mac, req);
+            var tagUrl = responseLinks.toAbsolute('/tags/' + tag.mac, req, true);
+
             tag = _.extend(tagUrl, tag);
             result.tags[index] = tag;
           });
 
           // Links handling
-          result._links = paginator.createLinks(req.href(), offset, limit, totalCount);
-          if(visibility !== 'visible') {
-            result._links.visible = responseLinks.generateLink(currentVersion + '/tags?visibility=visible', req);
-          }
-          if (visibility !== 'invisible') {
-            result._links.invisible = responseLinks.generateLink(currentVersion + '/tags?visibility=invisible', req);
-          }
+          result._links = paginator.createLinks(req, 'tags', offset, limit, totalCount);
           if(totalCount > 0) {
-            result._links.whereAreTags = responseLinks.generateLink(currentVersion + '/ask/whereis?macs=' + tagsMacs, req);
-            result._links.howAreTags   = responseLinks.generateLink(currentVersion + '/ask/howis?macs=' + tagsMacs, req);
+            if(visibility !== 'visible') {
+              result._links.visible = responseLinks.toAbsolute('/tags', req, true);
+              result._links.visible.href +=  '?visibility=visible';
+            }
+            if(visibility !== 'invisible') {
+              result._links.invisible = responseLinks.toAbsolute('/tags', req, true);
+              result._links.invisible.href +=  '?visibility=invisible';
+            }
+
+            result._links.whereAreTags = responseLinks.toAbsolute('/ask/whereis', req, true);
+            result._links.whereAreTags.href += '?macs=' + tagsMacs;
+
+            result._links.howAreTags   = responseLinks.toAbsolute('/ask/howis', req, true);
+            result._links.howAreTags.href += '?macs=' + tagsMacs;
           }
 
           res.json(result);

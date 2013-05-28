@@ -1,5 +1,6 @@
 var restify = require('restify');
 var util    = require('util');
+var urlUtil = require('url');
 
 /**
  * Response boilerplate for our API
@@ -119,56 +120,65 @@ var responseBoilerplate = {
    */
   responseLinks: {
     /**
-     * Generate a default link (self)
+     * Generate a default link (self > href)
      * @param  {String} href url to generate
      * @return {Object}      default section _links
      */
     setDefault: function(req) {
-      var format = req.urlFormatRequest || '';
+      var url = req.href();
+      url = responseBoilerplate.responseLinks.appendFormat(req, url);
       var _links = {
         self: {
-          href: req.href() + format
+          href: url
         }
       };
       return _links;
     },
 
     /**
-     * Quick helper for generating a simple link.
-     * If req is in the param, then we create an absolute link
-     * @param  {String} url url to generate
-     * @paramm {Object} req  the request
-     * @return {Object}      a simple link
+     * Return an absolute url (with path to the version optionnaly)
+     * @param  {String}  path        url relative to transform to an absolute
+     * @param  {Object}  req         request object
+     * @param  {Boolean} withVersion with version in url ?
+     * @return {String | Object}     url or link object with href
      */
-    generateLink: function(url, req) {
-      // Create an absolute link
+    toAbsolute: function(path, req, withVersion, simpleUrl) {
       if(req) {
-        url = responseBoilerplate.responseLinks.toAbsolute(url, req);
+        var parseUrl = urlUtil.parse(req.url);
+        var url = parseUrl.protocol + '//' + parseUrl.host;
+
+        if(withVersion) {
+          var pathname = parseUrl.pathname.split('/');
+          var version  = '/' + (pathname[0] || pathname[1]);
+          url += version;
+        }
+
+        path = path || '';
+        url += path;
+        url = responseBoilerplate.responseLinks.appendFormat(req, url);
       } else {
-        var format = req.urlFormatRequest || '';
-        url = url + format;
+        url = path;
       }
-      var link = {
-        href: url
-      };
-      return link;
+
+      if(simpleUrl) {
+        return url;
+      } else {
+        var link = {
+          href: url
+        };
+        return link;
+      }
     },
 
     /**
-     * Transform an url to an absolute one
-     * @param  {String} url  relative url
-     * @param  {Object} req  the request object
-     * @return {String}      absolute url
+     * Append the format to url if present (e.g. .json)
+     * @param  {Object} req Request object
+     * @param  {String} url The url
+     * @return {String}     url + format
      */
-    toAbsolute: function(url, req) {
-      var urlUtil = require('url');
-      var parseUrl = urlUtil.parse(req.url);
-      url = parseUrl.protocol + '//' + parseUrl.host + url;
-
+    appendFormat: function(req, url) {
       var format = req.urlFormatRequest || '';
-      url = url + format;
-
-      return url;
+      return url += format;
     }
   }
 };

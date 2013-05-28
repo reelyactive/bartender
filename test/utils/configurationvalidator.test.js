@@ -15,8 +15,8 @@ describe('Configuration validator testing', function() {
   beforeEach(function() {
     // Object.create is used to create a copy and don't change
     // the default object
-    configurationValidator.Conf = _.extend({}, conf);
-    configurationValidator.DbConf = _.extend({}, dbConf);
+    configurationValidator.conf = _.extend({}, conf);
+    configurationValidator.dbConf = _.extend({}, dbConf);
   });
 
   it('should not set an error on a default configuration', function() {

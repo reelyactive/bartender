@@ -30,8 +30,8 @@ var entryController = {
 
     // Generate links for versions
     _.each(result._links.versions, function getVersion(version, index) {
-      var versionLinks = responseLinks.generateLink('/' + version.name, req);
-      result._links.versions[index] = _.extend(versionLinks, version);
+      var versionLink = responseLinks.toAbsolute('/' + version.name, req);
+      result._links.versions[index] = _.extend(versionLink, version);
     });
 
     result._meta.totalCount = result._links.versions.length;
@@ -68,7 +68,7 @@ var entryController = {
     } else {
       result._meta = new responseMeta.Ok();
       result._links = responseLinks.setDefault(req);
-      result._links.root = responseLinks.generateLink('/', req);
+      result._links.root = responseLinks.toAbsolute('/', req);
 
       var topRoutes = routeManager.listTopRoutes(req, result.name);
       result._links.routes = topRoutes;

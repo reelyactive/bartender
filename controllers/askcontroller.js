@@ -74,7 +74,7 @@ var askController = {
     var urlBase = 'api/v0/ask/whereis';
     var macsUrl = '?macs=' + params.macs;
     var url = urlBase + macsUrl;
-    returnObject._links = paginator.createLinks(url, offset, limit, totalCount);
+    returnObject._links = paginator.createLinks(req, offset, limit, totalCount);
 
     macs = macs.slice(offset, offset + limit);
 
