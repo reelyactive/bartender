@@ -63,8 +63,13 @@ _.each(responseMeta, function testMetaSection(value, key) {
     // Lower camel case the key
     key = key.charAt(0).toLowerCase() + key.slice(1);
     responsesMeta[key] = function(meta) {
+      // Delete these values beacause it's not part of
+      // a base request (specific testing cases)
       delete meta.message;
       delete meta.totalCount;
+      delete meta.limit;
+      delete meta.offset;
+      delete meta.visibility;
       meta.should.eql(validMeta);
     };
   }
