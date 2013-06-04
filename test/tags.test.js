@@ -32,10 +32,10 @@ var validMetaTags = function(url, visibility) {
       should.not.exist(err);
       res.should.be.json;
       res.should.have.status(200);
-      data._meta.should.have.property('limit');
-      data._meta.limit.should.equal(10);
-      data._meta.should.have.property('offset');
-      data._meta.offset.should.equal(0);
+      data._meta.should.have.property('perpage');
+      data._meta.perpage.should.equal(10);
+      data._meta.should.have.property('page');
+      data._meta.page.should.equal(0);
       data._meta.should.have.property('visibility');
       if(visibility) {
         if(visibility == 'visible' || visibility == 'invisible') {
@@ -113,19 +113,19 @@ describe('Tags resource testing', function() {
   });
 
   /**
-   * /tags?offset=1&limit=2
+   * /tags?page=1&perpage=2
    */
-  describe('/tags?offset=1&limit=2 should send a valid response', function() {
+  describe('/tags?page=1&perpage=2 should send a valid response', function() {
 
     it('should not set an error and return a 200', function(done) {
-      client.get(baseUrl + '?offset=1&limit=2', function(err, req, res, data) {
+      client.get(baseUrl + '?page=1&perpage=2', function(err, req, res, data) {
         should.not.exist(err);
         res.should.be.json;
         res.should.have.status(200);
-        data._meta.should.have.property('limit');
-        data._meta.limit.should.equal(2);
-        data._meta.should.have.property('offset');
-        data._meta.offset.should.equal(1);
+        data._meta.should.have.property('perpage');
+        data._meta.perpage.should.equal(2);
+        data._meta.should.have.property('page');
+        data._meta.page.should.equal(1);
         responsesMeta.ok(data._meta);
         done();
       });
@@ -139,7 +139,7 @@ describe('Tags resource testing', function() {
     });
 
     it('should have correct properties', function(done) {
-      client.get(baseUrl + '?offset=1&limit=2', function(err, req, res, data) {
+      client.get(baseUrl + '?page=1&perpage=2', function(err, req, res, data) {
         var tags = data.tags;
         tags.should.be.an.instanceOf(Array);
         tags.length.should.be.below(3);

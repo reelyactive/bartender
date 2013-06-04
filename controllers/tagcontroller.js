@@ -20,8 +20,9 @@ var tagController = {
   findTags: function(req, res, next) {
     // Get params
     var params     = req.params;
-    var offset     = params.offset;
-    var limit      = params.limit;
+    var page       = params.page;
+    var perpage    = params.perpage;
+    var offset     = page * perpage;
     var visibility = params.visibility;
     var totalCount = 0;
 
@@ -56,12 +57,12 @@ var tagController = {
       }
       totalCount = count;
 
-      // Then we find the tags based on offset/limit
+      // Then we find the tags based on page/perpage
       Tag
         .find(conditions,
               'uuid mac')
         .skip(offset)
-        .limit(limit)
+        .limit(perpage)
         .exec(function tagsFound(err, tags) {
           if(err) {
             return next(err);
@@ -69,8 +70,8 @@ var tagController = {
 
           // Metadata handling
           var options = {
-            limit: limit,
-            offset: offset,
+            perpage: perpage,
+            page: page,
             totalCount: totalCount
           };
           result._meta = new responseMeta.Ok('ok', options);
@@ -96,7 +97,7 @@ var tagController = {
           });
 
           // Links handling
-          result._links = paginator.createLinks(req, 'tags', offset, limit, totalCount);
+          result._links = paginator.createLinks(req, 'tags', page, perpage, totalCount);
           if(totalCount > 0) {
             if(visibility !== 'visible') {
               result._links.visible = responseLinks.toAbsolute('/tags', req, true);

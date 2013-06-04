@@ -59,10 +59,11 @@ var askController = {
    */
   whereIs: function(req, res, next) {
     // Get params
-    var params = req.params;
-    var macs = params.macs.split(',');
-    var offset = params.offset;
-    var limit = params.limit;
+    var params     = req.params;
+    var macs       = params.macs.split(',');
+    var page       = params.page;
+    var perpage    = params.perpage;
+    var offset     = page * perpage;
 
     var totalCount = macs.length;
 
@@ -74,9 +75,9 @@ var askController = {
     var urlBase = 'api/v0/ask/whereis';
     var macsUrl = '?macs=' + params.macs;
     var url = urlBase + macsUrl;
-    returnObject._links = paginator.createLinks(req, offset, limit, totalCount);
+    returnObject._links = paginator.createLinks(req, page, perpage, totalCount);
 
-    macs = macs.slice(offset, offset + limit);
+    macs = macs.slice(page, offset + perpage);
 
     // Business logic
     returnObject.locations = [];
@@ -103,8 +104,8 @@ var askController = {
         // Metadata handling
         var options = {
           totalCount: totalCount,
-          offset: offset,
-          limit: limit
+          page: page,
+          perpage: perpage
         };
         returnObject._meta = new responseMeta.Ok('ok', options);
 

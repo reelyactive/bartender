@@ -11,26 +11,26 @@ var paginator = {
 
   /**
    * Create links section for the response object based on the url,
-   * the offset, the limit and the total count of objects.
+   * the page, the perpage and the total count of objects.
    * It returns a predefined object links.
    * @param  {String} url       base url of the current ressource
-   * @param  {Int} offset       offset of the query
-   * @param  {Int} limit        limit of the query
+   * @param  {Int} page         page of the query
+   * @param  {Int} perpage      perpage of the query
    * @param  {Int} totalCount   totalCount of ressources
    * @return {Object}           links object
    */
-  createLinks: function(req, type, offset, limit, totalCount) {
+  createLinks: function(req, type, page, perpage, totalCount) {
     // Find the base url
     var url = responseLinks.toAbsolute('/' + type, req, true, true);
 
     // Avoid two times the same param
-    // (e.g. ?limit=3&offset=0&limit=2)
+    // (e.g. ?perpage=3&page=0&perpage=2)
     var firstSymbol = '?';
     var parseUrl = urlUtil.parse(req.url, true);
     var query = parseUrl.query;
     if(!_.isEmpty(query)) {
-      delete query.offset;
-      delete query.limit;
+      delete query.page;
+      delete query.perpage;
       if(!_.isEmpty(query)) {
         var queryString = '?';
         _.each(query, function recreateString(value, key) {
@@ -42,34 +42,34 @@ var paginator = {
     }
     url = url + firstSymbol;
 
+    // Calculate the pages
+    var pages = paginator.calculatePages(page, perpage, totalCount);
 
-    // Now we have the base url. We just have to generate links pagination
+    // Now we have the base url and page.
+    // We just have to generate links pagination
+    var first = null;
+    if(totalCount !== 0) {
+      first = url + 'page=0&perpage=' + perpage;
+    }
+
     var prev = null;
-    if ((offset - limit) >= (-limit)) {
-      if((offset - limit) < 0) {
-        prev = 0;
-      } else {
-        prev = offset - limit;
-      }
-    } else {
-      prev = null;
+    if(pages.prev !== null) {
+      prev = url + 'page=' + pages.prev + '&perpage=' + perpage;
     }
 
-    if(prev !== null) {
-      prev = url + 'offset=' + prev + '&limit=' + limit;
+    var next = null;
+    if(pages.next !== null) {
+      next = url + 'page=' + pages.next + '&perpage=' + perpage;
     }
 
-    var next = ((offset + limit) < totalCount) ? (offset + limit) : null;
-    if(next) {
-      next = url + 'offset=' + next + '&limit=' + limit;
+    var last = null;
+    if(pages.last !== null) {
+      last = url + 'page=' + pages.last + '&perpage=' + perpage;
     }
-
-    var last = ((Math.ceil(totalCount / limit) * limit) > 0) ? (Math.ceil(totalCount / limit) * limit) - limit : 0;
-    last = url + 'offset=' + last + '&limit=' + limit;
 
     var links   = {};
-    links.self  = responseLinks.toAbsolute(url + 'offset=' + offset + '&limit=' + limit);
-    links.first = responseLinks.toAbsolute(url + 'offset=0&limit=' + limit);
+    links.self  = responseLinks.toAbsolute(url + 'page=' + page + '&perpage=' + perpage);
+    links.first = responseLinks.toAbsolute(first);
     links.prev  = responseLinks.toAbsolute(prev);
     links.next  = responseLinks.toAbsolute(next);
     links.last  = responseLinks.toAbsolute(last);
@@ -78,11 +78,66 @@ var paginator = {
   },
 
   /**
+   * Calculate pages pagination object
+   * @param  {Int} page       current page
+   * @param  {Int} perpage    number of result per page
+   * @param  {Int} totalCount number of total object
+   * @return {Object}         the pages object
+   */
+  calculatePages: function(page, perpage, totalCount) {
+    var pages = {};
+
+    if(totalCount === 0) {
+      pages = {
+        prev: null,
+        next: null,
+        last: null
+      };
+    } else {
+
+      var offset = page * perpage;
+
+      /**
+       * prev
+       */
+      var prev = null;
+      if(page > 0) {
+        prev = page - 1;
+      }
+
+      // If the page is more than the totalCount
+      if(offset > totalCount) {
+        prev = Math.floor(totalCount / perpage);
+      }
+
+      pages.prev = prev;
+
+      /**
+       * next
+       */
+      var next = null;
+      if(offset < (totalCount - perpage)) {
+        next = page + 1;
+      }
+      pages.next = next;
+
+      /**
+       * last
+       */
+      var last = 0;
+      last = Math.floor(totalCount / perpage);
+      pages.last = last;
+    }
+
+    return pages;
+  },
+
+  /**
    * Construct a pagination object from request params
    * and attach it to the request param
-   * req.params.offset can't be less than 0
-   * req.params.limit can't be less than 0
-   * req.params.limit can't be more than 100
+   * req.params.page can't be less than 0
+   * req.params.perpage can't be less than 0
+   * req.params.perpage can't be more than 100
    * @param  {[type]}   req  request
    * @param  {[type]}   res  response
    * @param  {Function} next callback
@@ -90,25 +145,26 @@ var paginator = {
   paginate: function(req, res, next) {
     var params = req.params;
 
-    var offset = params.offset || 0;
-    var limit = params.limit || 10;
-    offset = parseInt(offset, 10);
-    limit = parseInt(limit, 10);
+    var page = params.page || 0;
+    var perpage = params.perpage || 10;
 
-    if(offset < 0) {
-      offset = 0;
+    page = parseInt(page, 10);
+    perpage = parseInt(perpage, 10);
+
+    if(page < 0) {
+      page = 0;
     }
 
-    if(limit > 100 ) {
-      limit = 100;
+    if(perpage > 100) {
+      perpage = 100;
     }
 
-    if(limit <= 0) {
-      limit = 10;
+    if(perpage <= 0) {
+      perpage = 10;
     }
 
-    params.offset = offset;
-    params.limit = limit;
+    params.page = page;
+    params.perpage = perpage;
 
     return next();
   }

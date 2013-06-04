@@ -67,8 +67,8 @@ _.each(responseMeta, function testMetaSection(value, key) {
       // a base request (specific testing cases)
       delete meta.message;
       delete meta.totalCount;
-      delete meta.limit;
-      delete meta.offset;
+      delete meta.perpage;
+      delete meta.page;
       delete meta.visibility;
       meta.should.eql(validMeta);
     };

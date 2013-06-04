@@ -26,11 +26,11 @@ var responseBoilerplate = {
       options = options || {};
       this.totalCount       = options.totalCount || 1;
 
-      if(options.limit !== undefined) {
-        this.limit          = options.limit;
+      if(options.perpage !== undefined) {
+        this.perpage        = options.perpage;
       }
-      if(options.offset !== undefined) {
-        this.offset         = options.offset;
+      if(options.page !== undefined) {
+        this.page           = options.page;
       }
     },
 
