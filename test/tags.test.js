@@ -37,6 +37,8 @@ var validMetaTags = function(url, visibility) {
       data._meta.should.have.property('page');
       data._meta.page.should.equal(0);
       data._meta.should.have.property('visibility');
+      data._meta.should.have.property('tagIdentifiers');
+      data._meta.tagIdentifiers.should.be.an.instanceOf(Array);
       if(visibility) {
         if(visibility == 'visible' || visibility == 'invisible') {
           data._meta.visibility.should.equal(visibility);
@@ -126,6 +128,8 @@ describe('Tags resource testing', function() {
         data._meta.perpage.should.equal(2);
         data._meta.should.have.property('page');
         data._meta.page.should.equal(1);
+        data._meta.should.have.property('tagIdentifiers');
+        data._meta.tagIdentifiers.should.be.an.instanceOf(Array);
         responsesMeta.ok(data._meta);
         done();
       });

@@ -80,7 +80,7 @@ var tagController = {
           result.tags = tags;
 
           // Contain the list of each macs we've got
-          var tagsMacs = [];
+          var tagIdentifiers = [];
 
           _.each(result.tags, function addHrefToTag(tag, index) {
             // Transform the mongoose model instance to a plain object
@@ -88,13 +88,15 @@ var tagController = {
             // Remove _id as we don't want it in the answer
             delete tag._id;
 
-            tagsMacs.push(tag.mac);
+            tagIdentifiers.push(tag.mac);
 
             var tagUrl = responseLinks.toAbsolute('/tags/' + tag.mac, req, true);
 
             tag = _.extend(tagUrl, tag);
             result.tags[index] = tag;
           });
+
+          result._meta.tagIdentifiers = tagIdentifiers;
 
           // Links handling
           result._links = paginator.createLinks(req, 'tags', page, perpage, totalCount);
@@ -109,10 +111,10 @@ var tagController = {
             }
 
             result._links.whereAreTags = responseLinks.toAbsolute('/ask/whereis', req, true);
-            result._links.whereAreTags.href += '?macs=' + tagsMacs;
+            result._links.whereAreTags.href += '?macs=' + tagIdentifiers;
 
             result._links.howAreTags   = responseLinks.toAbsolute('/ask/howis', req, true);
-            result._links.howAreTags.href += '?macs=' + tagsMacs;
+            result._links.howAreTags.href += '?macs=' + tagIdentifiers;
           }
 
           res.json(result);

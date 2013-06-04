@@ -70,6 +70,7 @@ _.each(responseMeta, function testMetaSection(value, key) {
       delete meta.perpage;
       delete meta.page;
       delete meta.visibility;
+      delete meta.tagIdentifiers;
       meta.should.eql(validMeta);
     };
   }
