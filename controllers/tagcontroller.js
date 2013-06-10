@@ -128,11 +128,11 @@ var tagController = {
    * Find a specific tag
    */
   findTag: function(req, res, next) {
+    // Get params
     var id = req.params.id;
 
     // Instantiate result
     var result = {};
-    result._meta = {};
 
     // Links handling
     var url = req.href();
@@ -140,21 +140,113 @@ var tagController = {
     // Business logic
     Tag.findOne({
         type: 'Tag',
-        mac: id
+        uuid: id
       }, function tagFound(err, tag) {
         if(err) {
           return next(err);
         }
         if(!tag) {
-          result = {};
-          var message = 'No tag  with id ' + id + ' found';
+          var message = 'No tag  with id (uuid or mac) ' + id + ' found';
           result._meta = new responseMeta.NotFound(message);
-          return res.json(result._meta.statusCode, result);
+          res.json(result._meta.statusCode, result);
+          return next();
         }
-        result.tag = tag;
+
+        // Transform the mongoose model instance to a plain object
+        tag    = tag.toObject();
+        result = tag;
+
+        // Add links in our object tag response
+        if(tag.location && tag.location.poi && tag.location.poi.uuid) {
+          var uuid = tag.location.poi.uuid;
+          tag.location.poi.uri = {
+            reelceiver: responseLinks.toAbsolute('/reelceivers/' + uuid, req, true)
+          };
+        }
+        if(tag.location && tag.location.lastChangeEvent
+          && tag.location.lastChangeEvent.poi && tag.location.lastChangeEvent.poi.uuid) {
+          var uuid = tag.location.lastChangeEvent.poi.uuid;
+          tag.location.lastChangeEvent.poi.uri = {
+            reelceiver: responseLinks.toAbsolute('/reelceivers/' + uuid, req, true)
+          };
+        }
+
+        result._meta   = {};
+        result._links  = {};
 
         // Metadata handling
-        result._meta = new responseMeta.Ok();
+        result._meta            = new responseMeta.Ok();
+        result._meta.totalCount = 1;
+
+        // Tags values for generating links
+        // todo href + title
+        var poi;
+        var prevPoi;
+        if(tag.location) {
+          if(tag.location.poi && tag.location.poi.uuid) {
+            poi = tag.location.poi.uuid;
+          }
+          if(tag.location.lastChangeEvent && tag.location.lastChangeEvent.poi
+            && tag.location.lastChangeEvent.poi.uuid) {
+            prevPoi = tag.location.lastChangeEvent.poi.uuid;
+          }
+        }
+
+        // Maybe we should pluralize this name as it's an array
+        var decodingReelceiver = [];
+        var decodingReelceiverUuid = '';
+        if(tag.radioDecodings && tag.radioDecodings.receivers
+          && tag.radioDecodings.receivers.values) {
+
+          _.each(tag.radioDecodings.receivers.values, function(receiver) {
+            var uuid = receiver.uuid;
+            if(uuid) {
+              decodingReelceiverUuid += receiver.uuid + ',';
+              var reelceiverUri = responseLinks.toAbsolute('/reelceivers/' + uuid, req, true);
+              receiver.uri = {
+                reelceiver: reelceiverUri
+              };
+              decodingReelceiver.push(reelceiverUri);
+            }
+          });
+
+          var lastCharIsComma = decodingReelceiverUuid.charAt(decodingReelceiverUuid.length-1) === ',';
+          if(lastCharIsComma) {
+            decodingReelceiverUuid = decodingReelceiverUuid.slice(0, -1);
+          }
+        }
+
+        var reelceiversUrl = '/reelceivers/';
+        var howisUrl       = responseLinks.toAbsolute('/ask/howis', req, true);
+        var whatAtUrl      = responseLinks.toAbsolute('/ask/whatat', req, true);
+
+        // Links handling
+        result._links      = responseLinks.setDefault(req);
+        result._links.tags = responseLinks.toAbsolute('/tags', req, true);
+
+        if(poi) {
+          result._links.poi       = responseLinks.toAbsolute(reelceiversUrl + poi, req, true);
+          result._links.howIsPoi  = _.clone(howisUrl);
+          result._links.howIsPoi.href += '?uuid=' + poi;
+          result._links.whatAtPoi = _.clone(whatAtUrl);
+          result._links.whatAtPoi.href += '?uuid=' + poi;
+        }
+        if(prevPoi) {
+          result._links.prevPoi       = responseLinks.toAbsolute(reelceiversUrl + prevPoi, req, true);
+          result._links.howIsPrevPoi  = _.clone(howisUrl);
+          result._links.howIsPrevPoi.href += '?uuid=' + prevPoi;
+          result._links.whatAtPrevPoi = _.clone(whatAtUrl);
+          result._links.whatAtPrevPoi.href += '?uuid=' + prevPoi;
+        }
+        if(decodingReelceiver.length >= 0) {
+          result._links.decodingReelceiver = decodingReelceiver;
+          if(decodingReelceiverUuid !== '') {
+            result._links.howAreDecodingReelceivers = _.clone(howisUrl);
+            result._links.howAreDecodingReelceivers.href += '?uuid=' + decodingReelceiverUuid;
+            result._links.whatAtDecodingReelceivers = _.clone(whatAtUrl);
+            result._links.whatAtDecodingReelceivers.href += '?uuid=' + decodingReelceiverUuid;
+          }
+        }
 
         res.json(result);
         return next();
