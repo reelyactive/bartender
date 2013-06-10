@@ -30,18 +30,71 @@ var mgmtController = {
    */
   generateDevices: function(req, res, next) {
     var tag = new Tag({
-      uuid: 'random',
+      uuid: '550e8400-e29b-41d4-a716-446655440000',
       mac: '00-10-00-57',
       vendor: 'reelyActive',
       type: 'Tag',
       model: 'RA-T411-02',
       radioProtocol: 'RA-Proprietary-915MHz',
+      firmware: 'codename-v2',
+      firmwareUpdateDate: '2013-01-09T09:09:09Z',
       visibility: {
-        value: 'visible'
+        value: 'visible',
+        updateDate: '2013-04-22T17:12:12Z',
+        lastChangeEvent: {
+          value: 'invisible',
+          updateDate: '2013-04-22T16:00:00Z'
+        }
+      },
+      location: {
+        poi: {
+          uuid: '550e8400-e29b-41d4-a716-446655440006',
+          mac: '00-80-00-57',
+        },
+        updateDate: '2013-04-22T17:12:12Z',
+        lastChangeEvent: {
+          poi: {
+            uuid: '550e8400-e29b-41d4-a716-446655440007',
+            mac: '00-80-11-27',
+          },
+          updateDate: '2013-04-22T17:05:05Z'
+        }
+      },
+      temperature: {
+        value: 20,
+        updateDate: '2013-04-22T17:12:12Z',
+        lastChangeEvent: {
+          value: 19,
+          updateDate: '2013-04-21T11:33:33Z'
+        }
+      },
+      batteryLevel: {
+        value: 65,
+        updateDate: '2013-04-22T17:12:12Z',
+        lastChangeEvent: {
+          value: 67,
+          updateDate: '2013-04-21T11:33:33Z'
+        }
+      },
+      radioDecodings: {
+        receivers: {
+          values : [{
+            uuid: '550e8400-e29b-41d4-a716-446655440006',
+            mac: '00-80-00-57',
+            rssi: '-42'
+          },{
+            uuid: '550e8400-e29b-41d4-a716-446655440007',
+             mac: '00-80-11-27',
+             rssi: '-60'
+          }],
+          updateDate: '2013-04-22T17:12:12Z'
+        },
+        transmitters: undefined
       }
     });
+
     var tag2 = new Tag({
-      uuid: 'random2',
+      uuid: '550e8400-e29b-41d4-a716-446655440002',
       mac: '00-10-11-07',
       vendor: 'reelyActive',
       type: 'Tag',
@@ -52,7 +105,7 @@ var mgmtController = {
       }
     });
     var tag3 = new Tag({
-      uuid: 'random3',
+      uuid: '550e8400-e29b-41d4-a716-446655440003',
       mac: '00-10-22-13',
       vendor: 'reelyActive',
       type: 'Tag',
@@ -63,7 +116,7 @@ var mgmtController = {
       }
     });
     var tag4 = new Tag({
-      uuid: 'random4',
+      uuid: '550e8400-e29b-41d4-a716-446655440004',
       mac: '00-10-10-10',
       vendor: 'reelyActive',
       type: 'Tag',
@@ -74,7 +127,7 @@ var mgmtController = {
       }
     });
     var tag5 = new Tag({
-      uuid: 'random5',
+      uuid: '550e8400-e29b-41d4-a716-446655440005',
       mac: '00-10-00-23',
       vendor: 'reelyActive',
       type: 'Tag',
@@ -83,7 +136,7 @@ var mgmtController = {
     });
 
     var reelceiver = new Reelceiver({
-      uuid: 'random',
+      uuid: '550e8400-e29b-41d4-a716-446655440006',
       mac: '00-80-00-57',
       vendor: 'reelyActive',
       type: 'Reelceiver',
@@ -91,7 +144,7 @@ var mgmtController = {
       radioProtocol: 'RA-Proprietary-915MHz'
     });
     var reelceiver2 = new Reelceiver({
-      uuid: 'random2',
+      uuid: '550e8400-e29b-41d4-a716-446655440007',
       mac: '00-80-11-27',
       vendor: 'reelyActive',
       type: 'Reelceiver',
@@ -99,7 +152,7 @@ var mgmtController = {
       radioProtocol: 'RA-Proprietary-915MHz'
     });
     var reelceiver3 = new Reelceiver({
-      uuid: 'random3',
+      uuid: '550e8400-e29b-41d4-a716-446655440008',
       mac: '00-80-22-45',
       vendor: 'reelyActive',
       type: 'Reelceiver',
@@ -107,7 +160,7 @@ var mgmtController = {
       radioProtocol: 'RA-Proprietary-915MHz'
     });
     var reelceiver4 = new Reelceiver({
-      uuid: 'random4',
+      uuid: '550e8400-e29b-41d4-a716-446655440009',
       mac: '00-80-77-55',
       vendor: 'reelyActive',
       type: 'Reelceiver',
@@ -115,7 +168,7 @@ var mgmtController = {
       radioProtocol: 'RA-Proprietary-915MHz'
     });
     var reelceiver5 = new Reelceiver({
-      uuid: 'random5',
+      uuid: '550e8400-e29b-41d4-a716-446655440010',
       mac: '00-80-00-23',
       vendor: 'reelyActive',
       type: 'Reelceiver',
