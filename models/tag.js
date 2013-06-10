@@ -27,22 +27,12 @@ var tagSchema = new mongoose.Schema({
     poi: {
       uuid: String,
       mac: String,
-      uri: {
-        reelceiver: {
-          href: String
-        }
-      }
     },
     updateDate: Date,
     lastChangeEvent: {
       poi: {
         uuid: String,
         mac: String,
-        uri: {
-          reelceiver: {
-            href: String
-          }
-        }
       },
       updateDate: Date
     }
@@ -68,12 +58,10 @@ var tagSchema = new mongoose.Schema({
       values : [{
         uuid: String,
         mac: String,
-        uri: { reelceiver: { href: String }},
         rssi: Number
       }, {
         uuid: String,
         mac: String,
-        uri: { reelceiver: { href: String }},
         rssi: Number
       }],
       updateDate: Date

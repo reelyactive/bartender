@@ -31,7 +31,7 @@ var mgmtController = {
   generateDevices: function(req, res, next) {
     var tag = new Tag({
       uuid: '550e8400-e29b-41d4-a716-446655440000',
-      mac: '00-10-00-57',
+      mac: '00-00-00-00-00-00-00-23',
       vendor: 'reelyActive',
       type: 'Tag',
       model: 'RA-T411-02',
@@ -49,13 +49,13 @@ var mgmtController = {
       location: {
         poi: {
           uuid: '550e8400-e29b-41d4-a716-446655440006',
-          mac: '00-80-00-57',
+          mac: '00-1b-c5-09-ff-ff-ac-d5',
         },
         updateDate: '2013-04-22T17:12:12Z',
         lastChangeEvent: {
           poi: {
             uuid: '550e8400-e29b-41d4-a716-446655440007',
-            mac: '00-80-11-27',
+            mac: '00-1b-c5-09-ff-ff-13-35',
           },
           updateDate: '2013-04-22T17:05:05Z'
         }
@@ -80,12 +80,12 @@ var mgmtController = {
         receivers: {
           values : [{
             uuid: '550e8400-e29b-41d4-a716-446655440006',
-            mac: '00-80-00-57',
-            rssi: '-42'
+            mac: '00-1b-c5-09-ff-ff-ac-d5',
+            rssi: -42
           },{
             uuid: '550e8400-e29b-41d4-a716-446655440007',
-             mac: '00-80-11-27',
-             rssi: '-60'
+             mac: '00-1b-c5-09-ff-ff-13-35',
+             rssi: -60
           }],
           updateDate: '2013-04-22T17:12:12Z'
         },
@@ -95,7 +95,7 @@ var mgmtController = {
 
     var tag2 = new Tag({
       uuid: '550e8400-e29b-41d4-a716-446655440002',
-      mac: '00-10-11-07',
+      mac: '00-1b-c5-09-45-c6-d7-e8',
       vendor: 'reelyActive',
       type: 'Tag',
       model: 'RA-T411-02',
@@ -106,7 +106,7 @@ var mgmtController = {
     });
     var tag3 = new Tag({
       uuid: '550e8400-e29b-41d4-a716-446655440003',
-      mac: '00-10-22-13',
+      mac: '00-1b-c5-09-45-c6-d7-13',
       vendor: 'reelyActive',
       type: 'Tag',
       model: 'RA-T411-02',
@@ -117,7 +117,7 @@ var mgmtController = {
     });
     var tag4 = new Tag({
       uuid: '550e8400-e29b-41d4-a716-446655440004',
-      mac: '00-10-10-10',
+      mac: '23-ff-df-c1-c6-cd-d7-55',
       vendor: 'reelyActive',
       type: 'Tag',
       model: 'RA-T411-02',
@@ -128,7 +128,7 @@ var mgmtController = {
     });
     var tag5 = new Tag({
       uuid: '550e8400-e29b-41d4-a716-446655440005',
-      mac: '00-10-00-23',
+      mac: '00-1b-c5-09-45-c6-d7-27',
       vendor: 'reelyActive',
       type: 'Tag',
       model: 'RA-T411-02',
@@ -137,7 +137,7 @@ var mgmtController = {
 
     var reelceiver = new Reelceiver({
       uuid: '550e8400-e29b-41d4-a716-446655440006',
-      mac: '00-80-00-57',
+      mac: '00-1b-c5-09-ff-ff-ac-d5',
       vendor: 'reelyActive',
       type: 'Reelceiver',
       model: 'RA-T411-02',
@@ -145,7 +145,7 @@ var mgmtController = {
     });
     var reelceiver2 = new Reelceiver({
       uuid: '550e8400-e29b-41d4-a716-446655440007',
-      mac: '00-80-11-27',
+      mac: '00-1b-c5-09-ff-ff-13-35',
       vendor: 'reelyActive',
       type: 'Reelceiver',
       model: 'RA-T411-02',
@@ -153,7 +153,7 @@ var mgmtController = {
     });
     var reelceiver3 = new Reelceiver({
       uuid: '550e8400-e29b-41d4-a716-446655440008',
-      mac: '00-80-22-45',
+      mac: '00-1b-c5-09-ff-ff-19-45',
       vendor: 'reelyActive',
       type: 'Reelceiver',
       model: 'RA-T411-02',
@@ -161,7 +161,7 @@ var mgmtController = {
     });
     var reelceiver4 = new Reelceiver({
       uuid: '550e8400-e29b-41d4-a716-446655440009',
-      mac: '00-80-77-55',
+      mac: '00-1b-c5-09-ff-ff-19-39',
       vendor: 'reelyActive',
       type: 'Reelceiver',
       model: 'RA-T411-02',
@@ -169,7 +169,7 @@ var mgmtController = {
     });
     var reelceiver5 = new Reelceiver({
       uuid: '550e8400-e29b-41d4-a716-446655440010',
-      mac: '00-80-00-23',
+      mac: '00-1b-c5-09-ff-ff-01-23',
       vendor: 'reelyActive',
       type: 'Reelceiver',
       model: 'RA-T411-02',

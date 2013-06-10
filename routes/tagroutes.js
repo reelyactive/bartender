@@ -10,5 +10,5 @@ module.exports = function(server, version) {
     policies.paginate, tagController.findTags);
 
   server.get(version + '/tags/:id',
-    policies.requireId, tagController.findTag);
+    policies.idIsAValidMacOrUuid, tagController.findTag);
 };

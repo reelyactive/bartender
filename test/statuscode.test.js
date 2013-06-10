@@ -22,19 +22,25 @@ describe('Status code testing', function() {
   // Routes that should return a 200 status code
   // 200 - ok
   routes[200] = [
-    'tags', 'tags/00-10-00-57',
+    'tags', 'tags/00-00-00-00-00-00-00-23',
+    'tags/550e8400-e29b-41d4-a716-446655440000',
     'ask/whereis?macs=00-10-00-57',
     'ask/whereis?macs=00-10-00-57,00-10-00-00,00-10-00-23'
   ];
 
   // Routes that should return a 400 status code
   // 400 - Bad Request
-  routes[400] = ['ask/whatat', 'ask/whereis', 'ask/howis'];
+  routes[400] = [
+    'ask/whatat', 'ask/whereis', 'ask/howis',
+    'tags/ff-ff-ff', // wrong mac
+    'tags/ffffffff-ffff-ffff-ffff-ffffffffffff' // wrong uuid
+  ];
 
   // Routes that should return a 404 status code
   // 404 - not found
   routes[404] = [ 'notexist',
-    'tags/FF-FF-FF-FF-FF'
+    'tags/ff-ff-ff-ff-ff-ff-ff-ff',
+    'tags/ffffffff-ffff-1fff-8fff-ffffffffffff'
   ];
 
   // Routes that should return a 501 status code

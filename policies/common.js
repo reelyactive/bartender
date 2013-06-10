@@ -67,6 +67,11 @@ var commonPolicies = {
     stepManager.runSteps(req, res, next);
   },
 
+  idIsAValidMacOrUuid: function(req, res, next) {
+    req.steps.push(validator.idIsAValidMacOrUuid);
+    stepManager.runSteps(req, res, next);
+  },
+
   /**
    * Policy formating pagination infos to the request
    * @param  {[type]}   req  request

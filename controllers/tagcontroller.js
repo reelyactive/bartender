@@ -5,6 +5,7 @@ var responseMeta        = responseBoilerplate.responseMeta;
 var responseLinks       = responseBoilerplate.responseLinks;
 var restify             = require('restify');
 var paginator           = require('../utils/paginator');
+var validator           = require('../utils/validator');
 var versionManager      = require('../versionmanager');
 
 /**
@@ -130,6 +131,14 @@ var tagController = {
   findTag: function(req, res, next) {
     // Get params
     var id = req.params.id;
+    var conditions = {
+      type: 'Tag'
+    };
+    if(validator.validateMac(id)) {
+      conditions.mac = id;
+    } else if(validator.validateUuid(id)) {
+      conditions.uuid = id;
+    }
 
     // Instantiate result
     var result = {};
@@ -138,10 +147,7 @@ var tagController = {
     var url = req.href();
 
     // Business logic
-    Tag.findOne({
-        type: 'Tag',
-        uuid: id
-      }, function tagFound(err, tag) {
+    Tag.findOne(conditions, function tagFound(err, tag) {
         if(err) {
           return next(err);
         }
