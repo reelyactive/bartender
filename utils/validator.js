@@ -63,6 +63,23 @@ var validator = {
   },
 
   /**
+   * Return a boolean based on the validity of the mac
+   * @param  {String}  mac mac that we want to test
+   * @return {Boolean}     is the mac valid ?
+   */
+  validateMac: function(mac) {
+    var isValidMac = true;
+    // 16 lowercase hexadecimal digits splitted in eight groups of two
+    // and separated by hyphens or colons
+    var isValid = /^(([\w]{2}[-|:]){7}[\w]{2})$/i;
+    if(!isValid.test(mac)) {
+      isValidMac = false;
+    }
+
+    return isValidMac;
+  },
+
+  /**
    * Assert that if a macs param is present, it's valid
    * @param  {Object}   req   request
    * @param  {Object}   res   response
@@ -71,13 +88,10 @@ var validator = {
   isValidMacs: function(req, res, next) {
     var macs = req.params.macs;
     if(macs) {
-      macs = macs.split(',');
+      macs  = macs.split(',');
       var l = macs.length;
-      _.each(macs, function validateMac(mac){
-        // 16 lowercase hexadecimal digits splitted in eight groups of two
-        // and separated by hyphens or colons
-        var isValid = /(([\w]{2}[-|:]){7}[\w]{2})/;
-        if(!req.error && !isValid.test(mac)) {
+      _.each(macs, function (mac) {
+        if(!req.error && !validator.validateMac(mac)) {
           req.error = new responseMeta.BadRequest('macs parameters has a bad formatting.');
           return next();
         }
@@ -92,6 +106,21 @@ var validator = {
   },
 
   /**
+   * Return a boolean based on the validity of the uuid
+   * @param  {String}  uuid uuid that we want to validate
+   * @return {Boolean}      is the uuid valid ?
+   */
+  validateUuid: function(uuid) {
+    var isValidUuid = true;
+    var isValid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if(!isValid.test(uuid)) {
+      isValidUuid = false;
+    }
+
+    return isValidUuid;
+  },
+
+  /**
    * Assert that if a uuids param is present, it's valid
    * @param  {Object}   req   request
    * @param  {Object}   res   response
@@ -103,8 +132,7 @@ var validator = {
       uuids = uuids.split(',');
       var l = uuids.length;
       _.each(uuids, function validateUuid(uuid){
-        var isValid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-        if(!req.error && !isValid.test(uuid)) {
+        if(!req.error && !validator.validateUuid(uuid)) {
           req.error = new responseMeta.BadRequest('uuids parameters has a bad formatting.');
           return next();
         }
@@ -116,6 +144,28 @@ var validator = {
     } else {
       return next();
     }
+  },
+
+  /**
+   * Assert that the id param (if present) is a valid mac OR uuid
+   * @param  {Object}   req   request
+   * @param  {Object}   res   response
+   * @param  {Function} next  callback
+   */
+  idIsAValidMacOrUuid: function(req, res, next) {
+    validator.requireParam('id', req, res, function() {
+      if(req.error) {
+        return next();
+      } else {
+        var id = req.params['id'];
+        var isNotAValidMacOrUuid = !(validator.validateMac(id) || validator.validateUuid(id));
+        if(isNotAValidMacOrUuid){
+          req.error = new responseMeta.BadRequest('Id param isn\'t a valid mac nor uuid.');
+        }
+
+        return next();
+      }
+    });
   }
 };
 
