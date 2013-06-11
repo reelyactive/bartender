@@ -67,6 +67,12 @@ var commonPolicies = {
     stepManager.runSteps(req, res, next);
   },
 
+  /**
+   * Policy checking for the validity of the id param
+   * @param  {[type]}   req  request
+   * @param  {[type]}   res  response
+   * @param  {Function} next callback
+   */
   idIsAValidMacOrUuid: function(req, res, next) {
     req.steps.push(validator.idIsAValidMacOrUuid);
     stepManager.runSteps(req, res, next);

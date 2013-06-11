@@ -147,25 +147,19 @@ var validator = {
   },
 
   /**
-   * Assert that the id param (if present) is a valid mac OR uuid
+   * Assert that the id param is a valid mac OR uuid
    * @param  {Object}   req   request
    * @param  {Object}   res   response
    * @param  {Function} next  callback
    */
   idIsAValidMacOrUuid: function(req, res, next) {
-    validator.requireParam('id', req, res, function() {
-      if(req.error) {
-        return next();
-      } else {
-        var id = req.params['id'];
-        var isNotAValidMacOrUuid = !(validator.validateMac(id) || validator.validateUuid(id));
-        if(isNotAValidMacOrUuid){
-          req.error = new responseMeta.BadRequest('Id param isn\'t a valid mac nor uuid.');
-        }
+    var id = req.params['id'];
+    var isNotAValidMacOrUuid = !(validator.validateMac(id) || validator.validateUuid(id));
+    if(isNotAValidMacOrUuid){
+      req.error = new responseMeta.BadRequest('Id param isn\'t a valid mac nor uuid.');
+    }
 
-        return next();
-      }
-    });
+    return next();
   }
 };
 

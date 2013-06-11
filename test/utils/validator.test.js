@@ -166,16 +166,11 @@ describe('Validator testing', function() {
       });
     });
 
-    // Check the presence of and id param +
-    // validate if it's a valid mac or uuid
-    describe('Require an id param and make sure that it\'s a valid mac or uuid', function() {
-      it('should set an error if id param isn\'t present', function(done) {
-        validator.idIsAValidMacOrUuid(req, res, function isValid() {
-          should.exist(req.error);
-          done();
-        });
-      });
-
+    /**
+     * Test the idIsAValidMacOrUuid
+     * Make sure that the id param is a valid mac or uuid
+     */
+    describe('Make sure that id param is a valid mac or uuid', function() {
       it('should set an error if id param isn\'t valid', function(done) {
         req.params.id = 'wrongInputValue';
         validator.idIsAValidMacOrUuid(req, res, function isValid() {
