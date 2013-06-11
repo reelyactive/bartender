@@ -132,118 +132,121 @@ var tagController = {
   findTag: function(req, res, next) {
     // Get params
     var id = req.params.id;
-    var conditions = {
+
+    var searchFilters = {
       type: 'Tag'
     };
     if(validator.validateMac(id)) {
-      conditions.mac = id;
+      searchFilters.mac = id;
     } else if(validator.validateUuid(id)) {
-      conditions.uuid = id;
+      searchFilters.uuid = id;
     }
 
-    // Instantiate result
-    var result = {};
-
-    // Links handling
-    var url = req.href();
-
     // Business logic
-    Tag.findOne(conditions, function tagFound(err, tag) {
+    Tag.findOne(searchFilters, function tagFound(err, tag) {
         if(err) {
           return next(err);
         }
         if(!tag) {
           var message = 'No tag  with id (uuid or mac) ' + id + ' found';
-          result._meta = new responseMeta.NotFound(message);
+          var result  = {
+            _meta: new responseMeta.NotFound(message)
+          };
           res.json(result._meta.statusCode, result);
           return next();
         }
 
         // Transform the mongoose model instance to a plain object
-        tag    = tag.toObject();
-        result = tag;
+        tag = tag.toObject();
+        tagController.tagFound(tag, req, res, next);
+    });
+  },
 
-        // Add links in our object tag response
-        var poi = helper.getNestedProperties(tag, 'location.poi.uuid');
-        if(poi) {
-          tag.location.poi.uri = {
-            reelceiver: responseLinks.toAbsolute('/reelceivers/' + poi, req, true)
+  /**
+   * Called when a tag is found
+   * Linked to findTag above
+   */
+  tagFound: function(tag, req, res, next) {
+    var result = tag;
+
+    // Add links in our object tag response
+    var poi = helper.getNestedProperties(tag, 'location.poi.uuid');
+    if(poi !== undefined) {
+      tag.location.poi.uri = {
+        reelceiver: responseLinks.toAbsolute('/reelceivers/' + poi, req, true)
+      };
+    }
+    var prevPoi = helper.getNestedProperties(tag, 'location.lastChangeEvent.poi.uuid');
+    if(prevPoi !== undefined) {
+      tag.location.lastChangeEvent.poi.uri = {
+        reelceiver: responseLinks.toAbsolute('/reelceivers/' + prevPoi, req, true)
+      };
+    }
+
+    // Maybe we should pluralize this name as it's an array
+    var decodingReelceiver = [];
+    var decodingReelceiverUuid = '';
+    var receiversValues = helper.getNestedProperties(tag, 'radioDecodings.receivers.values');
+    if(receiversValues !== undefined) {
+
+      _.each(receiversValues, function(receiver) {
+        var uuid = receiver.uuid;
+        if(uuid) {
+          decodingReelceiverUuid += receiver.uuid + ',';
+          var reelceiverUri = responseLinks.toAbsolute('/reelceivers/' + uuid, req, true);
+          receiver.uri = {
+            reelceiver: reelceiverUri
           };
+          decodingReelceiver.push(reelceiverUri);
         }
-        var prevPoi = helper.getNestedProperties(tag, 'location.lastChangeEvent.poi.uuid');
-        if(prevPoi) {
-          tag.location.lastChangeEvent.poi.uri = {
-            reelceiver: responseLinks.toAbsolute('/reelceivers/' + prevPoi, req, true)
-          };
-        }
-
-        result._meta   = {};
-        result._links  = {};
-
-        // Metadata handling
-        result._meta            = new responseMeta.Ok();
-        result._meta.totalCount = 1;
-
-        // Maybe we should pluralize this name as it's an array
-        var decodingReelceiver = [];
-        var decodingReelceiverUuid = '';
-        var receiversValues = helper.getNestedProperties(tag, 'radioDecodings.receivers.values');
-        if(receiversValues) {
-
-          _.each(receiversValues, function(receiver) {
-            var uuid = receiver.uuid;
-            if(uuid) {
-              decodingReelceiverUuid += receiver.uuid + ',';
-              var reelceiverUri = responseLinks.toAbsolute('/reelceivers/' + uuid, req, true);
-              receiver.uri = {
-                reelceiver: reelceiverUri
-              };
-              decodingReelceiver.push(reelceiverUri);
-            }
-          });
-
-          var lastCharIsComma = decodingReelceiverUuid.charAt(decodingReelceiverUuid.length-1) === ',';
-          if(lastCharIsComma) {
-            decodingReelceiverUuid = decodingReelceiverUuid.slice(0, -1);
-          }
-        }
-
-        var reelceiversUrl = '/reelceivers/';
-        var howisUrl       = responseLinks.toAbsolute('/ask/howis', req, true);
-        var whatAtUrl      = responseLinks.toAbsolute('/ask/whatat', req, true);
-
-        // Links handling
-        result._links      = responseLinks.setDefault(req);
-        result._links.tags = responseLinks.toAbsolute('/tags', req, true);
-
-        if(poi) {
-          result._links.poi       = responseLinks.toAbsolute(reelceiversUrl + poi, req, true);
-          result._links.howIsPoi  = _.clone(howisUrl);
-          result._links.howIsPoi.href += '?uuid=' + poi;
-          result._links.whatAtPoi = _.clone(whatAtUrl);
-          result._links.whatAtPoi.href += '?uuid=' + poi;
-        }
-        if(prevPoi) {
-          result._links.prevPoi       = responseLinks.toAbsolute(reelceiversUrl + prevPoi, req, true);
-          result._links.howIsPrevPoi  = _.clone(howisUrl);
-          result._links.howIsPrevPoi.href += '?uuid=' + prevPoi;
-          result._links.whatAtPrevPoi = _.clone(whatAtUrl);
-          result._links.whatAtPrevPoi.href += '?uuid=' + prevPoi;
-        }
-        if(decodingReelceiver.length >= 0) {
-          result._links.decodingReelceiver = decodingReelceiver;
-          if(decodingReelceiverUuid !== '') {
-            result._links.howAreDecodingReelceivers = _.clone(howisUrl);
-            result._links.howAreDecodingReelceivers.href += '?uuid=' + decodingReelceiverUuid;
-            result._links.whatAtDecodingReelceivers = _.clone(whatAtUrl);
-            result._links.whatAtDecodingReelceivers.href += '?uuid=' + decodingReelceiverUuid;
-          }
-        }
-
-        res.json(result);
-        return next();
+      });
+      var lastCharIsComma = decodingReelceiverUuid.charAt(decodingReelceiverUuid.length-1) === ',';
+      if(lastCharIsComma) {
+        decodingReelceiverUuid = decodingReelceiverUuid.slice(0, -1);
       }
-    );
+    }
+
+    result._meta  = {};
+    result._links = {};
+
+    // Metadata handling
+    result._meta            = new responseMeta.Ok();
+    result._meta.totalCount = 1;
+
+    // Links handling
+    var reelceiversUrl = '/reelceivers/';
+    var howisUrl       = responseLinks.toAbsolute('/ask/howis', req, true);
+    var whatAtUrl      = responseLinks.toAbsolute('/ask/whatat', req, true);
+
+    result._links      = responseLinks.setDefault(req);
+    result._links.tags = responseLinks.toAbsolute('/tags', req, true);
+
+    if(poi !== undefined) {
+      result._links.poi       = responseLinks.toAbsolute(reelceiversUrl + poi, req, true);
+      result._links.howIsPoi  = _.clone(howisUrl);
+      result._links.howIsPoi.href += '?uuid=' + poi;
+      result._links.whatAtPoi = _.clone(whatAtUrl);
+      result._links.whatAtPoi.href += '?uuid=' + poi;
+    }
+    if(prevPoi !== undefined) {
+      result._links.prevPoi       = responseLinks.toAbsolute(reelceiversUrl + prevPoi, req, true);
+      result._links.howIsPrevPoi  = _.clone(howisUrl);
+      result._links.howIsPrevPoi.href += '?uuid=' + prevPoi;
+      result._links.whatAtPrevPoi = _.clone(whatAtUrl);
+      result._links.whatAtPrevPoi.href += '?uuid=' + prevPoi;
+    }
+    if(decodingReelceiver.length >= 0) {
+      result._links.decodingReelceiver = decodingReelceiver;
+      if(decodingReelceiverUuid !== '') {
+        result._links.howAreDecodingReelceivers = _.clone(howisUrl);
+        result._links.howAreDecodingReelceivers.href += '?uuid=' + decodingReelceiverUuid;
+        result._links.whatAtDecodingReelceivers = _.clone(whatAtUrl);
+        result._links.whatAtDecodingReelceivers.href += '?uuid=' + decodingReelceiverUuid;
+      }
+    }
+
+    res.json(result);
+    return next();
   }
 };
 

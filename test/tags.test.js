@@ -173,4 +173,191 @@ describe('Tags resource testing', function() {
       visibilityTesting(visibilities[i]);
     }
   });
+
+  /**
+   * /tags/:id testing
+   */
+
+  describe('/tags/00-00-00-00-00-00-00-23 should send a valid response', function() {
+
+    // Test standard response + meta section
+    it('should not set an error and return a 200', function(done) {
+      client.get(baseUrl + '/00-00-00-00-00-00-00-23', function(err, req, res, data) {
+        should.not.exist(err);
+        res.should.be.json;
+        res.should.have.status(200);
+        data._meta.totalCount.should.equal(1);
+        responsesMeta.ok(data._meta);
+        done();
+      });
+    });
+
+    // Test links section
+    it('should set a correct _links section', function(done) {
+      client.get(baseUrl + '/00-1b-c5-09-45-c6-d7-e8', function(err, req, res, data) {
+        var links = data._links;
+        links.should.be.a('object').and.have.property('self');
+        links.should.have.property('tags');
+        links.should.have.property('poi');
+        links.should.have.property('howIsPoi');
+        links.should.have.property('whatAtPoi');
+        // links.should.have.property('prevPoi');
+        // links.should.have.property('howIsPrevPoi');
+        // links.should.have.property('whatAtPrevPoi');
+        links.should.have.property('decodingReelceiver');
+        // links.should.have.property('howAreDecodingReelceivers');
+        // links.should.have.property('whatAtDecodingReelceivers');
+        done();
+      });
+    });
+
+    /**
+     * Test all properties for a request tag on a standard response
+     * @param  {Object} data data receive after a request has been made
+     */
+    function testPropertiesForStandardRequest(data) {
+      data.should.have.property('uuid');
+      data.uuid.should.be.a('string');
+      data.should.have.property('mac');
+      data.mac.should.be.a('string');
+      data.should.have.property('vendor');
+      data.vendor.should.be.a('string');
+      data.should.have.property('type');
+      data.type.should.be.a('string');
+      data.should.have.property('model');
+      data.model.should.be.a('string');
+      data.should.have.property('radioProtocol');
+      data.radioProtocol.should.be.a('string');
+      data.should.have.property('firmware');
+      data.firmware.should.be.a('string');
+      data.should.have.property('firmwareUpdateDate');
+      data.firmwareUpdateDate.should.be.a('string');
+
+      data.should.have.property('radioDecodings');
+      data.radioDecodings.should.be.a('object');
+      data.radioDecodings.should.have.property('receivers');
+      data.radioDecodings.receivers.should.have.property('updateDate');
+      data.radioDecodings.receivers.updateDate.should.be.a('string');
+      data.radioDecodings.receivers.should.have.property('values');
+      data.radioDecodings.receivers.values.should.be.an.instanceOf(Array);
+
+      var reelceiver = data.radioDecodings.receivers.values[0];
+      if(reelceiver) {
+        reelceiver.should.be.a('object');
+        reelceiver.should.have.property('uuid');
+        reelceiver.uuid.should.be.a('string');
+        reelceiver.should.have.property('mac');
+        reelceiver.mac.should.be.a('string');
+        reelceiver.rssi.should.be.a('number');
+        reelceiver.should.have.property('uri');
+        reelceiver.uri.should.be.a('object');
+        reelceiver.uri.should.have.property('reelceiver');
+        reelceiver.uri.reelceiver.should.be.a('object');
+        reelceiver.uri.reelceiver.should.have.property('href');
+        reelceiver.uri.reelceiver.href.should.be.a('string');
+      }
+
+      // Simplify the testing of common section (like batteryLevel, temperature and visibility)
+      function commonPropertiesTests(propertyName, valueType) {
+        valueType = valueType || 'number';
+        data[propertyName].should.be.a('object');
+        data[propertyName].should.have.property('value');
+        data[propertyName].value.should.be.a(valueType);
+        data[propertyName].should.have.property('updateDate');
+        data[propertyName].updateDate.should.be.a('string');
+        // data[propertyName].should.have.property('lastChangeEvent');
+        // data[propertyName].lastChangeEvent.should.be.a('object');
+        // data[propertyName].lastChangeEvent.should.have.property('value');
+        // data[propertyName].lastChangeEvent.value.should.be.a(valueType);
+        // data[propertyName].lastChangeEvent.should.have.property('updateDate');
+        // data[propertyName].lastChangeEvent.updateDate.should.be.a('string');
+      }
+
+      commonPropertiesTests('batteryLevel');
+      commonPropertiesTests('temperature');
+      commonPropertiesTests('visibility', 'string');
+
+      data.location.should.be.a('object');
+      data.location.should.have.property('updateDate');
+      data.location.updateDate.should.be.a('string');
+      data.location.should.have.property('poi');
+      data.location.poi.should.be.a('object');
+      data.location.poi.should.have.property('uuid');
+      data.location.poi.uuid.should.be.a('string');
+      data.location.poi.should.have.property('mac');
+      data.location.poi.mac.should.be.a('string');
+      data.location.poi.should.have.property('uri');
+      data.location.poi.uri.should.be.a('object');
+      data.location.poi.uri.should.have.property('reelceiver');
+      data.location.poi.uri.reelceiver.should.be.a('object');
+      data.location.poi.uri.reelceiver.should.have.property('href');
+      data.location.poi.uri.reelceiver.href.should.be.a('string');
+      // data.location.should.have.property('lastChangeEvent');
+      // data.location.lastChangeEvent.should.be.a('object');
+      // data.location.lastChangeEvent.should.have.property('updateDate');
+      // data.location.lastChangeEvent.updateDate.should.be.a('string');
+      // data.location.lastChangeEvent.should.have.property('poi');
+      // data.location.lastChangeEvent.poi.should.be.a('object');
+      // data.location.lastChangeEvent.poi.should.have.property('uuid');
+      // data.location.lastChangeEvent.poi.uuid.should.be.a('string');
+      // data.location.lastChangeEvent.poi.should.have.property('mac');
+      // data.location.lastChangeEvent.poi.mac.should.be.a('string');
+      // data.location.lastChangeEvent.poi.should.have.property('uri');
+      // data.location.lastChangeEvent.poi.uri.should.be.a('object');
+      // data.location.lastChangeEvent.poi.uri.should.have.property('reelceiver');
+      // data.location.lastChangeEvent.poi.uri.reelceiver.should.be.a('object');
+      // data.location.lastChangeEvent.poi.uri.reelceiver.should.have.property('href');
+      // data.location.lastChangeEvent.poi.uri.reelceiver.href.should.be.a('string');
+    }
+
+    // Test response properties
+    it('should have correct properties', function(done) {
+      client.get(baseUrl + '/00-00-00-00-00-00-00-23', function(err, req, res, data) {
+        testPropertiesForStandardRequest(data);
+        done();
+      });
+    });
+
+    it('should have correct properties', function(done) {
+      client.get(baseUrl + '/00-1b-c5-09-45-c6-d7-e8', function(err, req, res, data) {
+        testPropertiesForStandardRequest(data);
+        done();
+      });
+    });
+
+    // Make sure that a request w/ mac or w/ uuid has the same result
+    it('should have the same result either we request with a mac or uuid param', function(done) {
+      client.get(baseUrl + '/00-00-00-00-00-00-00-23', function(err, req, res, data) {
+        client.get(baseUrl + '/550e8400-e29b-41d4-a716-446655440000', function(err, req, res, dataUuid) {
+          // We delete this link because, obviously, it changes depending on the request
+          delete data._links.self;
+          delete dataUuid._links.self;
+          data.should.eql(dataUuid);
+          done();
+        });
+      });
+    });
+
+    // If the tag isn't found, it return a 404 error
+    it('should set a 404 (notFound) error if the requested tag doesn\'t exist', function(done) {
+      client.get(baseUrl + '/00-00-00-00-00-00-00-00', function(err, req, res, data) {
+        should.exist(err);
+        res.should.be.json;
+        res.should.have.status(404);
+        responsesMeta.notFound(data._meta);
+        done();
+      });
+    });
+
+    // If the id isn't valid, it returns a 400 error
+    it('should set a 400 (badRequest) error if the requested tag id isn\'t valid', function(done) {
+      client.get(baseUrl + '/randomBadId', function(err, req, res, data) {
+        should.exist(err);
+        res.should.be.json;
+        res.should.have.status(400);
+        responsesMeta.badRequest(data._meta);
+        done();
+      });
+    });
+  });
 });
