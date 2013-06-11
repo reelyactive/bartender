@@ -6,6 +6,7 @@ var responseLinks       = responseBoilerplate.responseLinks;
 var restify             = require('restify');
 var paginator           = require('../utils/paginator');
 var validator           = require('../utils/validator');
+var helper              = require('../utils/helper');
 var versionManager      = require('../versionmanager');
 
 /**
@@ -163,17 +164,16 @@ var tagController = {
         result = tag;
 
         // Add links in our object tag response
-        if(tag.location && tag.location.poi && tag.location.poi.uuid) {
-          var uuid = tag.location.poi.uuid;
+        var poi = helper.getNestedProperties(tag, 'location.poi.uuid');
+        if(poi) {
           tag.location.poi.uri = {
-            reelceiver: responseLinks.toAbsolute('/reelceivers/' + uuid, req, true)
+            reelceiver: responseLinks.toAbsolute('/reelceivers/' + poi, req, true)
           };
         }
-        if(tag.location && tag.location.lastChangeEvent
-          && tag.location.lastChangeEvent.poi && tag.location.lastChangeEvent.poi.uuid) {
-          var uuid = tag.location.lastChangeEvent.poi.uuid;
+        var prevPoi = helper.getNestedProperties(tag, 'location.lastChangeEvent.poi.uuid');
+        if(prevPoi) {
           tag.location.lastChangeEvent.poi.uri = {
-            reelceiver: responseLinks.toAbsolute('/reelceivers/' + uuid, req, true)
+            reelceiver: responseLinks.toAbsolute('/reelceivers/' + prevPoi, req, true)
           };
         }
 
@@ -184,27 +184,13 @@ var tagController = {
         result._meta            = new responseMeta.Ok();
         result._meta.totalCount = 1;
 
-        // Tags values for generating links
-        // todo href + title
-        var poi;
-        var prevPoi;
-        if(tag.location) {
-          if(tag.location.poi && tag.location.poi.uuid) {
-            poi = tag.location.poi.uuid;
-          }
-          if(tag.location.lastChangeEvent && tag.location.lastChangeEvent.poi
-            && tag.location.lastChangeEvent.poi.uuid) {
-            prevPoi = tag.location.lastChangeEvent.poi.uuid;
-          }
-        }
-
         // Maybe we should pluralize this name as it's an array
         var decodingReelceiver = [];
         var decodingReelceiverUuid = '';
-        if(tag.radioDecodings && tag.radioDecodings.receivers
-          && tag.radioDecodings.receivers.values) {
+        var receiversValues = helper.getNestedProperties(tag, 'radioDecodings.receivers.values');
+        if(receiversValues) {
 
-          _.each(tag.radioDecodings.receivers.values, function(receiver) {
+          _.each(receiversValues, function(receiver) {
             var uuid = receiver.uuid;
             if(uuid) {
               decodingReelceiverUuid += receiver.uuid + ',';
