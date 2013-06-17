@@ -1,7 +1,7 @@
 var restify      = require('restify');
 var stepManager  = require('./stepmanager');
+var helper       = require('./helper');
 var responseMeta = require('./responseboilerplate').responseMeta;
-var acceptParser = require('./acceptparser');
 
 /**
  * Usefull methods for the server to work.
@@ -14,7 +14,7 @@ var serverManager = {
   configure: function(server, Conf) {
     server.acceptable = ['application/json'];
     server.pre(restify.pre.sanitizePath());
-    server.use(acceptParser(server.acceptable));
+    server.use(helper.acceptParser(server.acceptable));
     server.use(restify.queryParser());
     server.use(restify.bodyParser());
     server.use(stepManager.setSteps);
