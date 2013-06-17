@@ -15,7 +15,7 @@ describe('Response boilerplate validation', function() {
 
       if(responseMeta.hasOwnProperty(key)) {
 
-        var meta = new responseMeta[key];
+        var meta = new responseMeta[key]();
         it('should have a correct meta structure for error '
             + meta.statusCode, function() {
 
@@ -53,7 +53,7 @@ _.each(responseMeta, function testMetaSection(value, key) {
   if(responseMeta.hasOwnProperty(key)) {
 
     // Valid meta that we compare against the one received
-    var validMeta = new responseMeta[key];
+    var validMeta = new responseMeta[key]();
     // Deletes the message and the total count because
     // it can change depending on the request and fail
     // our test

@@ -153,7 +153,7 @@ var validator = {
    * @param  {Function} next  callback
    */
   idIsAValidMacOrUuid: function(req, res, next) {
-    var id = req.params['id'];
+    var id = req.params.id;
     var isNotAValidMacOrUuid = !(validator.validateMac(id) || validator.validateUuid(id));
     if(isNotAValidMacOrUuid){
       req.error = new responseMeta.BadRequest('Id param isn\'t a valid mac nor uuid.');

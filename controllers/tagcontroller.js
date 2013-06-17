@@ -3,11 +3,9 @@ var Tag                 = require('../models/tag');
 var responseBoilerplate = require('../utils/responseboilerplate');
 var responseMeta        = responseBoilerplate.responseMeta;
 var responseLinks       = responseBoilerplate.responseLinks;
-var restify             = require('restify');
 var paginator           = require('../utils/paginator');
 var validator           = require('../utils/validator');
 var helper              = require('../utils/helper');
-var versionManager      = require('../versionmanager');
 
 /**
  * TagController
@@ -127,7 +125,7 @@ var tagController = {
   },
 
   /**
-   * Find a specific tag
+   * Find a specific tag (based on an id (uuid or mac) param)
    */
   findTag: function(req, res, next) {
     // Get params
@@ -144,21 +142,21 @@ var tagController = {
 
     // Business logic
     Tag.findOne(searchFilters, function tagFound(err, tag) {
-        if(err) {
-          return next(err);
-        }
-        if(!tag) {
-          var message = 'No tag  with id (uuid or mac) ' + id + ' found';
-          var result  = {
-            _meta: new responseMeta.NotFound(message)
-          };
-          res.json(result._meta.statusCode, result);
-          return next();
-        }
+      if(err) {
+        return next(err);
+      }
+      if(!tag) {
+        var message = 'No tag  with id (uuid or mac) ' + id + ' found';
+        var result  = {
+          _meta: new responseMeta.NotFound(message)
+        };
+        res.json(result._meta.statusCode, result);
+        return next();
+      }
 
-        // Transform the mongoose model instance to a plain object
-        tag = tag.toObject();
-        tagController.tagFound(tag, req, res, next);
+      // Transform the mongoose model instance to a plain object
+      tag = tag.toObject();
+      tagController.tagFound(tag, req, res, next);
     });
   },
 
@@ -168,6 +166,10 @@ var tagController = {
    */
   tagFound: function(tag, req, res, next) {
     var result = tag;
+
+    // Remove unwanted attributes from mongo
+    delete tag._id;
+    delete tag.__v;
 
     // Add links in our object tag response
     var poi = helper.getNestedProperties(tag, 'location.poi.uuid');
@@ -189,17 +191,25 @@ var tagController = {
     var receiversValues = helper.getNestedProperties(tag, 'radioDecodings.receivers.values');
     if(receiversValues !== undefined) {
 
+      // For each receivers, we construct an array for the _links section
+      // and we add links to the receivers section (in the tag response)
       _.each(receiversValues, function(receiver) {
         var uuid = receiver.uuid;
         if(uuid) {
           decodingReelceiverUuid += receiver.uuid + ',';
           var reelceiverUri = responseLinks.toAbsolute('/reelceivers/' + uuid, req, true);
+          // We add the uri for the receivers section
           receiver.uri = {
             reelceiver: reelceiverUri
           };
-          decodingReelceiver.push(reelceiverUri);
+
+          // _links section
+          var linksReelceiver = _.clone(reelceiverUri);
+          linksReelceiver.title = receiver.uuid;
+          decodingReelceiver.push(linksReelceiver);
         }
       });
+      // Remove the last comma
       var lastCharIsComma = decodingReelceiverUuid.charAt(decodingReelceiverUuid.length-1) === ',';
       if(lastCharIsComma) {
         decodingReelceiverUuid = decodingReelceiverUuid.slice(0, -1);
@@ -223,6 +233,7 @@ var tagController = {
 
     if(poi !== undefined) {
       result._links.poi       = responseLinks.toAbsolute(reelceiversUrl + poi, req, true);
+      result._links.poi.title = poi;
       result._links.howIsPoi  = _.clone(howisUrl);
       result._links.howIsPoi.href += '?uuid=' + poi;
       result._links.whatAtPoi = _.clone(whatAtUrl);
@@ -230,6 +241,7 @@ var tagController = {
     }
     if(prevPoi !== undefined) {
       result._links.prevPoi       = responseLinks.toAbsolute(reelceiversUrl + prevPoi, req, true);
+      result._links.prevPoi.title = prevPoi;
       result._links.howIsPrevPoi  = _.clone(howisUrl);
       result._links.howIsPrevPoi.href += '?uuid=' + prevPoi;
       result._links.whatAtPrevPoi = _.clone(whatAtUrl);

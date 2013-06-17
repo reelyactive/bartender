@@ -143,9 +143,10 @@ var responseBoilerplate = {
      * @return {String | Object}     url or link object with href
      */
     toAbsolute: function(path, req, withVersion, simpleUrl) {
+      var url = '';
       if(req) {
         var parseUrl = urlUtil.parse(req.url);
-        var url = parseUrl.protocol + '//' + parseUrl.host;
+        url = parseUrl.protocol + '//' + parseUrl.host;
 
         if(withVersion) {
           var pathname = parseUrl.pathname.split('/');

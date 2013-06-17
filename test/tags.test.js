@@ -199,6 +199,8 @@ describe('Tags resource testing', function() {
         links.should.be.a('object').and.have.property('self');
         links.should.have.property('tags');
         links.should.have.property('poi');
+        links.poi.should.have.property('href');
+        links.poi.should.have.property('title');
         links.should.have.property('howIsPoi');
         links.should.have.property('whatAtPoi');
         // links.should.have.property('prevPoi');

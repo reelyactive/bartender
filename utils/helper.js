@@ -13,7 +13,7 @@ var helper = {
    * @return {Boolean}    either the object has these nested properties or not
    */
   getNestedProperties : function(obj, properties) {
-    var properties = properties.split('.');
+    properties = properties.split('.') || [];
 
     var err;
 
