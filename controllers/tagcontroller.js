@@ -134,10 +134,13 @@ var tagController = {
     var searchFilters = {
       type: 'Tag'
     };
+    var favoriteType;
     if(validator.validateMac(id)) {
       searchFilters.mac = id;
+      favoriteType = 'mac';
     } else if(validator.validateUuid(id)) {
       searchFilters.uuid = id;
+      favoriteType = 'uuid';
     }
 
     // Business logic
@@ -146,7 +149,7 @@ var tagController = {
         return next(err);
       }
       if(!tag) {
-        var message = 'No tag  with id (uuid or mac) ' + id + ' found';
+        var message = 'No tag  with ' + favoriteType + ' = ' + id + ' found';
         var result  = {
           _meta: new responseMeta.NotFound(message)
         };
@@ -156,7 +159,7 @@ var tagController = {
 
       // Transform the mongoose model instance to a plain object
       tag = tag.toObject();
-      tagController.tagFound(tag, req, res, next);
+      tagController.tagFound(tag, favoriteType, req, res, next);
     });
   },
 
@@ -164,55 +167,64 @@ var tagController = {
    * Called when a tag is found
    * Linked to findTag above
    */
-  tagFound: function(tag, req, res, next) {
-    var result = tag;
-
+  tagFound: function(tag, favoriteType,  req, res, next) {
     // Remove unwanted attributes from mongo
     delete tag._id;
     delete tag.__v;
 
+    var result    = {};
+    result._meta  = {};
+    result._links = {};
+    result = _.extend(result, tag);
+
+
     // Add links in our object tag response
-    var poi = helper.getNestedProperties(tag, 'location.poi.uuid');
+    var poi = helper.getNestedProperties(tag, 'location.poi.' + favoriteType);
     if(poi !== undefined) {
       tag.location.poi.uri = {
         reelceiver: responseLinks.toAbsolute('/reelceivers/' + poi, req, true)
       };
+      tag.location.poi.uri.reelceiver.title = 'Point of interest where this tag is located';
     }
-    var prevPoi = helper.getNestedProperties(tag, 'location.lastChangeEvent.poi.uuid');
+    var prevPoi = helper.getNestedProperties(tag, 'location.lastChangeEvent.poi.' + favoriteType);
     if(prevPoi !== undefined) {
       tag.location.lastChangeEvent.poi.uri = {
         reelceiver: responseLinks.toAbsolute('/reelceivers/' + prevPoi, req, true)
       };
+      tag.location.lastChangeEvent.poi.uri.reelceiver.title = 'Previous point of interest where this tag was located';
     }
 
     // Maybe we should pluralize this name as it's an array
     var decodingReelceiver = [];
-    var decodingReelceiverUuid = '';
+    var decodingReelceiverId = '';
     var receiversValues = helper.getNestedProperties(tag, 'radioDecodings.receivers.values');
     if(receiversValues !== undefined) {
 
       // For each receivers, we construct an array for the _links section
       // and we add links to the receivers section (in the tag response)
       _.each(receiversValues, function(receiver) {
-        var uuid = receiver.uuid;
-        if(uuid) {
-          decodingReelceiverUuid += receiver.uuid + ',';
-          var reelceiverUri = responseLinks.toAbsolute('/reelceivers/' + uuid, req, true);
+        var id = receiver[favoriteType];
+        if(id) {
+          decodingReelceiverId += id + ',';
+          var reelceiverUri = responseLinks.toAbsolute('/reelceivers/' + id, req, true);
+
+          // _links section
+          var linksReelceiver   = _.clone(reelceiverUri);
+          linksReelceiver.name  = favoriteType === 'mac' ? receiver.uuid : receiver.mac;
+          linksReelceiver.title = 'One of the reelceiver which decoded this tag';
+          decodingReelceiver.push(linksReelceiver);
+
           // We add the uri for the receivers section
           receiver.uri = {
             reelceiver: reelceiverUri
           };
-
-          // _links section
-          var linksReelceiver = _.clone(reelceiverUri);
-          linksReelceiver.title = receiver.uuid;
-          decodingReelceiver.push(linksReelceiver);
+          receiver.uri.reelceiver.title = 'One of the reelceiver which decoded this tag';
         }
       });
       // Remove the last comma
-      var lastCharIsComma = decodingReelceiverUuid.charAt(decodingReelceiverUuid.length-1) === ',';
+      var lastCharIsComma = decodingReelceiverId.charAt(decodingReelceiverId.length-1) === ',';
       if(lastCharIsComma) {
-        decodingReelceiverUuid = decodingReelceiverUuid.slice(0, -1);
+        decodingReelceiverId = decodingReelceiverId.slice(0, -1);
       }
     }
 
@@ -228,34 +240,47 @@ var tagController = {
     var howisUrl       = responseLinks.toAbsolute('/ask/howis', req, true);
     var whatAtUrl      = responseLinks.toAbsolute('/ask/whatat', req, true);
 
-    result._links      = responseLinks.setDefault(req);
-    result._links.tags = responseLinks.toAbsolute('/tags', req, true);
+    var links        = responseLinks.setDefault(req);
+    links.self.title = 'The tag himself';
+    links.tags       = responseLinks.toAbsolute('/tags', req, true);
+    links.tags.title = 'The tags resource. Return all the tags you have access to';
+
+    // Pluralize for the _links generation
+    favoriteType += 's';
 
     if(poi !== undefined) {
-      result._links.poi       = responseLinks.toAbsolute(reelceiversUrl + poi, req, true);
-      result._links.poi.title = poi;
-      result._links.howIsPoi  = _.clone(howisUrl);
-      result._links.howIsPoi.href += '?uuid=' + poi;
-      result._links.whatAtPoi = _.clone(whatAtUrl);
-      result._links.whatAtPoi.href += '?uuid=' + poi;
+      links.poi       = responseLinks.toAbsolute(reelceiversUrl + poi, req, true);
+      links.poi.title = 'Point of interest where this tag is located';
+      links.howIsPoi  = _.clone(howisUrl);
+      links.howIsPoi.href += '?' + favoriteType + '=' + poi;
+      links.howIsPoi.title = 'Know how is the point of interest where this tag is located';
+      links.whatAtPoi = _.clone(whatAtUrl);
+      links.whatAtPoi.href += '?' + favoriteType + '=' + poi;
+      links.whatAtPoi.title = 'Find what at the point of interest where this tag is located';
     }
     if(prevPoi !== undefined) {
-      result._links.prevPoi       = responseLinks.toAbsolute(reelceiversUrl + prevPoi, req, true);
-      result._links.prevPoi.title = prevPoi;
-      result._links.howIsPrevPoi  = _.clone(howisUrl);
-      result._links.howIsPrevPoi.href += '?uuid=' + prevPoi;
-      result._links.whatAtPrevPoi = _.clone(whatAtUrl);
-      result._links.whatAtPrevPoi.href += '?uuid=' + prevPoi;
+      links.prevPoi       = responseLinks.toAbsolute(reelceiversUrl + prevPoi, req, true);
+      links.prevPoi.title = 'Previous point of interest where this tag was located';
+      links.howIsPrevPoi  = _.clone(howisUrl);
+      links.howIsPrevPoi.href += '?' + favoriteType + '=' + prevPoi;
+      links.howIsPrevPoi.title = 'Know how is the previous point of interest where this tag was located';
+      links.whatAtPrevPoi = _.clone(whatAtUrl);
+      links.whatAtPrevPoi.href += '?' + favoriteType + '=' + prevPoi;
+      links.whatAtPrevPoi.title = 'Find what at the previous point of interest where this tag was located';
     }
     if(decodingReelceiver.length >= 0) {
-      result._links.decodingReelceiver = decodingReelceiver;
-      if(decodingReelceiverUuid !== '') {
-        result._links.howAreDecodingReelceivers = _.clone(howisUrl);
-        result._links.howAreDecodingReelceivers.href += '?uuid=' + decodingReelceiverUuid;
-        result._links.whatAtDecodingReelceivers = _.clone(whatAtUrl);
-        result._links.whatAtDecodingReelceivers.href += '?uuid=' + decodingReelceiverUuid;
+      links.decodingReelceiver = decodingReelceiver;
+      if(decodingReelceiverId !== '') {
+        links.howAreDecodingReelceivers = _.clone(howisUrl);
+        links.howAreDecodingReelceivers.href  += '?' + favoriteType + '=' + decodingReelceiverId;
+        links.howAreDecodingReelceivers.title = 'Know how are the reelceivers which decoded this tag';
+        links.whatAtDecodingReelceivers = _.clone(whatAtUrl);
+        links.whatAtDecodingReelceivers.href += '?' + favoriteType + '=' + decodingReelceiverId;
+        links.whatAtDecodingReelceivers.title = 'Find what is located at the reelceivers which decoded this tag';
       }
     }
+
+    result._links = links;
 
     res.json(result);
     return next();

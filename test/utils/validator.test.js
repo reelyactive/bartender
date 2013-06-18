@@ -65,6 +65,12 @@ describe('Validator testing', function() {
         isValid.should.be.false;
       });
 
+      it('should return false if the mac param is not valid', function() {
+        var mac     = '00-1b-c5-09-45-zz-d7-e8';
+        var isValid = validator.validateMac(mac);
+        isValid.should.be.false;
+      });
+
       it('should return an error if a mac param is not valid', function(done) {
         req.params.macs = '00-1b-c5-09-45-c6-d7-e8,' +
                           '00-15-09c6-d7-e8,' +
@@ -124,6 +130,12 @@ describe('Validator testing', function() {
         isValid.should.be.false;
       });
 
+      it('should return false if the uuid param is not valid', function() {
+        var uuid    = '550e8400-e29b-91d4-f716-44665ff440zz0';
+        var isValid = validator.validateUuid(uuid);
+        isValid.should.be.false;
+      });
+
       it('should return an error if a uuid param is not valid', function(done) {
         req.params.uuids = '550e8400-e29b-91d4-f716-44665ff440000,'+
                            '550e8400-e29b-41d4-a716-446655440000';
@@ -175,6 +187,15 @@ describe('Validator testing', function() {
         req.params.id = 'wrongInputValue';
         validator.idIsAValidMacOrUuid(req, res, function isValid() {
           should.exist(req.error);
+          done();
+        });
+      });
+
+      it('should lowercase the id param', function(done) {
+        req.params.id = 'AA-BB-CC-DD-AA-BB-CC-DD';
+        validator.idIsAValidMacOrUuid(req, res, function isValid() {
+          req.params.id.should.equal('aa-bb-cc-dd-aa-bb-cc-dd');
+          should.not.exist(req.error);
           done();
         });
       });

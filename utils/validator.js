@@ -71,7 +71,7 @@ var validator = {
     var isValidMac = true;
     // 16 lowercase hexadecimal digits splitted in eight groups of two
     // and separated by hyphens or colons
-    var isValid = /^(([\w]{2}[-|:]){7}[\w]{2})$/i;
+    var isValid = /^(([0-9a-f]{2}[-|:]){7}[0-9a-f]{2})$/i;
     if(!isValid.test(mac)) {
       isValidMac = false;
     }
@@ -153,6 +153,8 @@ var validator = {
    * @param  {Function} next  callback
    */
   idIsAValidMacOrUuid: function(req, res, next) {
+    // always lowercase the id (mac or uuid) by convention
+    req.params.id = req.params.id.toLowerCase();
     var id = req.params.id;
     var isNotAValidMacOrUuid = !(validator.validateMac(id) || validator.validateUuid(id));
     if(isNotAValidMacOrUuid){
