@@ -53,7 +53,12 @@ var tagController = {
     // First, count the total number of tags we can access
     Tag.count(conditions, function tagCount(err, count) {
       if(err) {
-        return next(err);
+        result = {
+          _meta: new responseMeta.InternalServerError()
+        };
+        console.log('Error on mongoose request (Tag.count): ' + err);
+        res.json(result);
+        return next();
       }
       totalCount = count;
 
@@ -65,7 +70,12 @@ var tagController = {
         .limit(perpage)
         .exec(function tagsFound(err, tags) {
           if(err) {
-            return next(err);
+            result = {
+              _meta: new responseMeta.InternalServerError()
+            };
+            console.log('Error on mongoose request (Tag.find): ' + err);
+            res.json(result);
+            return next();
           }
 
           // Metadata handling

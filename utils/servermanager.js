@@ -74,7 +74,8 @@ var serverManager = {
     // 500 - Internal error
     server.on('uncaughtException', function after(req, res, route, err) {
       var result = {};
-      result._meta = new responseMeta.InternalServerError(err.message);
+      console.log('Error: Uncaught exception. Message: ' + err.message);
+      result._meta = new responseMeta.InternalServerError();
       res.json(result._meta.statusCode, result);
     });
   }
