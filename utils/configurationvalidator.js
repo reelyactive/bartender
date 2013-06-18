@@ -39,6 +39,7 @@ var configurationValidator = {
     defaults = {
       host: 'localhost',
       port: 27017,
+      type: 'mongodb',
       database: 'reelyActiveDB',
       options: null
     };
@@ -64,6 +65,7 @@ var configurationValidator = {
 
     validateValue(dbconf.host, 'host');
     validatePort(dbconf.port);
+    validateValue(dbconf.type, 'type');
     validateValue(dbconf.database, 'database');
     validateValue(dbconf.options, 'options', 'object');
 

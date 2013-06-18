@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var databaseManager = require('./database/databasemanager');
 
 /**
  * Tag schema
@@ -6,7 +6,7 @@ var mongoose = require('mongoose');
  * in MongoDB.
  * @type {Schema}
  */
-var tagSchema = new mongoose.Schema({
+var tagSchema = {
   uuid: String,
   mac: String,
   vendor: String,
@@ -80,10 +80,17 @@ var tagSchema = new mongoose.Schema({
     },
     transmitters: {}
   }
-});
+};
 
-// Compile our tagSchema into a tagModel
-// A model is a class with which we construct documents.
-var Tag = mongoose.model('Tag', tagSchema, 'device');
+var tagModel = {
+  count: function(conditions, callback) {
+    databaseManager.db.tag.count(conditions, callback);
+  },
 
-module.exports = Tag;
+  find: function(conditions, columns, offset, perpage, callback) {
+    databaseManager.db.tag.find(conditions, columns, offset, perpage, callback);
+  }
+};
+
+module.exports.schema = tagSchema;
+module.exports.model  = tagModel;

@@ -1,5 +1,5 @@
 var _                   = require('underscore');
-var Tag                 = require('../models/tag');
+var tagModel            = require('../models/tag').model;
 var responseBoilerplate = require('../utils/responseboilerplate');
 var responseMeta        = responseBoilerplate.responseMeta;
 var responseLinks       = responseBoilerplate.responseLinks;
@@ -51,29 +51,25 @@ var tagController = {
     }
 
     // First, count the total number of tags we can access
-    Tag.count(conditions, function tagCount(err, count) {
+    tagModel.count(conditions, function tagCount(err, count) {
       if(err) {
         result = {
           _meta: new responseMeta.InternalServerError()
         };
-        console.log('Error on mongoose request (Tag.count): ' + err);
+        console.log('Error on database request (Tag.count): ' + err);
         res.json(result);
         return next();
       }
       totalCount = count;
 
       // Then we find the tags based on page/perpage
-      Tag
-        .find(conditions,
-              'uuid mac')
-        .skip(offset)
-        .limit(perpage)
-        .exec(function tagsFound(err, tags) {
+      tagModel.find(conditions, 'uuid mac', offset, perpage,
+         function tagsFound(err, tags) {
           if(err) {
             result = {
               _meta: new responseMeta.InternalServerError()
             };
-            console.log('Error on mongoose request (Tag.find): ' + err);
+            console.log('Error on database request (Tag.find): ' + err);
             res.json(result);
             return next();
           }
@@ -138,38 +134,38 @@ var tagController = {
    * Find a specific tag
    */
   findTag: function(req, res, next) {
-    var id = req.params.id;
+    // var id = req.params.id;
 
-    // Instantiate result
-    var result = {};
-    result._meta = {};
+    // // Instantiate result
+    // var result = {};
+    // result._meta = {};
 
-    // Links handling
-    var url = req.href();
+    // // Links handling
+    // var url = req.href();
 
-    // Business logic
-    Tag.findOne({
-        type: 'Tag',
-        mac: id
-      }, function tagFound(err, tag) {
-        if(err) {
-          return next(err);
-        }
-        if(!tag) {
-          result = {};
-          var message = 'No tag  with id ' + id + ' found';
-          result._meta = new responseMeta.NotFound(message);
-          return res.json(result._meta.statusCode, result);
-        }
-        result.tag = tag;
+    // // Business logic
+    // Tag.findOne({
+    //     type: 'Tag',
+    //     mac: id
+    //   }, function tagFound(err, tag) {
+    //     if(err) {
+    //       return next(err);
+    //     }
+    //     if(!tag) {
+    //       result = {};
+    //       var message = 'No tag  with id ' + id + ' found';
+    //       result._meta = new responseMeta.NotFound(message);
+    //       return res.json(result._meta.statusCode, result);
+    //     }
+    //     result.tag = tag;
 
-        // Metadata handling
-        result._meta = new responseMeta.Ok();
+    //     // Metadata handling
+    //     result._meta = new responseMeta.Ok();
 
-        res.json(result);
-        return next();
-      }
-    );
+    //     res.json(result);
+    //     return next();
+    //   }
+    // );
   }
 };
 

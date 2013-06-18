@@ -22,28 +22,26 @@ describe('Status code testing', function() {
   // Routes that should return a 200 status code
   // 200 - ok
   routes[200] = [
-    'tags', 'tags/00-10-00-57',
-    'ask/whereis?macs=00-10-00-57',
-    'ask/whereis?macs=00-10-00-57,00-10-00-00,00-10-00-23'
+    'tags',
+    // 'ask/whereis?macs=00-10-00-57',
+    // 'ask/whereis?macs=00-10-00-57,00-10-00-00,00-10-00-23'
   ];
 
   // Routes that should return a 400 status code
   // 400 - Bad Request
-  routes[400] = ['ask/whatat', 'ask/whereis', 'ask/howis'];
+  // routes[400] = ['ask/whatat', 'ask/whereis', 'ask/howis'];
 
   // Routes that should return a 404 status code
   // 404 - not found
-  routes[404] = [ 'notexist',
-    'tags/FF-FF-FF-FF-FF'
-  ];
+  routes[404] = [ 'notexist' ];
 
   // Routes that should return a 501 status code
   // 501 - Not implemented
   routes[501] = [
-    'ask',
-    'ask/whatat?macs=00-00-00-02',
-    'ask/whatat?macs=00-00-00-02,00-00-00-01,00-00-00-06',
-    'ask/howis?macs=00-00-00-02'
+    // 'ask',
+    // 'ask/whatat?macs=00-00-00-02',
+    // 'ask/whatat?macs=00-00-00-02,00-00-00-01,00-00-00-06',
+    // 'ask/howis?macs=00-00-00-02'
   ];
 
   var routeGroupNum = -1;

@@ -27,6 +27,7 @@ var configurationManager = {
   dbConf : {
     host: 'localhost',
     port: 27017,
+    type: 'mongodb',
     database: 'bartender',
     options: {
       server: {

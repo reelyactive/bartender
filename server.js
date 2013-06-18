@@ -30,7 +30,7 @@ var restify = require('restify');
 
 var configurationValidator = require('./utils/configurationvalidator');
 var serverManager          = require('./utils/servermanager');
-var databaseManager        = require('./utils/databasemanager');
+var databaseManager        = require('./models/database/databasemanager');
 var routeManager           = require('./routes/routemanager');
 
 var conf, dbConf;
@@ -67,11 +67,24 @@ function createServer() {
   /**
    * Database connection
    */
-  databaseManager.connectDatabase(dbConf, function databaseConnected(err) {
+  databaseManager.init(dbConf);
+  console.log('\n## Database connection');
+  databaseManager.db.connect(function databaseConnected(err) {
+    /**
+     * If an error occured during the connection
+     * log some informations and return the error
+     */
     if(err) {
-      console.log(err);
+      var errInfos =
+        '- Cannot connect with the database.\n' +
+        '    First, check that it\'s up and running.\n' +
+        '    Then, check your configuration file.\n';
+      errInfos = errInfos + err;
+      console.log(errInfos);
       process.exit();
     }
+
+    console.log('- Connection with the database: OK');
 
     /**
      * Routes initialization
@@ -97,5 +110,7 @@ function createServer() {
  */
 process.on('exit', function() {
   console.log('\n## Proccess exiting');
-  databaseManager.disconnectDatabase();
+  databaseManager.db.disconnect(function databaseDisconnected() {
+    console.log('- Database disconnected');
+  });
 });
