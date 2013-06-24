@@ -1,5 +1,6 @@
-var Tag         = require('../models/tag');
-var Reelceiver  = require('../models/reelceiver');
+var mongoose     = require('mongoose');
+var Tag          = mongoose.model('Tag');
+var Reelceiver   = mongoose.model('Reelceiver');
 
 /**
  * MgmtController
