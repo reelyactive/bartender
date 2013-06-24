@@ -11,24 +11,51 @@ var mongoDatabase = {
   /**
    * Initialize the database by saving configuration and loading
    * models
+   * @param  {Object} conf   database configuration
+   * @param  {Array}  models models we want to load
    */
   init: function(conf, models) {
-    this.uri = 'mongodb://' +
-                conf.host + ':' + conf.port + '/' + conf.database;
     this.conf = conf;
+    this.loadModels(models);
+  },
 
-    /**
-     * Load each models in mongoose
-     */
-    _.each(models, function initModel(model) {
-      mongoDatabase[model].init();
-    });
+  /**
+   * Load each models in mongoose
+   * @param  {Array} models Array of models we want to load
+   */
+  loadModels: function(models) {
+    _.each(models, function (modelName) {
+      this.loadModel(modelName);
+    }, this);
+  },
+
+  /**
+   * Load a model
+   * @param  {String} modelName model we want to load
+   */
+  loadModel: function(modelName) {
+    var schema         = require('../' + modelName).schema;
+    var schemaMongoose = new mongoose.Schema(schema);
+
+    // This if allows us to extend mongoose with some of our methods
+    if(this[modelName]) {
+      schemaMongoose.statics = _.extend(schemaMongoose.statics, this[modelName]);
+    }
+
+    // Compile our schema into a Model
+    // A model is a class with which we construct documents.
+    var modelUpperCase = modelName.charAt(0).toUpperCase() + modelName.substr(1);
+    var mongooseModel  = mongoose.model(modelUpperCase, schemaMongoose, 'device');
+
+    this[modelName]  = mongooseModel;
   },
 
   /**
    * Connect to the database
    */
   connect: function(callback) {
+    this.uri = 'mongodb://' +
+                this.conf.host + ':' + this.conf.port + '/' + this.conf.database;
     mongoose.connect(this.uri, this.conf.options, callback);
   },
 
@@ -37,32 +64,19 @@ var mongoDatabase = {
    */
   disconnect: function(callback) {
     mongoose.disconnect(callback);
-  }
-};
-
-/**
- * Tag operations
- * @type {Object}
- */
-mongoDatabase.tag = {
-  /**
-   * Load the tag model
-   */
-  init: function() {
-    var tagSchema = require('../tag').schema;
-    var tagSchemaMongoose = new mongoose.Schema(tagSchema);
-    // Compile our tagSchema into a tagModel
-    // A model is a class with which we construct documents.
-    this.model = mongoose.model('Tag', tagSchemaMongoose, 'device');
   },
 
   /**
-   * Count nbr of tags depending on conditions
+   * Common requests
+   */
+
+  /**
+   * Count nbr of modelName (e.g. tags) depending on conditions
    * @param  {Object}   conditions equivalent to clause where
    * @param  {Function} callback   callback
    */
-  count: function(conditions, callback) {
-    this.model.count(conditions, callback);
+  count: function(modelName, conditions, callback) {
+    this[modelName].count(conditions, callback);
   },
 
   /**
@@ -70,33 +84,33 @@ mongoDatabase.tag = {
    * on columns, and pagination informations
    * @param  {Object}   conditions equivalent to clause where
    * @param  {String}   columns    select specific columns
-   * @param  {Int}      offset     pagination offset
-   * @param  {Int}      perpage    pagination perpage (=limit)
+   * @param  {Object}   pagination contain the paginatio information (offset, perpage)
    * @param  {Function} callback   callback
    */
-  find: function(conditions, columns, offset, perpage, callback) {
-    this.model.find(conditions, columns)
-       .skip(offset)
-       .limit(perpage)
-       .exec(callback);
+  find: function(modelName, conditions, columns, pagination, callback) {
+    var query = this[modelName].find(conditions, columns);
+    if(pagination) {
+      query.skip(pagination.offset)
+           .limit(pagination.perpage)
+    }
+    query.exec(callback);
   }
 };
 
 /**
- * Reelceiver operations
- * @type {Object}
+ * Example of how to add specifics methods to a model (i.e. tag)
  */
-mongoDatabase.reelceiver = {
-  /**
-   * Load the reelceiver model
-   */
-  init: function() {
-    var reelceiverSchema = require('../reelceiver').schema;
-    var reelceiverSchemaMongoose = new mongoose.Schema(reelceiverSchema);
-    // Compile our reelceiverSchema into a reelceiverModel
-    // A model is a class with which we construct documents.
-    this.model = mongoose.model('Reelceiver', reelceiverSchemaMongoose, 'device');
-  }
-};
+// mongoDatabase.tag = {
+//   countOverrideExample: function(conditions, callback) {
+//     // Do your work here
+//     // Here, 'this' contains the mongoose model
+//     // (i.e. count is a request from mongoose)
+//     this.count(conditions, callback);
+//   }
+// };
+//
+// Then, the usage on a controller would be:
+//
+// tagModel.countOverrideExample({type:'Tag'}, callback);
 
 module.exports = mongoDatabase;

@@ -63,7 +63,7 @@ var tagController = {
       totalCount = count;
 
       // Then we find the tags based on page/perpage
-      tagModel.find(conditions, 'uuid mac', offset, perpage,
+      tagModel.find(conditions, 'uuid mac', {offset: offset, perpage: perpage},
          function tagsFound(err, tags) {
           if(err) {
             result = {

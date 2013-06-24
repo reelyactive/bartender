@@ -1,3 +1,4 @@
+var commonModel     = require('./commonModel');
 var databaseManager = require('./database/databasemanager');
 
 /**
@@ -82,15 +83,14 @@ var tagSchema = {
   }
 };
 
-var tagModel = {
-  count: function(conditions, callback) {
-    databaseManager.db.tag.count(conditions, callback);
-  },
+var tagModel = new commonModel('tag');
 
-  find: function(conditions, columns, offset, perpage, callback) {
-    databaseManager.db.tag.find(conditions, columns, offset, perpage, callback);
-  }
-};
+/**
+ * Example of how to add methods to a model
+ */
+// tagModel.countOverrideExample = function(conditions, cb) {
+//   databaseManager.db.tag.countOverrideExample(conditions, cb);
+// };
 
 module.exports.schema = tagSchema;
 module.exports.model  = tagModel;
