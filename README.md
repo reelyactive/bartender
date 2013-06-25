@@ -1,4 +1,18 @@
-beehive
-=======
+# [Bartender 0.1.0](https://github.com/reelyactive/bartender/)
 
-Beehive is a REST API that provides the interface to label the infrastructure and to query for information.
+Bartender is a REST-style API that enables third parties to ask questions about the infrastructure and the status of the devices they have access to.
+
+## Quick Start
+
+* Clone the repo: `git clone git@github.com:reelyactive/bartender.git`
+* Run the following to get all the dependancies: `[sudo] npm install`
+
+Before launching the API, be sure to rename dbconf.sample.js to dbconf.js
+
+### Unit tests
+
+Your code must include the relevant unit tests. We're using [Mocha](http://visionmedia.github.com/mocha/). To run the tests, enter the following:
+
+`grunt tests`
+
+More details can be found on [reelyActive's TeamCentral testing page](https://sites.google.com/a/reelyactive.com/teamcentral/collaboration/automatedtesting).
