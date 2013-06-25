@@ -2,6 +2,7 @@ var responseBoilerplate = require('./responseboilerplate');
 var responseLinks       = responseBoilerplate.responseLinks;
 var urlUtil             = require('url');
 var _                   = require('underscore');
+var MESSAGES            = require('./messages');
 
 /**
  * Paginator is an helper class to handle all paginations functions
@@ -69,10 +70,15 @@ var paginator = {
 
     var links   = {};
     links.self  = responseLinks.toAbsolute(url + 'page=' + page + '&perpage=' + perpage);
+    links.self.title  = _.template(MESSAGES.titles.pagination.self, {type: type});
     links.first = responseLinks.toAbsolute(first);
+    links.first.title = _.template(MESSAGES.titles.pagination.first, {type: type});
     links.prev  = responseLinks.toAbsolute(prev);
+    links.prev.title  = _.template(MESSAGES.titles.pagination.prev, {type: type});
     links.next  = responseLinks.toAbsolute(next);
+    links.next.title  = _.template(MESSAGES.titles.pagination.next, {type: type});
     links.last  = responseLinks.toAbsolute(last);
+    links.last.title  = _.template(MESSAGES.titles.pagination.last, {type: type});
 
     return links;
   },

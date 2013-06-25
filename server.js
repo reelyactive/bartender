@@ -27,15 +27,17 @@
  */
 
 var restify = require('restify');
+var _       = require('underscore');
 
 var configurationValidator = require('./utils/configurationvalidator');
 var serverManager          = require('./utils/servermanager');
 var databaseManager        = require('./models/database/databasemanager');
 var routeManager           = require('./routes/routemanager');
+var MESSAGES               = require('./utils/messages');
 
 var conf, dbConf;
 
-console.log('\n# Initialization');
+console.log(MESSAGES.internal.initialization);
 
 /**
  * Validate the configuration file to avoid errors
@@ -68,23 +70,20 @@ function createServer() {
    * Database connection
    */
   databaseManager.init(dbConf);
-  console.log('\n## Database connection');
+  console.log(MESSAGES.internal.dbConnection);
   databaseManager.db.connect(function databaseConnected(err) {
     /**
      * If an error occured during the connection
      * log some informations and return the error
      */
     if(err) {
-      var errInfos =
-        '- Cannot connect with the database.\n' +
-        '    First, check that it\'s up and running.\n' +
-        '    Then, check your configuration file.\n';
+      var errInfos = MESSAGES.errors.dbConnection;
       errInfos = errInfos + err;
       console.log(errInfos);
       process.exit();
     }
 
-    console.log('- Connection with the database: OK');
+    console.log(MESSAGES.internal.dbConnected);
 
     /**
      * Routes initialization
@@ -96,10 +95,10 @@ function createServer() {
     /**
      * Server listening
      */
-    console.log('\n## Starting the server');
+    console.log(MESSAGES.internal.serverStarting);
 
     server.listen(conf.port, function serverListenning() {
-      console.log('-  %s is ready and waiting for your orders at %s', server.name, server.url);
+      console.log(_.template(MESSAGES.internal.serverReady, {name: server.name, url: server.url}));
     });
   });
 }
@@ -109,8 +108,8 @@ function createServer() {
  * close the conection with the database
  */
 process.on('exit', function() {
-  console.log('\n## Proccess exiting');
+  console.log(MESSAGES.internal.exiting);
   databaseManager.db.disconnect(function databaseDisconnected() {
-    console.log('- Database disconnected');
+    console.log(MESSAGES.internal.dbDisconnected);
   });
 });

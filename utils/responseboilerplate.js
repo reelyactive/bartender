@@ -1,6 +1,7 @@
-var restify = require('restify');
-var util    = require('util');
-var urlUtil = require('url');
+var restify  = require('restify');
+var util     = require('util');
+var urlUtil  = require('url');
+var MESSAGES = require('./messages');
 
 /**
  * Response boilerplate for our API
@@ -16,12 +17,12 @@ var responseBoilerplate = {
   responseMeta: {
     // 200
     Ok: function(message, options) {
-      this.message          = message || 'ok';
+      this.message          = message || MESSAGES.response.ok.message;
       this.statusCode       = 200;
-      this.developerMessage = 'ok';
-      this.userMessage      = 'Everything is ok.';
+      this.developerMessage = MESSAGES.response.ok.developerMessage;
+      this.userMessage      = MESSAGES.response.ok.userMessage;
       this.errorCode        = null;
-      this.moreInfo         = 'Documentation not implemented yet';
+      this.moreInfo         = MESSAGES.response.ok.moreInfo;
 
       options = options || {};
       this.totalCount       = options.totalCount || 1;
@@ -42,75 +43,75 @@ var responseBoilerplate = {
     BadRequest: function(message) {
       restify.RestError.call(this, {
         statusCode     : 400,
-        message        : message || 'badRequest',
+        message        : message || MESSAGES.response.badRequest.message,
         constructorOpt : responseBoilerplate.responseMeta.BadRequest
       });
       delete this.body;
       delete this.restCode;
-      this.developerMessage = 'badRequest';
-      this.userMessage      = 'An error occured due to a missing information.';
+      this.developerMessage = MESSAGES.response.badRequest.developerMessage;
+      this.userMessage      = MESSAGES.response.badRequest.userMessage;
       this.errorCode        = 400;
-      this.moreInfo         = 'Documentation not implemented yet';
+      this.moreInfo         = MESSAGES.response.badRequest.moreInfo;
     },
 
     // 404
     NotFound: function(message) {
       restify.RestError.call(this, {
         statusCode     : 404,
-        message        : message || 'notFound',
+        message        : message || MESSAGES.response.notFound.message,
         constructorOpt : responseBoilerplate.responseMeta.NotFound
       });
       delete this.body;
       delete this.restCode;
-      this.developerMessage = 'notFound';
-      this.userMessage      = 'Ressource not found';
+      this.developerMessage = MESSAGES.response.notFound.developerMessage;
+      this.userMessage      = MESSAGES.response.notFound.userMessage;
       this.errorCode        = 404;
-      this.moreInfo         = 'Documentation not implemented yet';
+      this.moreInfo         = MESSAGES.response.notFound.moreInfo;
     },
 
     // 406
     NotAcceptable: function(message) {
       restify.RestError.call(this, {
         statusCode     : 406,
-        message        : message || 'notAcceptable',
+        message        : message || MESSAGES.response.notAcceptable.message,
         constructorOpt : responseBoilerplate.responseMeta.NotAcceptable
       });
       delete this.body;
       delete this.restCode;
-      this.developerMessage = 'notAcceptable';
-      this.userMessage      = 'This action isn\'t supported by the server';
+      this.developerMessage = MESSAGES.response.notAcceptable.developerMessage;
+      this.userMessage      = MESSAGES.response.notAcceptable.userMessage;
       this.errorCode        = 406;
-      this.moreInfo         = 'Documentation not implemented yet';
+      this.moreInfo         = MESSAGES.response.notAcceptable.moreInfo;
     },
 
     // 500
     InternalServerError: function(message) {
       restify.RestError.call(this, {
         statusCode     : 500,
-        message        : message || 'internalServerError',
+        message        : message || MESSAGES.response.internalServerError.message,
         constructorOpt : responseBoilerplate.responseMeta.InternalServerError
       });
       delete this.body;
       delete this.restCode;
-      this.developerMessage = 'internalServerError';
-      this.userMessage      = 'An error occured on our side.';
+      this.developerMessage = MESSAGES.response.internalServerError.developerMessage;
+      this.userMessage      = MESSAGES.response.internalServerError.userMessage;
       this.errorCode        = 500;
-      this.moreInfo         = 'Documentation not implemented yet';
+      this.moreInfo         = MESSAGES.response.internalServerError.moreInfo;
     },
 
     // 501
     NotImplemented: function(message) {
       restify.RestError.call(this, {
         statusCode     : 501,
-        message        : message || 'notImplemented',
+        message        : message || MESSAGES.response.notImplemented.message,
         constructorOpt : responseBoilerplate.responseMeta.NotImplemented
       });
       delete this.body;
       delete this.restCode;
-      this.developerMessage = 'notImplemented';
-      this.userMessage      = 'The action you\'ve tried isn\'t yet implemented.';
+      this.developerMessage = MESSAGES.response.notImplemented.developerMessage;
+      this.userMessage      = MESSAGES.response.notImplemented.userMessage;
       this.errorCode        = 501;
-      this.moreInfo         = 'Documentation not implemented yet';
+      this.moreInfo         = MESSAGES.response.notImplemented.moreInfo;
     }
   },
 
