@@ -4,6 +4,7 @@ var responseMeta        = responseBoilerplate.responseMeta;
 var responseLinks       = responseBoilerplate.responseLinks;
 var routeManager        = require('../routes/routemanager');
 var versionManager      = require('../versionmanager');
+var MESSAGES            = require('../utils/messages');
 
 /**
  * EntryController
@@ -36,7 +37,7 @@ var entryController = {
 
     result._meta.totalCount = result._links.versions.length;
 
-    res.json(result);
+    res.json(result._meta.statusCode, result);
     return next();
   },
 
@@ -63,7 +64,7 @@ var entryController = {
     // If the requested version doesn't exist return 404
     if(!result.name) {
       delete result._links;
-      var message = 'The version you request, doesn\'t exist.';
+      var message = MESSAGES.entry.versionNotFound;
       result._meta = new responseMeta.NotFound(message);
     } else {
       result._meta = new responseMeta.Ok();
@@ -86,10 +87,9 @@ var entryController = {
    */
   notFound: function (req, res, next) {
     var result = {};
-    var message = 'Why did you request the 404 ? ' +
-                  'Now, you\'re lost.. And so am I.';
+    var message = MESSAGES.entry.notFoundPage;
     result._meta = new responseMeta.NotFound(message);
-    res.send(result._meta.statusCode, result);
+    res.json(result._meta.statusCode, result);
     return next();
   }
 };

@@ -1,6 +1,7 @@
 var _            = require('underscore');
 var responseMeta = require('./responseboilerplate').responseMeta;
 var restify      = require('restify');
+var MESSAGES     = require('./messages');
 
 /**
  * Validator is here for validation purposes
@@ -57,7 +58,8 @@ var validator = {
    */
   requireParam: function(paramName, req, res, next) {
     if(!req.params[paramName]) {
-      req.error = new responseMeta.BadRequest('Missing required parameter : ' + paramName);
+      var message = _.template(MESSAGES.errors.missingRequiredParam, {paramName: paramName});
+      req.error = new responseMeta.BadRequest(message);
     }
     return next();
   },
@@ -92,7 +94,8 @@ var validator = {
       var l = macs.length;
       _.each(macs, function (mac) {
         if(!req.error && !validator.validateMac(mac)) {
-          req.error = new responseMeta.BadRequest('macs parameters has a bad formatting.');
+          var message = _.template(MESSAGES.errors.invalidParam, {paramName: 'macs'});
+          req.error = new responseMeta.BadRequest(message);
           return next();
         }
 
@@ -133,7 +136,8 @@ var validator = {
       var l = uuids.length;
       _.each(uuids, function validateUuid(uuid){
         if(!req.error && !validator.validateUuid(uuid)) {
-          req.error = new responseMeta.BadRequest('uuids parameters has a bad formatting.');
+          var message = _.template(MESSAGES.errors.invalidParam, {paramName: 'uuids'});
+          req.error = new responseMeta.BadRequest(message);
           return next();
         }
 

@@ -1,5 +1,6 @@
 var _                    = require('underscore');
 var configurationManager = require('../conf');
+var MESSAGES             = require('./messages');
 
 /**
  * ConfigurationValidator is here to validate the configuration file
@@ -19,7 +20,7 @@ var configurationValidator = {
    */
   validate: function(next) {
 
-    console.log('\n## Validation of the configuration file');
+    console.log(MESSAGES.internal.confValidation);
     configurationValidator.err = '';
 
     /**
@@ -39,6 +40,7 @@ var configurationValidator = {
     defaults = {
       host: 'localhost',
       port: 27017,
+      type: 'mongodb',
       database: 'reelyActiveDB',
       options: null
     };
@@ -64,18 +66,19 @@ var configurationValidator = {
 
     validateValue(dbconf.host, 'host');
     validatePort(dbconf.port);
+    validateValue(dbconf.type, 'type');
     validateValue(dbconf.database, 'database');
     validateValue(dbconf.options, 'options', 'object');
 
     var err = configurationValidator.err;
 
     if(err) {
-      console.log('- Configuration file is not valid.');
+      console.log(MESSAGES.internal.confInvalid);
       console.log(err);
 
       return next(err);
     }
-    console.log('- Configuration file is valid.');
+    console.log(MESSAGES.internal.confValid);
 
     return next(null, {
       conf: configurationValidator.conf,

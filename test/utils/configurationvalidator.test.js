@@ -36,6 +36,7 @@ describe('Configuration validator testing', function() {
       configuration.conf.version.should.equal('1.0.0');
       configuration.dbConf.host.should.equal('localhost');
       configuration.dbConf.port.should.equal(27017);
+      configuration.dbConf.type.should.equal('mongodb');
       configuration.dbConf.database.should.equal('reelyActiveDB');
       should.not.exist(configuration.dbConf.options);
       should.not.exist(err);
@@ -53,6 +54,7 @@ describe('Configuration validator testing', function() {
     var wrongDbConf = {
       host: 123,
       port: {},
+      type: 123,
       database: 123,
       options: 123
     };
@@ -71,6 +73,7 @@ describe('Configuration validator testing', function() {
 
   testWrongConfValue('dbConf' , 'host'     , 123);
   testWrongConfValue('dbConf' , 'port'     , {});
+  testWrongConfValue('dbConf' , 'type' , 123);
   testWrongConfValue('dbConf' , 'database' , 123);
   testWrongConfValue('dbConf' , 'options'  , 123);
 

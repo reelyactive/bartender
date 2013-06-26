@@ -23,15 +23,12 @@ describe('Status code testing', function() {
   // 200 - ok
   routes[200] = [
     'tags', 'tags/00-00-00-00-00-00-00-23',
-    'tags/550e8400-e29b-41d4-a716-446655440000',
-    'ask/whereis?macs=00-10-00-57',
-    'ask/whereis?macs=00-10-00-57,00-10-00-00,00-10-00-23'
+    'tags/550e8400-e29b-41d4-a716-446655440000'
   ];
 
   // Routes that should return a 400 status code
   // 400 - Bad Request
   routes[400] = [
-    'ask/whatat', 'ask/whereis', 'ask/howis',
     'tags/ff-ff-ff', // wrong mac
     'tags/ffffffff-ffff-ffff-ffff-ffffffffffff' // wrong uuid
   ];
@@ -46,10 +43,10 @@ describe('Status code testing', function() {
   // Routes that should return a 501 status code
   // 501 - Not implemented
   routes[501] = [
-    'ask',
-    'ask/whatat?macs=00-00-00-02',
-    'ask/whatat?macs=00-00-00-02,00-00-00-01,00-00-00-06',
-    'ask/howis?macs=00-00-00-02'
+    // 'ask',
+    // 'ask/whatat?macs=00-00-00-02',
+    // 'ask/whatat?macs=00-00-00-02,00-00-00-01,00-00-00-06',
+    // 'ask/howis?macs=00-00-00-02'
   ];
 
   var routeGroupNum = -1;

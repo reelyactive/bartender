@@ -6,7 +6,7 @@ var mongoose = require('mongoose');
  * in MongoDB.
  * @type {Schema}
  */
-var reelceiverSchema = new mongoose.Schema({
+var reelceiverSchema = {
   uuid: String,
   mac: String,
   vendor: String,
@@ -62,8 +62,10 @@ var reelceiverSchema = new mongoose.Schema({
       updateDate: Date
     }
   }
-});
+}
 
-var Reelceiver = mongoose.model('Reelceiver', reelceiverSchema, 'device');
 
-module.exports = Reelceiver;
+var reelceiverModel = {};
+
+module.exports.schema = reelceiverSchema;
+module.exports.model  = reelceiverModel;

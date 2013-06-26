@@ -331,10 +331,8 @@ describe('Tags resource testing', function() {
     it('should have the same result either we request with a mac or uuid param', function(done) {
       client.get(baseUrl + '/00-00-00-00-00-00-00-23', function(err, req, res, data) {
         client.get(baseUrl + '/550e8400-e29b-41d4-a716-446655440000', function(err, req, res, dataUuid) {
-          // We delete this link because, obviously, it changes depending on the request
-          delete data._links.self;
-          delete dataUuid._links.self;
-          data.should.eql(dataUuid);
+          data.mac.should.equal(dataUuid.mac);
+          data.uuid.should.equal(dataUuid.uuid);
           done();
         });
       });

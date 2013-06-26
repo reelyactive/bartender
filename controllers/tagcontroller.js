@@ -1,9 +1,11 @@
 var _                   = require('underscore');
-var Tag                 = require('../models/tag');
+var tagModel            = require('../models/tag').model;
 var responseBoilerplate = require('../utils/responseboilerplate');
 var responseMeta        = responseBoilerplate.responseMeta;
 var responseLinks       = responseBoilerplate.responseLinks;
 var paginator           = require('../utils/paginator');
+var versionManager      = require('../versionmanager');
+var MESSAGES            = require('../utils/messages');
 var validator           = require('../utils/validator');
 var helper              = require('../utils/helper');
 
@@ -51,21 +53,27 @@ var tagController = {
     }
 
     // First, count the total number of tags we can access
-    Tag.count(conditions, function tagCount(err, count) {
+    tagModel.count(conditions, function tagCount(err, count) {
       if(err) {
-        return next(err);
+        result = {
+          _meta: new responseMeta.InternalServerError()
+        };
+        console.log(_.template(MESSAGES.errors.databaseRequest, {type: 'Tag.count', err: err}));
+        res.json(result);
+        return next();
       }
       totalCount = count;
 
       // Then we find the tags based on page/perpage
-      Tag
-        .find(conditions,
-              'uuid mac')
-        .skip(offset)
-        .limit(perpage)
-        .exec(function tagsFound(err, tags) {
+      tagModel.find(conditions, 'uuid mac', {offset: offset, perpage: perpage},
+         function tagsFound(err, tags) {
           if(err) {
-            return next(err);
+            result = {
+              _meta: new responseMeta.InternalServerError()
+            };
+            console.log(_.template(MESSAGES.errors.databaseRequest, {type: 'Tag.find', err: err}));
+            res.json(result._meta.statusCode, result);
+            return next();
           }
 
           // Metadata handling
@@ -74,7 +82,7 @@ var tagController = {
             page: page,
             totalCount: totalCount
           };
-          result._meta = new responseMeta.Ok('ok', options);
+          result._meta = new responseMeta.Ok('', options);
           result._meta.visibility = visibility;
 
           result.tags = tags;
@@ -91,7 +99,7 @@ var tagController = {
             tagIdentifiers.push(tag.mac);
 
             var tagUrl = responseLinks.toAbsolute('/tags/' + tag.mac, req, true);
-
+            tagUrl.title = _.template(MESSAGES.titles.resourceInformation, {type: 'tag ' + tag.mac});
             tag = _.extend(tagUrl, tag);
             result.tags[index] = tag;
           });
@@ -104,20 +112,24 @@ var tagController = {
             if(visibility !== 'visible') {
               result._links.visible = responseLinks.toAbsolute('/tags', req, true);
               result._links.visible.href +=  '?visibility=visible';
+              result._links.visible.title =  _.template(MESSAGES.titles.visibleResource, {type: 'tags'});
             }
             if(visibility !== 'invisible') {
               result._links.invisible = responseLinks.toAbsolute('/tags', req, true);
               result._links.invisible.href +=  '?visibility=invisible';
+              result._links.invisible.title = _.template(MESSAGES.titles.invisibleResource, {type: 'tags'});
             }
 
             result._links.whereAreTags = responseLinks.toAbsolute('/ask/whereis', req, true);
             result._links.whereAreTags.href += '?macs=' + tagIdentifiers;
+            result._links.whereAreTags.title = _.template(MESSAGES.titles.whereAreResources, {type: 'tags'});
 
-            result._links.howAreTags   = responseLinks.toAbsolute('/ask/howis', req, true);
+            result._links.howAreTags = responseLinks.toAbsolute('/ask/howis', req, true);
             result._links.howAreTags.href += '?macs=' + tagIdentifiers;
+            result._links.howAreTags.title = _.template(MESSAGES.titles.howAreResources, {type: 'tags'});
           }
 
-          res.json(result);
+          res.json(result._meta.statusCode, result);
           return next();
         }
       );
@@ -144,12 +156,18 @@ var tagController = {
     }
 
     // Business logic
-    Tag.findOne(searchFilters, function tagFound(err, tag) {
+    tagModel.findOne(searchFilters, function tagFound(err, tag) {
       if(err) {
-        return next(err);
+        result = {
+          _meta: new responseMeta.InternalServerError()
+        };
+        console.log(_.template(MESSAGES.errors.databaseRequest, {type: 'Tag.findOne', err: err}));
+        res.json(result._meta.statusCode, result);
+        return next();
       }
       if(!tag) {
         var message = 'No tag  with ' + favoriteType + ' = ' + id + ' found';
+        var message = _.template(MESSAGES.titles.ressourceNotFound, {type: 'tag', idType: favoriteType, id: id});
         var result  = {
           _meta: new responseMeta.NotFound(message)
         };
@@ -184,14 +202,14 @@ var tagController = {
       tag.location.poi.uri = {
         reelceiver: responseLinks.toAbsolute('/reelceivers/' + poi, req, true)
       };
-      tag.location.poi.uri.reelceiver.title = 'Point of interest where this tag is located';
+      tag.location.poi.uri.reelceiver.title = MESSAGES.tag.locationPoi;
     }
     var prevPoi = helper.getNestedProperties(tag, 'location.lastChangeEvent.poi.' + favoriteType);
     if(prevPoi !== undefined) {
       tag.location.lastChangeEvent.poi.uri = {
         reelceiver: responseLinks.toAbsolute('/reelceivers/' + prevPoi, req, true)
       };
-      tag.location.lastChangeEvent.poi.uri.reelceiver.title = 'Previous point of interest where this tag was located';
+      tag.location.lastChangeEvent.poi.uri.reelceiver.title = MESSAGES.tag.previousLocationPoi;
     }
 
     // Maybe we should pluralize this name as it's an array
@@ -211,14 +229,14 @@ var tagController = {
           // _links section
           var linksReelceiver   = _.clone(reelceiverUri);
           linksReelceiver.name  = favoriteType === 'mac' ? receiver.uuid : receiver.mac;
-          linksReelceiver.title = 'One of the reelceiver which decoded this tag';
+          linksReelceiver.title = MESSAGES.tag.reelceiverDecoding;
           decodingReelceiver.push(linksReelceiver);
 
           // We add the uri for the receivers section
           receiver.uri = {
             reelceiver: reelceiverUri
           };
-          receiver.uri.reelceiver.title = 'One of the reelceiver which decoded this tag';
+          receiver.uri.reelceiver.title = MESSAGES.tag.reelceiverDecoding;
         }
       });
       // Remove the last comma
@@ -241,48 +259,48 @@ var tagController = {
     var whatAtUrl      = responseLinks.toAbsolute('/ask/whatat', req, true);
 
     var links        = responseLinks.setDefault(req);
-    links.self.title = 'The tag himself';
+    links.self.title = MESSAGES.tag.self;
     links.tags       = responseLinks.toAbsolute('/tags', req, true);
-    links.tags.title = 'The tags resource. Return all the tags you have access to';
+    links.tags.title = MESSAGES.tag.tags;
 
     // Pluralize for the _links generation
     favoriteType += 's';
 
     if(poi !== undefined) {
       links.poi       = responseLinks.toAbsolute(reelceiversUrl + poi, req, true);
-      links.poi.title = 'Point of interest where this tag is located';
+      links.poi.title = MESSAGES.tag.poiLocated;
       links.howIsPoi  = _.clone(howisUrl);
       links.howIsPoi.href += '?' + favoriteType + '=' + poi;
-      links.howIsPoi.title = 'Know how is the point of interest where this tag is located';
+      links.howIsPoi.title = MESSAGES.tag.howIsPoi;
       links.whatAtPoi = _.clone(whatAtUrl);
       links.whatAtPoi.href += '?' + favoriteType + '=' + poi;
-      links.whatAtPoi.title = 'Find what at the point of interest where this tag is located';
+      links.whatAtPoi.title = MESSAGES.tag.whatAtPoi;
     }
     if(prevPoi !== undefined) {
       links.prevPoi       = responseLinks.toAbsolute(reelceiversUrl + prevPoi, req, true);
-      links.prevPoi.title = 'Previous point of interest where this tag was located';
+      links.prevPoi.title = MESSAGES.tag.previousPoiLocated;
       links.howIsPrevPoi  = _.clone(howisUrl);
       links.howIsPrevPoi.href += '?' + favoriteType + '=' + prevPoi;
-      links.howIsPrevPoi.title = 'Know how is the previous point of interest where this tag was located';
+      links.howIsPrevPoi.title = MESSAGES.tag.howIsPrevPoi;
       links.whatAtPrevPoi = _.clone(whatAtUrl);
       links.whatAtPrevPoi.href += '?' + favoriteType + '=' + prevPoi;
-      links.whatAtPrevPoi.title = 'Find what at the previous point of interest where this tag was located';
+      links.whatAtPrevPoi.title = MESSAGES.tag.whatAtPrevPoi;
     }
     if(decodingReelceiver.length >= 0) {
       links.decodingReelceiver = decodingReelceiver;
       if(decodingReelceiverId !== '') {
         links.howAreDecodingReelceivers = _.clone(howisUrl);
         links.howAreDecodingReelceivers.href  += '?' + favoriteType + '=' + decodingReelceiverId;
-        links.howAreDecodingReelceivers.title = 'Know how are the reelceivers which decoded this tag';
+        links.howAreDecodingReelceivers.title = MESSAGES.tag.howAreDecodingReelceivers;
         links.whatAtDecodingReelceivers = _.clone(whatAtUrl);
         links.whatAtDecodingReelceivers.href += '?' + favoriteType + '=' + decodingReelceiverId;
-        links.whatAtDecodingReelceivers.title = 'Find what is located at the reelceivers which decoded this tag';
+        links.whatAtDecodingReelceivers.title = MESSAGES.tag.whatAtDecodingReelceivers;
       }
     }
 
     result._links = links;
 
-    res.json(result);
+    res.json(result._meta.statusCode, result);
     return next();
   }
 };

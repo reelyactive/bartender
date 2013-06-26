@@ -1,4 +1,5 @@
-var mongoose = require('mongoose');
+var commonModel     = require('./commonModel');
+var databaseManager = require('./database/databasemanager');
 
 /**
  * Tag schema
@@ -6,7 +7,7 @@ var mongoose = require('mongoose');
  * in MongoDB.
  * @type {Schema}
  */
-var tagSchema = new mongoose.Schema({
+var tagSchema = {
   uuid:               { type: String, default : '00000000-0000-1000-8000-000000000000' },
   mac:                { type: String, default : '00-00-00-00-00-00-00-00' },
   vendor:             { type: String, default : 'reelyActive' },
@@ -64,10 +65,16 @@ var tagSchema = new mongoose.Schema({
     },
     transmitters: {}
   }
-});
+};
 
-// Compile our tagSchema into a tagModel
-// A model is a class with which we construct documents.
-var Tag = mongoose.model('Tag', tagSchema, 'device');
+var tagModel = new commonModel('tag');
 
-module.exports = Tag;
+/**
+ * Example of how to add methods to a model
+ */
+// tagModel.countOverrideExample = function(conditions, cb) {
+//   databaseManager.db.tag.countOverrideExample(conditions, cb);
+// };
+
+module.exports.schema = tagSchema;
+module.exports.model  = tagModel;

@@ -1,7 +1,9 @@
 var restify      = require('restify');
+var _            = require('underscore');
 var stepManager  = require('./stepmanager');
 var helper       = require('./helper');
 var responseMeta = require('./responseboilerplate').responseMeta;
+var MESSAGES     = require('./messages');
 
 /**
  * Usefull methods for the server to work.
@@ -57,7 +59,7 @@ var serverManager = {
     // On error (example : Address in use)
     server.on('error', function serverError(err) {
       if(err && err.code === 'EADDRINUSE') {
-        console.log('- The port ' + conf.port + ' is already in use.');
+        console.log(_.template(MESSAGES.errors.portAlreadyUse, {port: conf.port}));
       }
       console.log(err);
       process.exit();
@@ -66,7 +68,7 @@ var serverManager = {
     // 404 - Not found
     server.on('NotFound', function notFound(req, res, next) {
       var result = {};
-      result._meta = new responseMeta.NotFound('Ressource not found');
+      result._meta = new responseMeta.NotFound();
       res.json(result._meta.statusCode, result);
       return next();
     });
@@ -74,7 +76,8 @@ var serverManager = {
     // 500 - Internal error
     server.on('uncaughtException', function after(req, res, route, err) {
       var result = {};
-      result._meta = new responseMeta.InternalServerError(err.message);
+      console.log(_.template(MESSAGES.errors.uncaughtException, {err: err.message}));
+      result._meta = new responseMeta.InternalServerError();
       res.json(result._meta.statusCode, result);
     });
   }
