@@ -1,0 +1,29 @@
+{
+  "name": "barnowl-crapi",
+  "homepage": "https://github.com/reelyactive/bartender/tree/feature/crapi",
+  "author": {
+    "name": "reelyActive",
+    "email": "webdev@reelyactive.com"
+  },
+  "description": "Crappy infrastructure API keeping status in memory and with direct dependency on BarnOwl.",
+  "version": "0.0.0",
+  "engines": {
+    "node": "0.10.x || 0.8.x"
+  },
+  "main": "./crapi.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reelyactive/bartender.git"
+  },
+  "dependencies": {
+    "barnowl": "^0.2.2"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.4.3",
+    "grunt-mocha-test": "~0.2.2",
+    "should": "~1.2.2",
+    "node-inspector": "~0.2.0beta4",
+    "grunt-exec": "~0.4.0"
+  }
+}

@@ -1,4 +1,5 @@
-beehive
-=======
+barnowl-crapi
+=============
 
-Beehive is a REST API that provides the interface to label the infrastructure and to query for information.
+BarnOwl-crapi is a crappy infrastructure API keeping status in memory and with direct dependency on BarnOwl.
+It enables to query basic contextual information such as "what (is) at (location)".
