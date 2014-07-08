@@ -22,15 +22,22 @@ barnOwlInstance.on('visibilityEvent', function(tiraid) {
 /*   identifier values which have a matching radioDecoding identifier.  */
 server.on('request', function(req, res) {
   var macsIndex = req.url.indexOf("macs=");
+  var findIndex = req.url.indexOf("find=");
   var hasMacs = macsIndex > 0;
-  if(!hasMacs) {
+  var hasFind = findIndex > 0;
+  if(!(hasMacs || hasFind)) {
     res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('The url should contain some macs');
+    res.end('The url should contain macs= or find=');
   }
-  else {
+  else if(hasMacs) {
     var macs = req.url.substr(macsIndex + 5);
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end(getIdentifiers(macs.toLowerCase().split(',')));
+  }
+  else if(hasFind) {
+    var mac = req.url.substr(findIndex + 5);
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.end(getLocation(mac.toLowerCase()));
   }
 });
 
@@ -55,6 +62,16 @@ function getIdentifiers(macs) {
   }
   //return matchingIdentifiers.toString();
   return JSON.stringify(matchingIdentifiers, null, " ");
+}
+
+/* Search through the identifier table and return the tiraid of the */
+/*   given identifier, if found.                                    */
+function getLocation(mac) {
+  var tiraid = identifierTable[mac];
+  if(!tiraid) {
+    return "";
+  }
+  return JSON.stringify(tiraid, null, " ");
 }
 
 /* Listen on port 4000 */
