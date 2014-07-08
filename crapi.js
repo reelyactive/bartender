@@ -30,7 +30,7 @@ server.on('request', function(req, res) {
   else {
     var macs = req.url.substr(macsIndex + 5);
     res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end(getIdentifiers(macs.split(',')));
+    res.end(getIdentifiers(macs.toLowerCase().split(',')));
   }
 });
 
