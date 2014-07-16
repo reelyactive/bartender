@@ -16,7 +16,7 @@
     "url": "https://github.com/reelyactive/bartender.git"
   },
   "dependencies": {
-    "barnowl": "^0.3.1"
+    "barnowl": "^0.3.4"
   },
   "devDependencies": {
     "grunt": "~0.4.1",

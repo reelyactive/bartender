@@ -1,6 +1,6 @@
 var barnOwl = require('barnowl');
 var http = require('http');
-var barnOwlInstance = new barnOwl();
+var barnOwlInstance = new barnOwl(1, true);
 var server = http.createServer();
 var httpPort = process.env.httpport || 4000;
 var udpPort = process.env.udpport || 49900;
