@@ -1,0 +1,23 @@
+{
+  "name": "bartender-nearby",
+  "homepage": "https://github.com/reelyactive/bartender/tree/feature/nearby",
+  "author": {
+    "name": "reelyActive",
+    "email": "webdev@reelyactive.com"
+  },
+  "description": "REST API for hyperlocal context.",
+  "version": "0.0.0",
+  "engines": {
+    "node": "0.10.x || 0.8.x"
+  },
+  "main": "./server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reelyactive/bartender.git"
+  },
+  "dependencies": {
+    "barnowl": "^0.3.8",
+    "nedb": ">=0.11.0",
+    "express": ">=4.0.0"
+  }
+}
